@@ -3,6 +3,6 @@
 
 #include "Shooter.h"
 
-void CreateBoss (void);
+void CreateBoss(void);
 
 #endif

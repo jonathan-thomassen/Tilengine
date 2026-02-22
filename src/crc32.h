@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-	unsigned int _crc32(unsigned int crc, const void *buf, size_t size);
+unsigned int _crc32(unsigned int crc, const void *buf, size_t size);
 
 #ifdef __cplusplus
 }

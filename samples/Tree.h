@@ -3,6 +3,6 @@
 
 #include "Actor.h"
 
-Actor* CreateTree (int x, int y, char side);
+Actor *CreateTree(int x, int y, char side);
 
 #endif

@@ -32,16 +32,19 @@
 typedef unsigned int MD5_u32plus;
 
 typedef struct {
-	MD5_u32plus lo, hi;
-	MD5_u32plus a, b, c, d;
-	unsigned char buffer[64];
-	MD5_u32plus block[16];
+  MD5_u32plus lo;
+  MD5_u32plus hi;
+  MD5_u32plus a;
+  MD5_u32plus b;
+  MD5_u32plus c;
+  MD5_u32plus d;
+  unsigned char buffer[64];
+  MD5_u32plus block[16];
 } MD5_CTX;
 
 #ifdef __cplusplus
-extern "C"
-{
-#endif	/* __cplusplus */
+extern "C" {
+#endif /* __cplusplus */
 extern void MD5_Init(MD5_CTX *ctx);
 extern void MD5_Update(MD5_CTX *ctx, const void *data, unsigned long size);
 extern void MD5_Final(unsigned char *result, MD5_CTX *ctx);

@@ -1,0 +1,43 @@
+[1/68] Building C object CMakeFiles/Tilengine.dir/src/LoadTileset.c.obj
+FAILED: [code=1] CMakeFiles/Tilengine.dir/src/LoadTileset.c.obj 
+C:\msys64\mingw64\bin\gcc.exe  -IC:/msys64/mingw64/bin/../include/SDL2 -IC:/Users/jonat/Tilengine/include -std=c11 -O2 -fpic -Wno-unused-result -Wno-format-truncation -g -MD -MT CMakeFiles/Tilengine.dir/src/LoadTileset.c.obj -MF CMakeFiles\Tilengine.dir\src\LoadTileset.c.obj.d -o CMakeFiles/Tilengine.dir/src/LoadTileset.c.obj -c C:/Users/jonat/Tilengine/src/LoadTileset.c
+[2/68] Building C object CMakeFiles/Tilengine.dir/src/ObjectList.c.obj
+FAILED: [code=1] CMakeFiles/Tilengine.dir/src/ObjectList.c.obj 
+C:\msys64\mingw64\bin\gcc.exe  -IC:/msys64/mingw64/bin/../include/SDL2 -IC:/Users/jonat/Tilengine/include -std=c11 -O2 -fpic -Wno-unused-result -Wno-format-truncation -g -MD -MT CMakeFiles/Tilengine.dir/src/ObjectList.c.obj -MF CMakeFiles\Tilengine.dir\src\ObjectList.c.obj.d -o CMakeFiles/Tilengine.dir/src/ObjectList.c.obj -c C:/Users/jonat/Tilengine/src/ObjectList.c
+[3/68] Building C object CMakeFiles/Tilengine.dir/src/Math2D.c.obj
+FAILED: [code=1] CMakeFiles/Tilengine.dir/src/Math2D.c.obj 
+C:\msys64\mingw64\bin\gcc.exe  -IC:/msys64/mingw64/bin/../include/SDL2 -IC:/Users/jonat/Tilengine/include -std=c11 -O2 -fpic -Wno-unused-result -Wno-format-truncation -g -MD -MT CMakeFiles/Tilengine.dir/src/Math2D.c.obj -MF CMakeFiles\Tilengine.dir\src\Math2D.c.obj.d -o CMakeFiles/Tilengine.dir/src/Math2D.c.obj -c C:/Users/jonat/Tilengine/src/Math2D.c
+[4/68] Building C object CMakeFiles/Tilengine.dir/src/Draw.c.obj
+FAILED: [code=1] CMakeFiles/Tilengine.dir/src/Draw.c.obj 
+C:\msys64\mingw64\bin\gcc.exe  -IC:/msys64/mingw64/bin/../include/SDL2 -IC:/Users/jonat/Tilengine/include -std=c11 -O2 -fpic -Wno-unused-result -Wno-format-truncation -g -MD -MT CMakeFiles/Tilengine.dir/src/Draw.c.obj -MF CMakeFiles\Tilengine.dir\src\Draw.c.obj.d -o CMakeFiles/Tilengine.dir/src/Draw.c.obj -c C:/Users/jonat/Tilengine/src/Draw.c
+[5/68] Building C object CMakeFiles/Tilengine.dir/src/Sequence.c.obj
+FAILED: [code=1] CMakeFiles/Tilengine.dir/src/Sequence.c.obj 
+C:\msys64\mingw64\bin\gcc.exe  -IC:/msys64/mingw64/bin/../include/SDL2 -IC:/Users/jonat/Tilengine/include -std=c11 -O2 -fpic -Wno-unused-result -Wno-format-truncation -g -MD -MT CMakeFiles/Tilengine.dir/src/Sequence.c.obj -MF CMakeFiles\Tilengine.dir\src\Sequence.c.obj.d -o CMakeFiles/Tilengine.dir/src/Sequence.c.obj -c C:/Users/jonat/Tilengine/src/Sequence.c
+[6/68] Building C object CMakeFiles/Tilengine.dir/src/Palette.c.obj
+FAILED: [code=1] CMakeFiles/Tilengine.dir/src/Palette.c.obj 
+C:\msys64\mingw64\bin\gcc.exe  -IC:/msys64/mingw64/bin/../include/SDL2 -IC:/Users/jonat/Tilengine/include -std=c11 -O2 -fpic -Wno-unused-result -Wno-format-truncation -g -MD -MT CMakeFiles/Tilengine.dir/src/Palette.c.obj -MF CMakeFiles\Tilengine.dir\src\Palette.c.obj.d -o CMakeFiles/Tilengine.dir/src/Palette.c.obj -c C:/Users/jonat/Tilengine/src/Palette.c
+[7/68] Building C object CMakeFiles/Tilengine.dir/src/ResourcePacker.c.obj
+FAILED: [code=1] CMakeFiles/Tilengine.dir/src/ResourcePacker.c.obj 
+C:\msys64\mingw64\bin\gcc.exe  -IC:/msys64/mingw64/bin/../include/SDL2 -IC:/Users/jonat/Tilengine/include -std=c11 -O2 -fpic -Wno-unused-result -Wno-format-truncation -g -MD -MT CMakeFiles/Tilengine.dir/src/ResourcePacker.c.obj -MF CMakeFiles\Tilengine.dir\src\ResourcePacker.c.obj.d -o CMakeFiles/Tilengine.dir/src/ResourcePacker.c.obj -c C:/Users/jonat/Tilengine/src/ResourcePacker.c
+[8/68] Building C object CMakeFiles/Tilengine.dir/src/Object.c.obj
+FAILED: [code=1] CMakeFiles/Tilengine.dir/src/Object.c.obj 
+C:\msys64\mingw64\bin\gcc.exe  -IC:/msys64/mingw64/bin/../include/SDL2 -IC:/Users/jonat/Tilengine/include -std=c11 -O2 -fpic -Wno-unused-result -Wno-format-truncation -g -MD -MT CMakeFiles/Tilengine.dir/src/Object.c.obj -MF CMakeFiles\Tilengine.dir\src\Object.c.obj.d -o CMakeFiles/Tilengine.dir/src/Object.c.obj -c C:/Users/jonat/Tilengine/src/Object.c
+[9/68] Building C object CMakeFiles/Tilengine.dir/src/Sprite.c.obj
+FAILED: [code=1] CMakeFiles/Tilengine.dir/src/Sprite.c.obj 
+C:\msys64\mingw64\bin\gcc.exe  -IC:/msys64/mingw64/bin/../include/SDL2 -IC:/Users/jonat/Tilengine/include -std=c11 -O2 -fpic -Wno-unused-result -Wno-format-truncation -g -MD -MT CMakeFiles/Tilengine.dir/src/Sprite.c.obj -MF CMakeFiles\Tilengine.dir\src\Sprite.c.obj.d -o CMakeFiles/Tilengine.dir/src/Sprite.c.obj -c C:/Users/jonat/Tilengine/src/Sprite.c
+[10/68] Building C object CMakeFiles/Tilengine.dir/src/SequencePack.c.obj
+FAILED: [code=1] CMakeFiles/Tilengine.dir/src/SequencePack.c.obj 
+C:\msys64\mingw64\bin\gcc.exe  -IC:/msys64/mingw64/bin/../include/SDL2 -IC:/Users/jonat/Tilengine/include -std=c11 -O2 -fpic -Wno-unused-result -Wno-format-truncation -g -MD -MT CMakeFiles/Tilengine.dir/src/SequencePack.c.obj -MF CMakeFiles\Tilengine.dir\src\SequencePack.c.obj.d -o CMakeFiles/Tilengine.dir/src/SequencePack.c.obj -c C:/Users/jonat/Tilengine/src/SequencePack.c
+[11/68] Building C object CMakeFiles/Tilengine.dir/src/Spriteset.c.obj
+FAILED: [code=1] CMakeFiles/Tilengine.dir/src/Spriteset.c.obj 
+C:\msys64\mingw64\bin\gcc.exe  -IC:/msys64/mingw64/bin/../include/SDL2 -IC:/Users/jonat/Tilengine/include -std=c11 -O2 -fpic -Wno-unused-result -Wno-format-truncation -g -MD -MT CMakeFiles/Tilengine.dir/src/Spriteset.c.obj -MF CMakeFiles\Tilengine.dir\src\Spriteset.c.obj.d -o CMakeFiles/Tilengine.dir/src/Spriteset.c.obj -c C:/Users/jonat/Tilengine/src/Spriteset.c
+[12/68] Building C object CMakeFiles/Tilengine.dir/src/Tilemap.c.obj
+FAILED: [code=1] CMakeFiles/Tilengine.dir/src/Tilemap.c.obj 
+C:\msys64\mingw64\bin\gcc.exe  -IC:/msys64/mingw64/bin/../include/SDL2 -IC:/Users/jonat/Tilengine/include -std=c11 -O2 -fpic -Wno-unused-result -Wno-format-truncation -g -MD -MT CMakeFiles/Tilengine.dir/src/Tilemap.c.obj -MF CMakeFiles\Tilengine.dir\src\Tilemap.c.obj.d -o CMakeFiles/Tilengine.dir/src/Tilemap.c.obj -c C:/Users/jonat/Tilengine/src/Tilemap.c
+[13/68] Building C object CMakeFiles/Tilengine.dir/src/Tables.c.obj
+FAILED: [code=1] CMakeFiles/Tilengine.dir/src/Tables.c.obj 
+C:\msys64\mingw64\bin\gcc.exe  -IC:/msys64/mingw64/bin/../include/SDL2 -IC:/Users/jonat/Tilengine/include -std=c11 -O2 -fpic -Wno-unused-result -Wno-format-truncation -g -MD -MT CMakeFiles/Tilengine.dir/src/Tables.c.obj -MF CMakeFiles\Tilengine.dir\src\Tables.c.obj.d -o CMakeFiles/Tilengine.dir/src/Tables.c.obj -c C:/Users/jonat/Tilengine/src/Tables.c
+[14/68] Building C object CMakeFiles/Tilengine.dir/src/Test.c.obj
+FAILED: [code=1] CMakeFiles/Tilengine.dir/src/Test.c.obj 
+C:\msys64\mingw64\bin\gcc.exe  -IC:/msys64/mingw64/bin/../include/SDL2 -IC:/Users/jonat/Tilengine/include -std=c11 -O2 -fpic -Wno-unused-result -Wno-format-truncation -g -MD -MT CMakeFiles/Tilengine.dir/src/Test.c.obj -MF CMakeFiles\Tilengine.dir\src\Test.c.obj.d -o CMakeFiles/Tilengine.dir/src/Test.c.obj -c C:/Users/jonat/Tilengine/src/Test.c
+ninja: build stopped: subcommand failed.

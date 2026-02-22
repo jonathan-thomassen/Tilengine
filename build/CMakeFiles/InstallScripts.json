@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/Users/jonat/Tilengine/build/cmake_install.cmake",
+		"C:/Users/jonat/Tilengine/build/samples/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

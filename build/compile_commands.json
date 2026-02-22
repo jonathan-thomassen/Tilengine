@@ -1,0 +1,386 @@
+[
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Animation.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Animation.c",
+  "file": "C:/Users/jonat/Tilengine/src/Animation.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Animation.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Base64.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Base64.c",
+  "file": "C:/Users/jonat/Tilengine/src/Base64.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Base64.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Bitmap.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Bitmap.c",
+  "file": "C:/Users/jonat/Tilengine/src/Bitmap.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Bitmap.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Blitters.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Blitters.c",
+  "file": "C:/Users/jonat/Tilengine/src/Blitters.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Blitters.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Draw.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Draw.c",
+  "file": "C:/Users/jonat/Tilengine/src/Draw.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Draw.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Layer.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Layer.c",
+  "file": "C:/Users/jonat/Tilengine/src/Layer.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Layer.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\List.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\List.c",
+  "file": "C:/Users/jonat/Tilengine/src/List.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/List.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\LoadBitmap.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\LoadBitmap.c",
+  "file": "C:/Users/jonat/Tilengine/src/LoadBitmap.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/LoadBitmap.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\LoadFile.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\LoadFile.c",
+  "file": "C:/Users/jonat/Tilengine/src/LoadFile.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/LoadFile.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\LoadPalette.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\LoadPalette.c",
+  "file": "C:/Users/jonat/Tilengine/src/LoadPalette.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/LoadPalette.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\LoadSequencePack.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\LoadSequencePack.c",
+  "file": "C:/Users/jonat/Tilengine/src/LoadSequencePack.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/LoadSequencePack.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\LoadSpriteset.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\LoadSpriteset.c",
+  "file": "C:/Users/jonat/Tilengine/src/LoadSpriteset.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/LoadSpriteset.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\LoadTMX.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\LoadTMX.c",
+  "file": "C:/Users/jonat/Tilengine/src/LoadTMX.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/LoadTMX.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\LoadTilemap.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\LoadTilemap.c",
+  "file": "C:/Users/jonat/Tilengine/src/LoadTilemap.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/LoadTilemap.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\LoadTileset.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\LoadTileset.c",
+  "file": "C:/Users/jonat/Tilengine/src/LoadTileset.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/LoadTileset.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Math2D.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Math2D.c",
+  "file": "C:/Users/jonat/Tilengine/src/Math2D.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Math2D.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Object.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Object.c",
+  "file": "C:/Users/jonat/Tilengine/src/Object.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Object.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\ObjectList.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\ObjectList.c",
+  "file": "C:/Users/jonat/Tilengine/src/ObjectList.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/ObjectList.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Palette.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Palette.c",
+  "file": "C:/Users/jonat/Tilengine/src/Palette.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Palette.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\ResourcePacker.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\ResourcePacker.c",
+  "file": "C:/Users/jonat/Tilengine/src/ResourcePacker.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/ResourcePacker.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Sequence.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Sequence.c",
+  "file": "C:/Users/jonat/Tilengine/src/Sequence.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Sequence.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\SequencePack.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\SequencePack.c",
+  "file": "C:/Users/jonat/Tilengine/src/SequencePack.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/SequencePack.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Sprite.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Sprite.c",
+  "file": "C:/Users/jonat/Tilengine/src/Sprite.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Sprite.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Spriteset.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Spriteset.c",
+  "file": "C:/Users/jonat/Tilengine/src/Spriteset.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Spriteset.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Tables.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Tables.c",
+  "file": "C:/Users/jonat/Tilengine/src/Tables.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Tables.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Test.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Test.c",
+  "file": "C:/Users/jonat/Tilengine/src/Test.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Test.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Tilemap.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Tilemap.c",
+  "file": "C:/Users/jonat/Tilengine/src/Tilemap.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Tilemap.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Tilengine.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Tilengine.c",
+  "file": "C:/Users/jonat/Tilengine/src/Tilengine.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Tilengine.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Tileset.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Tileset.c",
+  "file": "C:/Users/jonat/Tilengine/src/Tileset.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Tileset.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\Window.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Window.c",
+  "file": "C:/Users/jonat/Tilengine/src/Window.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/Window.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\World.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\World.c",
+  "file": "C:/Users/jonat/Tilengine/src/World.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/World.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\aes.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\aes.c",
+  "file": "C:/Users/jonat/Tilengine/src/aes.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/aes.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\cJSON.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\cJSON.c",
+  "file": "C:/Users/jonat/Tilengine/src/cJSON.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/cJSON.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\crc32.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\crc32.c",
+  "file": "C:/Users/jonat/Tilengine/src/crc32.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/crc32.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\crt.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\crt.c",
+  "file": "C:/Users/jonat/Tilengine/src/crt.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/crt.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\md5.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\md5.c",
+  "file": "C:/Users/jonat/Tilengine/src/md5.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/md5.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Tilengine.dir\\src\\simplexml.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\simplexml.c",
+  "file": "C:/Users/jonat/Tilengine/src/simplexml.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Tilengine.dir/src/simplexml.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o CMakeFiles\\Test.dir\\src\\Test.c.obj -c C:\\Users\\jonat\\Tilengine\\src\\Test.c",
+  "file": "C:/Users/jonat/Tilengine/src/Test.c",
+  "output": "C:/Users/jonat/Tilengine/build/CMakeFiles/Test.dir/src/Test.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\barrel.dir\\Barrel.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Barrel.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Barrel.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/barrel.dir/Barrel.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\barrel.dir\\Simon.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Simon.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Simon.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/barrel.dir/Simon.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\mode7.dir\\Mode7.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Mode7.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Mode7.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/mode7.dir/Mode7.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\mode7.dir\\Sin.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Sin.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Sin.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/mode7.dir/Sin.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\platformer.dir\\Platformer.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Platformer.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Platformer.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/platformer.dir/Platformer.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\racer.dir\\Racer.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Racer.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Racer.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/racer.dir/Racer.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\racer.dir\\Tree.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Tree.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Tree.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/racer.dir/Tree.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\racer.dir\\Actor.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Actor.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Actor.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/racer.dir/Actor.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\scaling.dir\\Scaling.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Scaling.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Scaling.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/scaling.dir/Scaling.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\shadow.dir\\Shadow.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Shadow.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Shadow.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/shadow.dir/Shadow.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\shooter.dir\\Shooter.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Shooter.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Shooter.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/shooter.dir/Shooter.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\shooter.dir\\Actor.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Actor.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Actor.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/shooter.dir/Actor.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\shooter.dir\\Boss.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Boss.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Boss.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/shooter.dir/Boss.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\shooter.dir\\Enemy.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Enemy.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Enemy.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/shooter.dir/Enemy.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\shooter.dir\\Explosion.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Explosion.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Explosion.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/shooter.dir/Explosion.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\shooter.dir\\Ship.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Ship.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Ship.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/shooter.dir/Ship.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\shooter.dir\\Sin.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Sin.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Sin.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/shooter.dir/Sin.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\tutorial.dir\\Tutorial.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Tutorial.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Tutorial.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/tutorial.dir/Tutorial.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\wobble.dir\\Wobble.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Wobble.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Wobble.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/wobble.dir/Wobble.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\wobble.dir\\Sin.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Sin.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Sin.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/wobble.dir/Sin.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\colorcycle.dir\\ColorCycle.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\ColorCycle.c",
+  "file": "C:/Users/jonat/Tilengine/samples/ColorCycle.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/colorcycle.dir/ColorCycle.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\benchmark.dir\\Benchmark.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Benchmark.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Benchmark.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/benchmark.dir/Benchmark.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\supermarioclone.dir\\SuperMarioClone.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\SuperMarioClone.c",
+  "file": "C:/Users/jonat/Tilengine/samples/SuperMarioClone.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/supermarioclone.dir/SuperMarioClone.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\test_mouse.dir\\TestMouse.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\TestMouse.c",
+  "file": "C:/Users/jonat/Tilengine/samples/TestMouse.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/test_mouse.dir/TestMouse.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\forest.dir\\Forest.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\Forest.c",
+  "file": "C:/Users/jonat/Tilengine/samples/Forest.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/forest.dir/Forest.c.obj"
+},
+{
+  "directory": "C:/Users/jonat/Tilengine/build",
+  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -IC:/Users/jonat/Tilengine/samples/../include  -std=c23 -O2 -fpic -Wno-unused-result -Wno-format-truncation -std=c99 -O2 -fpic -Wno-unused-result -Wno-format-truncation -o samples\\CMakeFiles\\querylayer.dir\\QueryLayer.c.obj -c C:\\Users\\jonat\\Tilengine\\samples\\QueryLayer.c",
+  "file": "C:/Users/jonat/Tilengine/samples/QueryLayer.c",
+  "output": "C:/Users/jonat/Tilengine/build/samples/CMakeFiles/querylayer.dir/QueryLayer.c.obj"
+}
+]

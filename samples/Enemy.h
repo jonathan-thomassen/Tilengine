@@ -3,7 +3,7 @@
 
 #include "Shooter.h"
 
-void CreateEnemy (void);
-bool HitEnemy (Actor* actor, int power);
+void CreateEnemy(void);
+bool HitEnemy(Actor *actor, int power);
 
 #endif

@@ -1,0 +1,282 @@
+{
+	"configurations" : 
+	[
+		{
+			"abstractTargets" : 
+			[
+				{
+					"directoryIndex" : 1,
+					"id" : "SDL3::Headers::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-SDL3__Headers-Debug-b8e4a67040031a7a7216.json",
+					"name" : "SDL3::Headers",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "SDL3::SDL3-shared::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-SDL3__SDL3-shared-Debug-7163e9f6d4e547343ac5.json",
+					"name" : "SDL3::SDL3-shared",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "SDL3::SDL3-static::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-SDL3__SDL3-static-Debug-14f4871f68709f66d869.json",
+					"name" : "SDL3::SDL3-static",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "SDL3::SDL3_test::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-SDL3__SDL3_test-Debug-7119bf75ed1f31e36c57.json",
+					"name" : "SDL3::SDL3_test",
+					"projectIndex" : 1
+				}
+			],
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"jsonFile" : "directory-.-Debug-f6f22219c74102c3da70.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				},
+				{
+					"abstractTargetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					],
+					"build" : "samples",
+					"jsonFile" : "directory-samples-Debug-a263aaf5ea9f7c37bab5.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "samples",
+					"targetIndexes" : 
+					[
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Tilengine",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				},
+				{
+					"abstractTargetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					],
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "samples",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Test::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Test-Debug-e48e4980791abf83627b.json",
+					"name" : "Test",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Tilengine::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Tilengine-Debug-236a0b4b972728531d3f.json",
+					"name" : "Tilengine",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "barrel::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-barrel-Debug-ceea4e23b1b892ea3b3d.json",
+					"name" : "barrel",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "benchmark::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-benchmark-Debug-6d7bb1903dc5612fa9cd.json",
+					"name" : "benchmark",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "colorcycle::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-colorcycle-Debug-cfd8b27289c3eb2ba088.json",
+					"name" : "colorcycle",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "forest::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-forest-Debug-6791650db3ec91a1be40.json",
+					"name" : "forest",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "mode7::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-mode7-Debug-29e596aa4b5770e9bc32.json",
+					"name" : "mode7",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "platformer::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-platformer-Debug-762173add189f0600925.json",
+					"name" : "platformer",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "querylayer::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-querylayer-Debug-d20dc4c5dc7a06b81a38.json",
+					"name" : "querylayer",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "racer::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-racer-Debug-6467393b9abb81d3b8c3.json",
+					"name" : "racer",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "scaling::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-scaling-Debug-134c474372cfe4bc078a.json",
+					"name" : "scaling",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "shadow::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-shadow-Debug-2e1d4e9c8772d7637998.json",
+					"name" : "shadow",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "shooter::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-shooter-Debug-b66d1b1d224cba843a92.json",
+					"name" : "shooter",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "supermarioclone::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-supermarioclone-Debug-4bad7342bb58404f1841.json",
+					"name" : "supermarioclone",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "test_mouse::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-test_mouse-Debug-1d4097644d36e25abc70.json",
+					"name" : "test_mouse",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "tutorial::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-tutorial-Debug-1bc847e074c35a97ca0b.json",
+					"name" : "tutorial",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "wobble::@fd003194bc69d7fb51e8",
+					"jsonFile" : "target-wobble-Debug-3b2dadade17d7b8df3d0.json",
+					"name" : "wobble",
+					"projectIndex" : 1
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/jonat/Tilengine/build",
+		"source" : "C:/Users/jonat/Tilengine"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 9
+	}
+}
