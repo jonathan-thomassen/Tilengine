@@ -4,7 +4,7 @@
 #include "Shooter.h"
 #include <stdlib.h>
 
-/* datos extra ship */
+/* ship extra data */
 typedef struct {
   int lives;
   Actor *claws[2];
@@ -12,7 +12,7 @@ typedef struct {
   bool claw;
 } Ship;
 
-/* datos extra claw */
+/* claw extra data */
 typedef struct {
   int radius;
   int angle;
@@ -28,19 +28,19 @@ static void apply_sprite_tilt(Actor *actor) {
   int index = TLN_GetSpritePicture(actor->index);
   SetActorTimeout(actor, 0, 6);
 
-  /* hacia arriba */
+  /* upward */
   if (actor->vy < 0) {
     if (index > 0)
       TLN_SetSpritePicture(actor->index, index - 1);
   }
 
-  /* hacia abajo */
+  /* downward */
   else if (actor->vy > 0) {
     if (index < 6)
       TLN_SetSpritePicture(actor->index, index + 1);
   }
 
-  /* centrado */
+  /* centered */
   else {
     if (index > 3)
       TLN_SetSpritePicture(actor->index, index - 1);
@@ -48,11 +48,11 @@ static void apply_sprite_tilt(Actor *actor) {
       TLN_SetSpritePicture(actor->index, index + 1);
   }
 
-  /* izquierda */
+  /* left boundary */
   if (actor->vx < 0 && actor->x < 0)
     actor->x = 0;
 
-  /* derecha */
+  /* right boundary */
   if (actor->vx > 0 && actor->x > 396)
     actor->x = 396;
 }
@@ -99,7 +99,7 @@ void ShipTasks(Actor *actor) {
   /* movement */
   apply_sprite_tilt(actor);
 
-  /* disparo */
+  /* shoot */
   if (GetActorTimeout(actor, 1) && TLN_GetInput(INPUT_A)) {
     SetActorTimeout(actor, 1, 10);
     CreateShot(TYPE_BLADEB, actor->x + 32, actor->y + rand() % 10 - 5);
@@ -133,18 +133,18 @@ void ClawTasks(Actor *actor) {
   Claw *claw = (Claw *)actor->usrdata;
   Actor const *parent = GetActor(ACTOR_SHIP);
 
-  /* extensi�n */
+  /* extension */
   if (claw->radius < 32)
     claw->radius++;
 
-  /* giro */
+  /* rotation */
   else {
     claw->angle -= 3;
     if (claw->angle == 0)
       claw->angle = 360;
   }
 
-  /* posicion */
+  /* position */
   actor->x = parent->x + CalcSin(claw->angle, claw->radius) + 8;
   actor->y = parent->y + CalcCos(claw->angle, claw->radius);
 }
@@ -186,13 +186,13 @@ void ShotTasks(Actor *actor) {
   int last;
   int power;
 
-  /* escape de pantalla */
+  /* off screen */
   if (actor->x > 430) {
     ReleaseActor(actor);
     return;
   }
 
-  /* colisiones */
+  /* collisions */
   if (actor->type == TYPE_BLADEB)
     power = 2;
   else
@@ -213,7 +213,7 @@ void ShotTasks(Actor *actor) {
     }
   }
 
-  /* colisiones jefe */
+  /* boss collisions */
   last = ACTOR_BOSS + 8;
   for (c = ACTOR_BOSS; c < last; c++) {
     Actor const *target = GetActor(c);

@@ -27,19 +27,19 @@ void EnemyTasks(Actor *actor) {
     int index = TLN_GetSpritePicture(actor->index);
     SetActorTimeout(actor, 0, 6);
 
-    /* hacia arriba */
+    /* upward */
     if (actor->vy < 0) {
       if (index > 23)
         TLN_SetSpritePicture(actor->index, index - 1);
     }
 
-    /* hacia abajo */
+    /* downward */
     else if (actor->vy > 0) {
       if (index < 27)
         TLN_SetSpritePicture(actor->index, index + 1);
     }
 
-    /* centrado */
+    /* centered */
     else {
       if (index > 25)
         TLN_SetSpritePicture(actor->index, index - 1);
@@ -61,7 +61,7 @@ void EnemyTasks(Actor *actor) {
       actor->vy = 0;
   }
 
-  /* limites de pantalla */
+  /* screen bounds */
   if (actor->y < 0) {
     actor->y = 0;
     actor->vy = 0;

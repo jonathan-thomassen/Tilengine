@@ -79,7 +79,7 @@ int main(int arg, char *argv[]) {
   return 0;
 }
 
-/* auxiliar for Bresenham's setup_circle() */
+/* helper for Bresenham's setup_circle() */
 void setup_edge(Edge *edge_buf, int xc, int yc, int x, int y) {
   edge_buf[yc + y].x1 = edge_buf[yc - y].x1 = xc - x;
   edge_buf[yc + y].x2 = edge_buf[yc - y].x2 = xc + x;
