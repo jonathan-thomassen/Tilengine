@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
     palettes[c] = TLN_ClonePalette(TLN_GetTilesetPalette(layers[c].tileset));
 
   /* startup display */
-  TLN_CreateWindow(NULL, CWF_NEAREST);
+  TLN_CreateWindow(CWF_NEAREST);
 
   /* main loop */
   while (TLN_ProcessWindow()) {
@@ -219,14 +219,10 @@ static void raster_callback(int line) {
     TLN_SetLayerPosition(LAYER_FOREGROUND, (frame << 2) / 3, 192 - line);
   }
 
-  if (line == 64)
-    TLN_SetLayerBlendMode(LAYER_FOREGROUND, BLEND_MIX50, 0);
-
   if (line == 112)
     TLN_DisableLayer(LAYER_FOREGROUND);
 
   if (line == 192) {
-    TLN_SetLayerBlendMode(LAYER_FOREGROUND, BLEND_NONE, 0);
     TLN_SetLayerPosition(LAYER_FOREGROUND, frame * 10, 448 - line);
   }
 

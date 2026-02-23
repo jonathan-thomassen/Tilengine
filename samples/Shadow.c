@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
   sky_lo.b = sky[1].b;
 
   /* main loop */
-  TLN_CreateWindow(NULL, CWF_NEAREST);
+  TLN_CreateWindow(CWF_NEAREST);
   while (TLN_ProcessWindow()) {
     if (xpos < max_xpos) {
       xpos += speed;

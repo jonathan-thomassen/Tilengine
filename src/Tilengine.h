@@ -409,8 +409,8 @@ TLNAPI const char *TLN_GetErrorString(TLN_Error error);
  * \defgroup windowing
  * \brief Built-in window and input management
  * @{ */
-TLNAPI bool TLN_CreateWindow(const char *overlay, int flags);
-TLNAPI bool TLN_CreateWindowThread(const char *overlay, int flags);
+TLNAPI bool TLN_CreateWindow(int flags);
+TLNAPI bool TLN_CreateWindowThread(int flags);
 TLNAPI void TLN_SetWindowTitle(const char *title);
 TLNAPI bool TLN_ProcessWindow(void);
 TLNAPI bool TLN_IsWindowActive(void);
@@ -568,10 +568,7 @@ TLNAPI bool TLN_SetLayerAffineTransform(int nlayer, TLN_Affine const *affine);
 TLNAPI bool TLN_SetLayerTransform(int layer, float angle, float dx, float dy,
                                   float sx, float sy);
 TLNAPI bool TLN_SetLayerPixelMapping(int nlayer, TLN_PixelMap *table);
-TLNAPI bool TLN_SetLayerBlendMode(int nlayer, TLN_Blend mode, uint8_t factor);
 TLNAPI bool TLN_SetLayerColumnOffset(int nlayer, int *offset);
-TLNAPI bool TLN_SetLayerClip(int nlayer, int x1, int y1, int x2, int y2);
-TLNAPI bool TLN_DisableLayerClip(int nlayer);
 TLNAPI bool TLN_SetLayerWindow(int nlayer, int x1, int y1, int x2, int y2,
                                bool invert);
 TLNAPI bool TLN_SetLayerWindowColor(int nlayer, uint8_t r, uint8_t g, uint8_t b,
@@ -590,7 +587,6 @@ TLNAPI bool TLN_DisableLayer(int nlayer);
 TLNAPI bool TLN_EnableLayer(int nlayer);
 TLNAPI TLN_LayerType TLN_GetLayerType(int nlayer);
 TLNAPI TLN_Palette TLN_GetLayerPalette(int nlayer);
-TLNAPI TLN_Tileset TLN_GetLayerTileset(int nlayer);
 TLNAPI TLN_Tilemap TLN_GetLayerTilemap(int nlayer);
 TLNAPI TLN_Bitmap TLN_GetLayerBitmap(int nlayer);
 TLNAPI TLN_ObjectList TLN_GetLayerObjects(int nlayer);
@@ -606,16 +602,12 @@ TLNAPI int TLN_GetLayerY(int nlayer);
  * \defgroup sprite
  * \brief Sprites management
  * @{ */
-TLNAPI bool TLN_ConfigSprite(int nsprite, TLN_Spriteset spriteset,
-                             uint32_t flags);
 TLNAPI bool TLN_SetSpriteSet(int nsprite, TLN_Spriteset spriteset);
-TLNAPI bool TLN_SetSpriteFlags(int nsprite, uint32_t flags);
 TLNAPI bool TLN_EnableSpriteFlag(int nsprite, uint32_t flag, bool enable);
 TLNAPI bool TLN_SetSpritePivot(int nsprite, float px, float py);
 TLNAPI bool TLN_SetSpritePosition(int nsprite, int x, int y);
 TLNAPI bool TLN_SetSpritePicture(int nsprite, int entry);
 TLNAPI bool TLN_SetSpritePalette(int nsprite, TLN_Palette palette);
-TLNAPI bool TLN_SetSpriteBlendMode(int nsprite, TLN_Blend mode);
 TLNAPI bool TLN_SetSpriteScaling(int nsprite, float sx, float sy);
 TLNAPI bool TLN_ResetSpriteScaling(int nsprite);
 TLNAPI int TLN_GetSpritePicture(int nsprite);
@@ -627,7 +619,6 @@ TLNAPI bool TLN_GetSpriteCollision(int nsprite);
 TLNAPI bool TLN_GetSpriteState(int nsprite, TLN_SpriteState *state);
 TLNAPI bool TLN_SetFirstSprite(int nsprite);
 TLNAPI bool TLN_SetNextSprite(int nsprite, int next);
-TLNAPI bool TLN_EnableSpriteMasking(int nsprite, bool enable);
 TLNAPI void TLN_SetSpritesMaskRegion(int top_line, int bottom_line);
 TLNAPI bool TLN_SetSpriteAnimation(int nsprite, TLN_Sequence sequence,
                                    int loop);

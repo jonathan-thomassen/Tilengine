@@ -352,9 +352,6 @@ static int WindowThread(void * /* data */) {
  * \brief
  * Creates a window for rendering
  *
- * \param overlay
- * Deprecated parameter in 2.10, kept for compatibility. Set to NULL
- *
  * \param flags
  * Mask of the possible creation flags:
  * CWF_FULLSCREEN, CWF_VSYNC, CWF_S1 - CWF_S5 (scaling factor, none = auto max)
@@ -377,7 +374,7 @@ static int WindowThread(void * /* data */) {
  * \see
  * TLN_DeleteWindow(), TLN_ProcessWindow(), TLN_GetInput(), TLN_DrawFrame()
  */
-bool TLN_CreateWindow(const char * /* overlay */, int flags) {
+bool TLN_CreateWindow(int flags) {
   bool ok;
 
   /* allow single instance */
@@ -427,7 +424,7 @@ bool TLN_CreateWindow(const char * /* overlay */, int flags) {
  * \see
  * TLN_DeleteWindow(), TLN_IsWindowActive(), TLN_GetInput(), TLN_UpdateFrame()
  */
-bool TLN_CreateWindowThread(const char * /* overlay */, int flags) {
+bool TLN_CreateWindowThread(int flags) {
   /* allow single instance */
   if (instances) {
     instances++;

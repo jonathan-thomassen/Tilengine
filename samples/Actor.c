@@ -81,10 +81,7 @@ Actor *SetActor(int index, int type, int x, int y, int w, int h,
 }
 
 /* releases actor */
-void ReleaseActor(Actor *actor) {
-  TLN_SetSpriteBlendMode(actor->index, BLEND_NONE);
-  actor->state = 0;
-}
+void ReleaseActor(Actor *actor) { actor->state = 0; }
 
 /* sets collision box */
 void UpdateActorHitbox(Actor *actor) {

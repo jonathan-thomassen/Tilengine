@@ -15,7 +15,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 #define WIDTH 320
 #define HEIGHT 192
 #define COLUMNS WIDTH / 8 + 2
@@ -53,7 +52,7 @@ int main(int argc, char *argv[]) {
   TLN_SetLayerColumnOffset(LAYER_BACKGROUND, column);
 
   /* main loop */
-  TLN_CreateWindow(NULL, CWF_NEAREST);
+  TLN_CreateWindow(CWF_NEAREST);
   while (TLN_ProcessWindow()) {
     /* scroll */
     TLN_SetLayerPosition(LAYER_FOREGROUND, frame * 3, 0);

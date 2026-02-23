@@ -9,7 +9,7 @@ void ExplosionTasks(Actor *actor) {
 Actor *CreateExplosion(int index, int x, int y, TLN_Sequence sequence) {
   Actor *actor = GetActor(index);
   SetActor(index, TYPE_EXPLOSION, x, y, 32, 32, ExplosionTasks);
-  TLN_ConfigSprite(index, spritesets[SPRITESET_MAIN], 0);
+  TLN_SetSpriteSet(index, spritesets[SPRITESET_MAIN]);
   TLN_SetSpriteAnimation(index, sequence, 1);
   return actor;
 }

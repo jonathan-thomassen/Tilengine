@@ -17,7 +17,7 @@ void CreateEnemy(void) {
   actor->vx = -(rand() % 3 + 2);
   actor->life = 8;
   SetActorTimeout(actor, 1, 60);
-  TLN_ConfigSprite(actor->index, spritesets[SPRITESET_MAIN], 0);
+  TLN_SetSpriteSet(actor->index, spritesets[SPRITESET_MAIN]);
   TLN_SetSpritePicture(actor->index, 25);
 }
 

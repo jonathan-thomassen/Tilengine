@@ -54,7 +54,6 @@ int main(int argc, char *argv[]) {
 
   printf("Blend layer...........");
   TLN_ResetLayerMode(0);
-  TLN_SetLayerBlendMode(0, BLEND_MIX, 128);
   Profile();
 
   printf("Scaling blend layer...");
@@ -71,7 +70,8 @@ int main(int argc, char *argv[]) {
   for (c = 0; c < NUM_SPRITES; c++) {
     int y = c / 25;
     int x = c % 25;
-    TLN_ConfigSprite(c, spriteset, FLAG_NONE);
+    TLN_SetSpriteSet(c, spriteset);
+    TLN_EnableSpriteFlag(c, FLAG_NONE, true);
     TLN_SetSpritePicture(c, 0);
     TLN_SetSpritePosition(c, x * 15, y * 21);
   }

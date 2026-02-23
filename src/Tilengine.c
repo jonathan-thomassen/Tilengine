@@ -158,7 +158,7 @@ static TLN_Engine create_context(int hres, int vres, int numlayers,
     engine = context;
 
   for (c = 0; c < context->numlayers; c++)
-    TLN_DisableLayerClip(c);
+    TLN_DisableLayerWindow(c);
 
 #ifdef _DEBUG
   TLN_SetLogLevel(TLN_LOG_ERRORS);

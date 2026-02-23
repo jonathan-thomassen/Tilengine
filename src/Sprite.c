@@ -26,30 +26,6 @@
 static void SelectSpriteBlitter(Sprite *sprite);
 
 /*!
- * \deprecated use \ref TLN_SetSpriteSet and \ref TLN_EnableSpriteFlag
- * \brief
- * Configures a sprite, setting spriteset and flags at once
- *
- * \param nsprite
- * Id of the sprite [0, num_sprites - 1]
- *
- * \param spriteset
- * Reference of the spriteset containing the graphics to set
- *
- * \param flags
- * Can be 0 or a combination of FLAG_FLIPX and FLAG_FLIPY
- *
- * \remarks
- * This function also assigns the palette of the spriteset
- * \see
- * TLN_SetSpritePicture()
- */
-bool TLN_ConfigSprite(int nsprite, TLN_Spriteset spriteset, uint32_t flags) {
-  return TLN_SetSpriteSet(nsprite, spriteset) &&
-         TLN_SetSpriteFlags(nsprite, flags);
-}
-
-/*!
  * \brief
  * Assigns the spriteset and its palette to a given sprite
  *
@@ -94,33 +70,6 @@ bool TLN_SetSpriteSet(int nsprite, TLN_Spriteset spriteset) {
     ListAppendNode(&engine->list_sprites, nsprite);
 
   return GetSpriteFlag(sprite, SPRITE_FLAG_OK);
-}
-
-/*!
- * \deprecated Use \ref TLN_EnableSpriteFlag to enable or disable individual
- * flags
- * \brief
- * Sets flags for a given sprite
- *
- * \param nsprite
- * Id of the sprite [0, num_sprites - 1]
- *
- * \param flags
- * Can be 0 or a combination of TLN_TileFlags
- */
-bool TLN_SetSpriteFlags(int nsprite, uint32_t flags) {
-  if (nsprite >= engine->numsprites) {
-    TLN_SetLastError(TLN_ERR_IDX_SPRITE);
-    return false;
-  }
-
-  /* preserve internal SPRITE_FLAG_* bits (bits 24+), update only user-visible
-   * bits */
-  const uint32_t internal_mask = 0xFF000000U;
-  Sprite *sprite = &engine->sprites[nsprite];
-  sprite->flags = (sprite->flags & internal_mask) | (flags & ~internal_mask);
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
 }
 
 /*!
@@ -298,38 +247,6 @@ int TLN_GetSpriteY(int nsprite) {
 
   TLN_SetLastError(TLN_ERR_OK);
   return engine->sprites[nsprite].pos.y;
-}
-
-/*!
- * \brief
- * Sets the blending mode (transparency effect)
- *
- * \param nsprite
- * Id of the sprite [0, num_sprites - 1]
- *
- * \param mode
- * Member of the TLN_Blend enumeration
- *
- * \param factor
- * Deprecated as of 1.12, left for backwards compatibility but doesn't have
- * effect.
- *
- * \see
- * Blending
- */
-bool TLN_SetSpriteBlendMode(int nsprite, TLN_Blend mode) {
-  Sprite *sprite;
-  if (nsprite >= engine->numsprites) {
-    TLN_SetLastError(TLN_ERR_IDX_SPRITE);
-    return false;
-  }
-
-  sprite = &engine->sprites[nsprite];
-  sprite->blend = SelectBlendTable(mode);
-  SelectSpriteBlitter(sprite);
-
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
 }
 
 /*!
@@ -814,17 +731,6 @@ bool TLN_SetNextSprite(int nsprite, int next) {
   ListPrint(list);
   TLN_SetLastError(TLN_ERR_OK);
   return true;
-}
-
-/*!
- * \deprecated, use \ref TLN_EnableSpriteFlag (nsprite, FLAG_MASKED, enable)
- * \brief Enables or disables masking for this sprite, if enabled it won't be
- * drawn inside the region set up with TLN_SetSpritesMaskRegion()
- * \param nsprite Id of the sprite to mask [0, num_sprites - 1].
- * \param enable Enables (true) or disables (false) masking
- */
-bool TLN_EnableSpriteMasking(int nsprite, bool enable) {
-  return TLN_EnableSpriteFlag(nsprite, FLAG_MASKED, enable);
 }
 
 /* normalize clamp in range 0.0f - 1.0f */

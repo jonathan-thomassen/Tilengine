@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
   SimonInit();
 
   /* main loop */
-  TLN_CreateWindow(NULL, CWF_NEAREST);
+  TLN_CreateWindow(CWF_NEAREST);
   while (TLN_ProcessWindow()) {
     ypos++;
     SimonTasks();

@@ -51,7 +51,7 @@ int main(int arg, char *argv[]) {
   TLN_SetLayerWindowColor(LAYER_FOREGROUND, 0, 128, 224, BLEND_NONE);
 
   /* create window & main loop */
-  TLN_CreateWindow(NULL, CWF_NEAREST);
+  TLN_CreateWindow(CWF_NEAREST);
   while (TLN_ProcessWindow()) {
     /* change radius */
     if (TLN_GetInput(INPUT_BUTTON1) && radius > 2)

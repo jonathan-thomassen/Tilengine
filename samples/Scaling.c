@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
   scale = 100;
 
   /* main loop */
-  TLN_CreateWindow(NULL, CWF_NEAREST);
+  TLN_CreateWindow(CWF_NEAREST);
   while (TLN_ProcessWindow()) {
     float fgscale;
     float bgscale;

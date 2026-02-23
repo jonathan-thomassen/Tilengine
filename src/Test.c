@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 
   /* test sprite */
   for (c = 0; c < 2; c++) {
-    TLN_ConfigSprite(0, spriteset, 0);
+    TLN_SetSpriteSet(0, spriteset);
     if (spriteset == NULL)
       spriteset = TLN_LoadSpriteset("smw_sprite");
   }

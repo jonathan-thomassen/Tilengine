@@ -58,10 +58,10 @@ int main(int argc, char *argv[]) {
   TLN_CreateSpriteSequence(NULL, atlas, "player-skip/player-skip-", 6);
   xplayer = 48;
   yplayer = 144;
-  TLN_ConfigSprite(0, atlas, 0);
+  TLN_SetSpriteSet(0, atlas);
   TLN_SetSpriteAnimation(0, idle, 0);
   TLN_SetSpriteWorldPosition(0, xplayer, yplayer);
-  TLN_CreateWindow(NULL, CWF_NEAREST);
+  TLN_CreateWindow(CWF_NEAREST);
   while (TLN_ProcessWindow()) {
     TLN_DrawFrame(0);
 

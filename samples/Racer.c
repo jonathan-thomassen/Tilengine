@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
   spritesets[SPRITESET_TREES] = TLN_LoadSpriteset("trees");
 
   /* startup display */
-  TLN_CreateWindow(NULL, CWF_NEAREST);
+  TLN_CreateWindow(CWF_NEAREST);
 
   CreateActors(MAX_ACTOR);
 

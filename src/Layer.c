@@ -269,37 +269,6 @@ int TLN_GetLayerHeight(int nlayer) {
 
 /*!
  * \brief
- * Sets the blending mode (transparency effect)
- *
- * \param nlayer
- * Layer index [0, num_layers - 1]
- *
- * \param mode
- * Member of the TLN_Blend enumeration
- *
- * \param factor
- * Deprecated as of 1.12, left for backwards compatibility but doesn't have
- * effect.
- *
- * \see
- * Blending
- */
-bool TLN_SetLayerBlendMode(int nlayer, TLN_Blend mode, uint8_t /*factor*/) {
-  Layer *layer;
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
-
-  layer = &engine->layers[nlayer];
-  layer->render.blend = SelectBlendTable(mode);
-  SetBlitter(layer);
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
-}
-
-/*!
- * \brief
  * Sets the color palette to the layer
  *
  * \param nlayer
@@ -378,19 +347,6 @@ TLN_LayerType TLN_GetLayerType(int nlayer) {
 
   TLN_SetLastError(TLN_ERR_IDX_LAYER);
   return LAYER_NONE;
-}
-
-/*!
- * \deprecated Returns the first tilesetof the attached layer's tilemap
- */
-TLN_Tileset TLN_GetLayerTileset(int nlayer) {
-  if (nlayer < engine->numlayers && engine->layers[nlayer].tilemap != NULL) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return engine->layers[nlayer].tilemap->tilesets[0];
-  }
-
-  TLN_SetLastError(TLN_ERR_IDX_LAYER);
-  return NULL;
 }
 
 /*!
@@ -899,41 +855,6 @@ bool TLN_ResetLayerMode(int nlayer) {
   layer->render.mode = MODE_NORMAL;
   layer->render.draw = GetLayerDraw(layer);
   SetBlitter(layer);
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
-}
-
-/*!
- * \deprecated Use \ref TLN_SetLayerWindow instead
- * \brief Enables clipping rectangle on selected layer
- *
- * \param nlayer Layer index [0, num_layers - 1]
- * \param x1 left coordinate
- * \param y1 top coordinate
- * \param x2 right coordinate
- * \param y2 bottom coordinate
- */
-bool TLN_SetLayerClip(int nlayer, int x1, int y1, int x2, int y2) {
-  return TLN_SetLayerWindow(nlayer, x1, y1, x2, y2, false);
-}
-
-/*!
- * \deprecated Use \ref TLN_DisableLayerWindow instead
- * \brief Disables clipping rectangle on selected layer
- *
- * \param nlayer Layer index [0, num_layers - 1]
- */
-bool TLN_DisableLayerClip(int nlayer) {
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
-
-  LayerWindow *window = &engine->layers[nlayer].window;
-  window->x1 = 0;
-  window->x2 = engine->framebuffer.width;
-  window->y1 = 0;
-  window->y2 = engine->framebuffer.height;
   TLN_SetLastError(TLN_ERR_OK);
   return true;
 }

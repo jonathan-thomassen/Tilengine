@@ -79,11 +79,11 @@ void SimonTasks(void) {
   /* direction flags */
   if (input == DIR_RIGHT && direction == DIR_LEFT) {
     direction = input;
-    TLN_SetSpriteFlags(0, 0);
+    TLN_EnableSpriteFlag(0, FLAG_FLIPX, false);
   }
   if (input == DIR_LEFT && direction == DIR_RIGHT) {
     direction = input;
-    TLN_SetSpriteFlags(0, FLAG_FLIPX);
+    TLN_EnableSpriteFlag(0, FLAG_FLIPX, true);
   }
 
   switch (state) {

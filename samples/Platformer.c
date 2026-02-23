@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
   inc_background[5] = 2.0f;
 
   /* startup display */
-  TLN_CreateWindow(NULL, CWF_NEAREST);
+  TLN_CreateWindow(CWF_NEAREST);
 
   /* main loop */
   while (TLN_ProcessWindow()) {

@@ -102,13 +102,13 @@ int main(int argc, char *argv[]) {
     entity->sprite_index = c;
 
     /* show on Tilengine */
-    TLN_ConfigSprite(entity->sprite_index, spriteset, 0);
+    TLN_SetSpriteSet(entity->sprite_index, spriteset);
     TLN_SetSpritePosition(entity->sprite_index, entity->x, entity->y);
     TLN_SetSpritePicture(entity->sprite_index, 0);
   }
 
   /* windows and main loop */
-  TLN_CreateWindow(NULL, CWF_NEAREST);
+  TLN_CreateWindow(CWF_NEAREST);
   TLN_SetSDLCallback(sdl_callback);
   while (TLN_ProcessWindow()) {
     TLN_DrawFrame(frame);

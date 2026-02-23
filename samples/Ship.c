@@ -33,7 +33,7 @@ Actor *CreateShip(void) {
   Ship *ship;
 
   actor = SetActor(ACTOR_SHIP, TYPE_SHIP, 100, 100, 32, 16, ShipTasks);
-  TLN_ConfigSprite(actor->index, spritesets[SPRITESET_MAIN], 0);
+  TLN_SetSpriteSet(actor->index, spritesets[SPRITESET_MAIN]);
   TLN_SetSpritePicture(actor->index, 3);
 
   ship = (Ship *)actor->usrdata;
@@ -118,7 +118,7 @@ Actor *CreateClaw(int id) {
   Actor *actor = SetActor(id, TYPE_CLAW, 0, 0, 16, 16, ClawTasks);
   Claw *claw = (Claw *)actor->usrdata;
 
-  TLN_ConfigSprite(actor->index, spritesets[SPRITESET_MAIN], 0);
+  TLN_SetSpriteSet(actor->index, spritesets[SPRITESET_MAIN]);
   TLN_SetSpriteAnimation(actor->index, sequences[SEQ_CLAW], 0);
 
   claw->angle = id == ACTOR_CLAW1 ? 360 : 180;
@@ -173,7 +173,7 @@ Actor *CreateShot(int type, int x, int y) {
   actor = SetActor(index, type, x, y, size, size, ShotTasks);
   actor->vx = 8;
   actor->vy = 0;
-  TLN_ConfigSprite(actor->index, spritesets[SPRITESET_MAIN], 0);
+  TLN_SetSpriteSet(actor->index, spritesets[SPRITESET_MAIN]);
   TLN_SetSpriteAnimation(actor->index, sequences[seq], 0);
 
   return actor;

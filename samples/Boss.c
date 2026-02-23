@@ -42,8 +42,8 @@ void CreateBoss(void) {
     part = SetActor(index, TYPE_ENEMY, x, y, si.w, si.h,
                     c == 0 ? &BossTasks : NULL);
     boss->parts[c] = part;
-    TLN_ConfigSprite(part->index, spritesets[SPRITESET_HELLARM],
-                     BossGfx[c].flags);
+    TLN_SetSpriteSet(part->index, spritesets[SPRITESET_HELLARM]);
+    TLN_EnableSpriteFlag(part->index, BossGfx[c].flags, true);
     TLN_SetSpritePicture(part->index, BossGfx[c].picture);
   }
   actor->vx = -1;

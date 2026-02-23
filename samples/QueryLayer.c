@@ -38,14 +38,12 @@ static void show_layer_info(int nlayer) {
   switch (type) {
   case LAYER_TILE:
     tilemap = TLN_GetLayerTilemap(nlayer);
-    printf("  Tileset: %p\n", TLN_GetLayerTileset(nlayer));
     printf("  Tilemap: %p\n", tilemap);
     printf("  Tilemap dimensions: %d rows, %d columns\n",
            TLN_GetTilemapRows(tilemap), TLN_GetTilemapCols(tilemap));
     break;
   case LAYER_OBJECT:
     object_list = TLN_GetLayerObjects(nlayer);
-    printf("  Tileset: %p\n", TLN_GetLayerTileset(nlayer));
     printf("  Objects: %p\n", object_list);
 
     /* iterate objects and get info on each with TLN_GetListObject() */
