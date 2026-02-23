@@ -88,9 +88,9 @@ static const unsigned int _crc32_tab[] = {
     0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d};
 
 unsigned int _crc32(unsigned int crc, const void *buf, size_t size) {
-  unsigned char const *p;
+  unsigned char *p;
 
-  p = (unsigned char const *)buf;
+  p = (unsigned char *)buf;
   crc = crc ^ ~0U;
 
   while (size--)

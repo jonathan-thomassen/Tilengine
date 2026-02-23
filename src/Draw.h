@@ -26,7 +26,7 @@ typedef enum {
 typedef bool (*ScanDrawPtr)(int, uint32_t *, int, int, int);
 typedef struct Layer Layer;
 
-ScanDrawPtr GetLayerDraw(Layer *layer);
+ScanDrawPtr GetLayerDraw(Layer const *layer);
 ScanDrawPtr GetSpriteDraw(draw_t mode);
 
 extern bool DrawScanline(void);

@@ -22,6 +22,11 @@
 
 static int csvdecode(char *in, int numtiles, uint32_t *data);
 static int decompress(uint8_t *in, int in_size, uint8_t *out, int out_size);
+static void handle_add_attribute(const char *szName, const char *szAttribute,
+                                 const char *szValue);
+static void handle_add_content(const char *szName, const char *szValue);
+static void correct_tile_firstgid(Tile *tile, TMXInfo const *info,
+                                  TLN_Tileset *tilesets);
 
 /* encoding */
 typedef enum {
@@ -47,74 +52,83 @@ struct {
   uint32_t numtiles;
 } static loader;
 
+static void handle_data_encoding(const char *szValue) {
+  if (!strcasecmp(szValue, "csv"))
+    loader.encoding = ENCODING_CSV;
+  else if (!strcasecmp(szValue, "base64"))
+    loader.encoding = ENCODING_BASE64;
+  else
+    loader.state = false;
+}
+
+static void handle_data_compression(const char *szValue) {
+  if (!strcasecmp(szValue, "gzip"))
+    loader.state = false;
+  else if (!strcasecmp(szValue, "zlib"))
+    loader.compression = COMPRESSION_ZLIB;
+}
+
+static void handle_add_attribute(const char *szName, const char *szAttribute,
+                                 const char *szValue) {
+  if (!strcasecmp(szName, "layer") && !strcasecmp(szAttribute, "name")) {
+    loader.state = !strcasecmp(szValue, loader.layer->name);
+  } else if (!strcasecmp(szName, "data") && loader.state) {
+    if (!strcasecmp(szAttribute, "encoding"))
+      handle_data_encoding(szValue);
+    else if (!strcasecmp(szAttribute, "compression"))
+      handle_data_compression(szValue);
+  }
+}
+
+static void decode_base64_content(const char *szValue, uint32_t *data,
+                                  int size) {
+  if (loader.compression == COMPRESSION_NONE) {
+    base64decode(szValue, (int)strlen(szValue), (uint8_t *)data, &size);
+  } else {
+    uint8_t *deflated = (uint8_t *)malloc(size);
+    int in_size = size;
+    base64decode(szValue, (int)strlen(szValue), deflated, &in_size);
+    decompress(deflated, in_size, (uint8_t *)data, size);
+    free(deflated);
+  }
+}
+
+static void handle_add_content(const char *szName, const char *szValue) {
+  if (strcasecmp(szName, "data") != 0 || !loader.state)
+    return;
+
+  int size = (int)(loader.numtiles * sizeof(uint32_t));
+  uint32_t *data = (uint32_t *)malloc(size);
+  if (data == NULL)
+    return;
+
+  memset(data, 0, size);
+  if (loader.encoding == ENCODING_CSV) {
+    char *mutable_value = strdup(szValue);
+    if (mutable_value) {
+      csvdecode(mutable_value, loader.numtiles, data);
+      free(mutable_value);
+    }
+  } else if (loader.encoding == ENCODING_BASE64)
+    decode_base64_content(szValue, data, size);
+  loader.data = data;
+}
+
 /* XML parser callback */
 static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
                      const char *szName, const char *szAttribute,
                      const char *szValue) {
   switch (evt) {
-  case ADD_SUBTAG:
-    break;
-
   case ADD_ATTRIBUTE:
-    if (!strcasecmp(szName, "layer") && (!strcasecmp(szAttribute, "name"))) {
-      if (!strcasecmp(szValue, loader.layer->name))
-        loader.state = true;
-      else
-        loader.state = false;
-    }
-
-    else if (!strcasecmp(szName, "data") && loader.state == true) {
-      if (!strcasecmp(szAttribute, "encoding")) {
-        if (!strcasecmp(szValue, "csv"))
-          loader.encoding = ENCODING_CSV;
-        else if (!strcasecmp(szValue, "base64"))
-          loader.encoding = ENCODING_BASE64;
-        else
-          loader.state = false;
-      }
-
-      else if (!strcasecmp(szAttribute, "compression")) {
-        if (!strcasecmp(szValue, "gzip"))
-          loader.state = false;
-        else if (!strcasecmp(szValue, "zlib"))
-          loader.compression = COMPRESSION_ZLIB;
-      }
-    }
+    handle_add_attribute(szName, szAttribute, szValue);
     break;
-
-  case FINISH_ATTRIBUTES:
-    break;
-
   case ADD_CONTENT:
-    if (!strcasecmp(szName, "data") && loader.state == true) {
-      int size = loader.numtiles * sizeof(uint32_t);
-      uint32_t *data = (uint32_t *)malloc(size);
-      if (data == NULL)
-        return handler;
-
-      memset(data, 0, size);
-      if (loader.encoding == ENCODING_CSV)
-        csvdecode((char *)szValue, loader.numtiles, data);
-
-      else if (loader.encoding == ENCODING_BASE64) {
-        if (loader.compression == COMPRESSION_NONE)
-          base64decode(szValue, (int)strlen(szValue), (uint8_t *)data, &size);
-        else {
-          uint8_t *deflated = (uint8_t *)malloc(size);
-          int in_size = size;
-          base64decode(szValue, (int)strlen(szValue), deflated, &in_size);
-          decompress(deflated, in_size, (uint8_t *)data, size);
-          free(deflated);
-        }
-      }
-      loader.data = data;
-    }
+    handle_add_content(szName, szValue);
     break;
-
-  case FINISH_TAG:
+  default:
     break;
   }
-  return handler;
+  return &handler;
 }
 
 static TLN_Tileset load_tileset(TMXInfo *info, const char *filename,
@@ -202,15 +216,8 @@ TLN_Tilemap TLN_LoadTilemap(const char *filename, const char *layername) {
     /* correct with firstgid */
     Tile *tile = (Tile *)loader.data;
     for (c = 0; c < loader.numtiles; c += 1, tile += 1) {
-      if (tile->index > 0) {
-        int suitable = TMXGetSuitableTileset(&tmxinfo, tile->index, tilesets);
-        if (suitable != -1 && suitable < MAX_TILESETS) {
-          tile->tileset = (uint8_t)suitable;
-          tile->index =
-              (uint16_t)(tile->index - tmxinfo.tilesets[suitable].firstgid + 1);
-        } else
-          tile->index = 0;
-      }
+      if (tile->index > 0)
+        correct_tile_firstgid(tile, &tmxinfo, tilesets);
     }
 
     /* create */
@@ -226,6 +233,17 @@ TLN_Tilemap TLN_LoadTilemap(const char *filename, const char *layername) {
   }
 
   return tilemap;
+}
+
+static void correct_tile_firstgid(Tile *tile, TMXInfo const *info,
+                                  TLN_Tileset *tilesets) {
+  int suitable = TMXGetSuitableTileset(info, tile->index, tilesets);
+  if (suitable != -1 && suitable < MAX_TILESETS) {
+    tile->tileset = (uint8_t)suitable;
+    tile->index =
+        (uint16_t)(tile->index - info->tilesets[suitable].firstgid + 1);
+  } else
+    tile->index = 0;
 }
 
 /* read CSV string */
@@ -272,11 +290,14 @@ static int decompress(uint8_t *in, int in_size, uint8_t *out, int out_size) {
       assert(ret != Z_STREAM_ERROR); /* state not clobbered */
       switch (ret) {
       case Z_NEED_DICT:
-        ret = Z_DATA_ERROR; /* and fall through */
+        ret = Z_DATA_ERROR;
+        [[fallthrough]];
       case Z_DATA_ERROR:
       case Z_MEM_ERROR:
         (void)inflateEnd(&strm);
         return ret;
+      default:
+        break;
       }
     } while (strm.avail_out == 0);
 

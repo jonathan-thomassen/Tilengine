@@ -89,7 +89,7 @@ static TLN_Engine create_context(int hres, int vres, int numlayers,
   context->framebuffer.width = hres;
   context->framebuffer.height = vres;
   context->framebuffer.pitch = (((hres * 32) >> 3) + 3) & ~0x03;
-  context->target_fps = INTERNAL_FPS;
+  context->timing.target_fps = INTERNAL_FPS;
 
   /* create static layers */
   if (numlayers > 0) {
@@ -133,25 +133,25 @@ static TLN_Engine create_context(int hres, int vres, int numlayers,
 
   /* create static animations */
   if (numanimations > 0) {
-    context->numanimations = numanimations;
-    context->animations = (Animation *)calloc(numanimations, sizeof(Animation));
-    if (!context->animations) {
+    context->anim.num = numanimations;
+    context->anim.items = (Animation *)calloc(numanimations, sizeof(Animation));
+    if (!context->anim.items) {
       TLN_DeleteContext(context);
       TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
       return NULL;
     }
-    ListInit(&context->list_animations, &context->animations[0].list_node,
-             sizeof(Animation), context->numanimations);
+    ListInit(&context->anim.list, &context->anim.items[0].list_node,
+             sizeof(Animation), context->anim.num);
   }
 
-  context->bgcolor = PackRGB32(0, 0, 0);
-  context->blit_fast = SelectBlitter(false, false, false);
+  context->bg.color = PackRGB32(0, 0, 0);
+  context->bg.blit_fast = SelectBlitter(false, false, false);
   if (!CreateBlendTables()) {
     TLN_DeleteContext(context);
     TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
     return NULL;
   }
-  context->blend_table = SelectBlendTable(BLEND_MOD);
+  context->bg.blend_table = SelectBlendTable(BLEND_MOD);
 
   /* set as default context if it's the first one */
   if (engine == NULL)
@@ -240,8 +240,8 @@ bool TLN_DeleteContext(TLN_Engine context) {
   if (context->priority)
     free(context->priority);
 
-  if (context->animations)
-    free(context->animations);
+  if (context->anim.items)
+    free(context->anim.items);
 
   if (context->collision)
     free(context->collision);
@@ -292,7 +292,7 @@ uint32_t TLN_GetVersion(void) {
  * constant animation pacing at other frequencies
  * \see TLN_GetTargetFps
  */
-void TLN_SetTargetFps(int fps) { engine->target_fps = fps; }
+void TLN_SetTargetFps(int fps) { engine->timing.target_fps = fps; }
 
 /*!
  * \brief Returns target fps
@@ -301,7 +301,7 @@ void TLN_SetTargetFps(int fps) { engine->target_fps = fps; }
  * TLN_SetTargetFps
  * \see TLN_GetTargetFps, TLN_CreateWindow
  */
-int TLN_GetTargetFps(void) { return engine->target_fps; }
+int TLN_GetTargetFps(void) { return engine->timing.target_fps; }
 
 /*!
  * \brief
@@ -405,11 +405,11 @@ bool ref_add(RefList *refs, void *item) {
 
 /* Processes color cycle animations for the current frame */
 static void update_color_cycle_animations(int frame) {
-  if (engine->numanimations > 0) {
-    List const *list = &engine->list_animations;
+  if (engine->anim.num > 0) {
+    List const *list = &engine->anim.list;
     int index = list->first;
     while (index != -1) {
-      Animation *animation = &engine->animations[index];
+      Animation *animation = &engine->anim.items[index];
       UpdateAnimation(animation, frame);
       index = animation->list_node.next;
     }
@@ -461,8 +461,8 @@ static void update_tileset_animations(int frame) {
 /* Starts active rendering of the current frame */
 static void BeginFrame(int frame) {
   /* adjust to target fps */
-  frame = (engine->frame * INTERNAL_FPS) / engine->target_fps;
-  engine->frame += 1;
+  frame = (engine->timing.frame * INTERNAL_FPS) / engine->timing.target_fps;
+  engine->timing.frame += 1;
 
   /* update active animations */
   update_color_cycle_animations(frame);
@@ -470,9 +470,9 @@ static void BeginFrame(int frame) {
   update_tileset_animations(frame);
 
   /* frame callback */
-  engine->line = 0;
-  if (engine->cb_frame)
-    engine->cb_frame(engine->frame);
+  engine->timing.line = 0;
+  if (engine->callbacks.frame)
+    engine->callbacks.frame(engine->timing.frame);
 }
 
 /*!
@@ -537,7 +537,7 @@ int TLN_GetNumSprites(void) {
  */
 void TLN_SetRasterCallback(void (*callback)(int)) {
   TLN_SetLastError(TLN_ERR_OK);
-  engine->cb_raster = callback;
+  engine->callbacks.raster = callback;
 }
 
 /*!
@@ -549,7 +549,7 @@ void TLN_SetRasterCallback(void (*callback)(int)) {
  */
 void TLN_SetFrameCallback(void (*callback)(int)) {
   TLN_SetLastError(TLN_ERR_OK);
-  engine->cb_frame = callback;
+  engine->callbacks.frame = callback;
 }
 
 /*!
@@ -573,7 +573,7 @@ void TLN_SetFrameCallback(void (*callback)(int)) {
  * backgrounds
  */
 void TLN_SetBGColor(uint8_t r, uint8_t g, uint8_t b) {
-  engine->bgcolor = PackRGB32(r, g, b);
+  engine->bg.color = PackRGB32(r, g, b);
 }
 
 /*!
@@ -585,7 +585,7 @@ void TLN_SetBGColor(uint8_t r, uint8_t g, uint8_t b) {
  */
 bool TLN_SetBGColorFromTilemap(TLN_Tilemap tilemap) {
   if (CheckBaseObject(tilemap, OT_TILEMAP)) {
-    engine->bgcolor = tilemap->bgcolor | 0xFF000000;
+    engine->bg.color = tilemap->bgcolor | 0xFF000000;
     TLN_SetLastError(TLN_ERR_OK);
     return true;
   } else
@@ -600,7 +600,7 @@ bool TLN_SetBGColorFromTilemap(TLN_Tilemap tilemap) {
  * \see
  * TLN_SetBGColor()
  */
-void TLN_DisableBGColor(void) { engine->bgcolor = 0; }
+void TLN_DisableBGColor(void) { engine->bg.color = 0; }
 
 /*!
  * \brief
@@ -620,9 +620,9 @@ bool TLN_SetBGBitmap(TLN_Bitmap bitmap) {
   if (bitmap != NULL) {
     if (!CheckBaseObject(bitmap, OT_BITMAP))
       return false;
-    engine->bgpalette = bitmap->palette;
+    engine->bg.palette = bitmap->palette;
   }
-  engine->bgbitmap = bitmap;
+  engine->bg.bitmap = bitmap;
   TLN_SetLastError(TLN_ERR_OK);
   return true;
 }
@@ -641,7 +641,7 @@ bool TLN_SetBGPalette(TLN_Palette palette) {
   if (!CheckBaseObject(palette, OT_PALETTE))
     return false;
 
-  engine->bgpalette = palette;
+  engine->bg.palette = palette;
   TLN_SetLastError(TLN_ERR_OK);
   return true;
 }

@@ -22,7 +22,7 @@ void CreateEnemy(void) {
 }
 
 void EnemyTasks(Actor *actor) {
-  /* animacion */
+  /* animation */
   if (GetActorTimeout(actor, 0)) {
     int index = TLN_GetSpritePicture(actor->index);
     SetActorTimeout(actor, 0, 6);
@@ -48,7 +48,7 @@ void EnemyTasks(Actor *actor) {
     }
   }
 
-  /* movimiento vertical */
+  /* vertical movement */
   if (GetActorTimeout(actor, 1)) {
     int res;
     SetActorTimeout(actor, 1, 60);

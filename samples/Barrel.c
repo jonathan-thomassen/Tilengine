@@ -10,8 +10,8 @@
  ******************************************************************************/
 
 #define _USE_MATH_DEFINES
-#include "../src/Tilengine.h"
 #include "Simon.h"
+#include "Tilengine.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
   SimonInit();
 
   /* main loop */
-  TLN_CreateWindow(NULL, 0);
+  TLN_CreateWindow(NULL, CWF_NEAREST);
   while (TLN_ProcessWindow()) {
     ypos++;
     SimonTasks();

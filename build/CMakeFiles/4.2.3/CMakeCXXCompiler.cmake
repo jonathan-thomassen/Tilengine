@@ -27,7 +27,7 @@ set(CMAKE_CXX_COMPILER_ARCHITECTURE_ID "x86_64")
 
 set(CMAKE_AR "C:/msys64/mingw64/bin/ar.exe")
 set(CMAKE_CXX_COMPILER_AR "C:/msys64/mingw64/bin/gcc-ar.exe")
-set(CMAKE_RANLIB ":")
+set(CMAKE_RANLIB "C:/msys64/mingw64/bin/ranlib.exe")
 set(CMAKE_CXX_COMPILER_RANLIB "C:/msys64/mingw64/bin/gcc-ranlib.exe")
 set(CMAKE_LINKER "C:/msys64/mingw64/bin/ld.exe")
 set(CMAKE_LINKER_LINK "")
@@ -98,11 +98,11 @@ set(CMAKE_CXX_COMPILER_CLANG_RESOURCE_DIR "")
 
 set(CMAKE_CXX_COMPILER_IMPORT_STD "")
 ### Imported target for C++23 standard library
-set(CMAKE_CXX23_COMPILER_IMPORT_STD_NOT_FOUND_MESSAGE "Experimental `import std` support not enabled when detecting toolchain; it must be set before `CXX` is enabled (usually a `project()` call)")
+set(CMAKE_CXX23_COMPILER_IMPORT_STD_NOT_FOUND_MESSAGE "Unsupported generator: MinGW Makefiles")
 
 
 ### Imported target for C++26 standard library
-set(CMAKE_CXX26_COMPILER_IMPORT_STD_NOT_FOUND_MESSAGE "Experimental `import std` support not enabled when detecting toolchain; it must be set before `CXX` is enabled (usually a `project()` call)")
+set(CMAKE_CXX26_COMPILER_IMPORT_STD_NOT_FOUND_MESSAGE "Unsupported generator: MinGW Makefiles")
 
 
 

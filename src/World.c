@@ -109,7 +109,7 @@ void TLN_ReleaseWorld(void) {
     const int layerindex = tmxinfo.num_layers - c - 1 + first;
 
     Layer *layer = GetLayer(layerindex);
-    layer->ok = false;
+    layer->flags.ok = false;
     switch (tmxlayer->type) {
     case LAYER_NONE:
       break;
@@ -146,7 +146,7 @@ bool TLN_SetLayerParallaxFactor(int nlayer, float x, float y) {
   layer = &engine->layers[nlayer];
   layer->world.xfactor = x;
   layer->world.yfactor = y;
-  layer->dirty = true;
+  layer->flags.dirty = true;
   TLN_SetLastError(TLN_ERR_OK);
   return true;
 }
@@ -158,9 +158,9 @@ bool TLN_SetLayerParallaxFactor(int nlayer, float x, float y) {
  * \param y vertical position in world space
  */
 void TLN_SetWorldPosition(int x, int y) {
-  engine->xworld = x;
-  engine->yworld = y;
-  engine->dirty = true;
+  engine->world.x = x;
+  engine->world.y = y;
+  engine->world.dirty = true;
 }
 
 /*!

@@ -39,7 +39,7 @@ ResAsset ResPack_OpenAsset(ResPack rp, const char *filename);
 FILE *ResPack_GetAssetFile(ResAsset asset);
 
 /* returns actual size of an opened asset with ResPack_OpenAsset() */
-uint32_t ResPack_GetAssetSize(ResAsset asset);
+uint32_t ResPack_GetAssetSize(struct _ResAsset const *asset);
 
 /* closes opened asset, deletes temporal file */
 void ResPack_CloseAsset(ResAsset asset);

@@ -29,12 +29,12 @@ static int lerp(int x, int x0, int x1, int fx0, int fx1) {
 
 static inline void blendColors(uint8_t const *srcptr0, uint8_t const *srcptr1,
                                uint8_t *dstptr, uint8_t f0, uint8_t f1) {
-  dstptr[0] = blendfunc(engine->blend_table, srcptr0[0], f0) +
-              blendfunc(engine->blend_table, srcptr1[0], f1);
-  dstptr[1] = blendfunc(engine->blend_table, srcptr0[1], f0) +
-              blendfunc(engine->blend_table, srcptr1[1], f1);
-  dstptr[2] = blendfunc(engine->blend_table, srcptr0[2], f0) +
-              blendfunc(engine->blend_table, srcptr1[2], f1);
+  dstptr[0] = blendfunc(engine->bg.blend_table, srcptr0[0], f0) +
+              blendfunc(engine->bg.blend_table, srcptr1[0], f1);
+  dstptr[1] = blendfunc(engine->bg.blend_table, srcptr0[1], f0) +
+              blendfunc(engine->bg.blend_table, srcptr1[1], f1);
+  dstptr[2] = blendfunc(engine->bg.blend_table, srcptr0[2], f0) +
+              blendfunc(engine->bg.blend_table, srcptr1[2], f1);
 }
 
 static void SetAnimation(Animation *animation, TLN_Sequence sequence,
@@ -140,12 +140,12 @@ bool TLN_SetPaletteAnimation(int index, TLN_Palette palette,
 
   TLN_SetLastError(TLN_ERR_OK);
 
-  if (index >= engine->numanimations) {
+  if (index >= engine->anim.num) {
     TLN_SetLastError(TLN_ERR_IDX_ANIMATION);
     return false;
   }
 
-  if (engine->animations[index].sequence == sequence)
+  if (engine->anim.items[index].sequence == sequence)
     return true;
 
   /* validate type */
@@ -153,9 +153,9 @@ bool TLN_SetPaletteAnimation(int index, TLN_Palette palette,
       !CheckBaseObject(sequence, OT_SEQUENCE))
     return false;
 
-  animation = &engine->animations[index];
+  animation = &engine->anim.items[index];
   if (!animation->enabled)
-    ListAppendNode(&engine->list_animations, index);
+    ListAppendNode(&engine->anim.list, index);
   SetAnimation(animation, sequence, TYPE_PALETTE);
   animation->palette = palette;
   animation->blend = blend;
@@ -193,7 +193,7 @@ bool TLN_SetPaletteAnimation(int index, TLN_Palette palette,
 bool TLN_SetPaletteAnimationSource(int index, TLN_Palette palette) {
   Animation *animation = NULL;
 
-  if (index >= engine->numanimations) {
+  if (index >= engine->anim.num) {
     TLN_SetLastError(TLN_ERR_IDX_ANIMATION);
     return false;
   }
@@ -201,7 +201,7 @@ bool TLN_SetPaletteAnimationSource(int index, TLN_Palette palette) {
   if (!CheckBaseObject(palette, OT_PALETTE))
     return false;
 
-  animation = &engine->animations[index];
+  animation = &engine->anim.items[index];
   CopyBaseObject(animation->srcpalette, palette);
   CopyBaseObject(animation->palette, palette);
 
@@ -290,7 +290,7 @@ bool TLN_SetAnimationDelay(int index, int frame, int delay) {
   Animation *animation;
   TLN_SequenceFrame *frames = NULL;
 
-  if (index >= engine->numanimations || index < 0) {
+  if (index >= engine->anim.num || index < 0) {
     TLN_SetLastError(TLN_ERR_IDX_SPRITE);
     return false;
   }
@@ -319,8 +319,8 @@ bool TLN_SetAnimationDelay(int index, int frame, int delay) {
 int TLN_GetAvailableAnimation(void) {
 
   TLN_SetLastError(TLN_ERR_OK);
-  for (int c = 0; c < engine->numanimations; c++) {
-    if (!engine->animations[c].enabled)
+  for (int c = 0; c < engine->anim.num; c++) {
+    if (!engine->anim.items[c].enabled)
       return c;
   }
   return -1;
@@ -339,19 +339,19 @@ int TLN_GetAvailableAnimation(void) {
 bool TLN_DisablePaletteAnimation(int index) {
   Animation *animation;
 
-  if (index >= engine->numanimations) {
+  if (index >= engine->anim.num) {
     TLN_SetLastError(TLN_ERR_IDX_ANIMATION);
     return false;
   }
 
-  animation = &engine->animations[index];
+  animation = &engine->anim.items[index];
   if (animation->enabled)
-    ListUnlinkNode(&engine->list_animations, index);
+    ListUnlinkNode(&engine->anim.list, index);
 
   animation->enabled = false;
   animation->type = TYPE_NONE;
   animation->sequence = NULL;
-  ListUnlinkNode(&engine->list_animations, index);
+  ListUnlinkNode(&engine->anim.list, index);
   TLN_SetLastError(TLN_ERR_OK);
   return true;
 }

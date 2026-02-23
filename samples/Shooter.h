@@ -1,9 +1,10 @@
 #ifndef _SHOOTER_H
 #define _SHOOTER_H
 
-#include "../src/Tilengine.h"
 #include "Actor.h"
 #include "Sin.h"
+#include "Tilengine.h"
+
 
 #define WIDTH 400
 #define HEIGHT 240

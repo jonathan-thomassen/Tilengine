@@ -1,4 +1,4 @@
-#include "../src/Tilengine.h"
+#include "Tilengine.h"
 #include <stdio.h>
 
 #define WIDTH 400
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
   sky_lo.b = sky[1].b;
 
   /* main loop */
-  TLN_CreateWindow(NULL, 0);
+  TLN_CreateWindow(NULL, CWF_NEAREST);
   while (TLN_ProcessWindow()) {
     if (xpos < max_xpos) {
       xpos += speed;
@@ -119,7 +119,7 @@ static void raster_callback(int line) {
     color.r = lerp(line, 0, 191, sky_hi.r, sky_lo.r);
     color.g = lerp(line, 0, 191, sky_hi.g, sky_lo.g);
     color.b = lerp(line, 0, 191, sky_hi.b, sky_lo.b);
-    TLN_SetBGColor(color.r, color.g, color.b);
+    TLN_SetBGColor((uint8_t)color.r, (uint8_t)color.g, (uint8_t)color.b);
   }
 
   /* background layer */

@@ -41,12 +41,89 @@ struct {
 } static loader;
 
 static bool CloneObjectToList(TLN_ObjectList list, TLN_Object const *data);
+static void resolve_object_tilesets(TMXInfo *info);
+static void handle_add_attribute(const char *szName, const char *szAttribute,
+                                 const char *szValue);
+static void handle_finish_attributes(const char *szName);
+static void handle_finish_tag(const char *szName);
+
+static void handle_object_gid_attribute(const char *szValue) {
+  Tile tile;
+  tile.value = strtoul(szValue, NULL, 0);
+  loader.object.has_gid = true;
+  loader.object.flags = tile.flags;
+  loader.object.gid = tile.index;
+}
+
+static void handle_object_attribute(const char *szAttribute,
+                                    const char *szValue) {
+  int intvalue = atoi(szValue);
+  if (!strcasecmp(szAttribute, "id"))
+    loader.object.id = (uint16_t)intvalue;
+  else if (!strcasecmp(szAttribute, "gid"))
+    handle_object_gid_attribute(szValue);
+  else if (!strcasecmp(szAttribute, "x"))
+    loader.object.x = intvalue;
+  else if (!strcasecmp(szAttribute, "y"))
+    loader.object.y = intvalue;
+  else if (!strcasecmp(szAttribute, "width"))
+    loader.object.width = intvalue;
+  else if (!strcasecmp(szAttribute, "height"))
+    loader.object.height = intvalue;
+  else if (!strcasecmp(szAttribute, "type"))
+    loader.object.type = (uint8_t)intvalue;
+  else if (!strcasecmp(szAttribute, "visible"))
+    loader.object.visible = (bool)intvalue;
+  else if (!strcasecmp(szAttribute, "name"))
+    strncpy(loader.object.name, szValue, sizeof(loader.object.name));
+}
+
+static void handle_property_attribute(const char *szAttribute,
+                                      const char *szValue) {
+  if (!strcasecmp(szAttribute, "name")) {
+    loader.property =
+        !strcasecmp(szValue, "priority") ? PROPERTY_PRIORITY : PROPERTY_NONE;
+  } else if (!strcasecmp(szAttribute, "value") &&
+             loader.property == PROPERTY_PRIORITY &&
+             !strcasecmp(szValue, "true")) {
+    loader.object.flags += FLAG_PRIORITY;
+  }
+}
+
+static void handle_add_attribute(const char *szName, const char *szAttribute,
+                                 const char *szValue) {
+  if (!strcasecmp(szName, "objectgroup") && !strcasecmp(szAttribute, "name")) {
+    loader.state = !strcasecmp(szValue, loader.layer->name);
+  } else if (!strcasecmp(szName, "object"))
+    handle_object_attribute(szAttribute, szValue);
+  else if (!strcasecmp(szName, "property"))
+    handle_property_attribute(szAttribute, szValue);
+}
+
+static void handle_finish_attributes(const char *szName) {
+  if (loader.state && !strcasecmp(szName, "objectgroup")) {
+    loader.objects = TLN_CreateObjectList();
+    loader.objects->id = loader.layer->id;
+    loader.objects->visible = loader.layer->visible;
+  }
+}
+
+static void handle_finish_tag(const char *szName) {
+  if (!loader.state)
+    return;
+  if (!strcasecmp(szName, "objectgroup")) {
+    loader.state = false;
+  } else if (!strcasecmp(szName, "object")) {
+    if (loader.object.has_gid)
+      loader.object.y -= loader.object.height;
+    CloneObjectToList(loader.objects, &loader.object);
+  }
+}
 
 /* XML parser callback */
 static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
                      const char *szName, const char *szAttribute,
                      const char *szValue) {
-  int intvalue;
   ODB("handler evt=%d szName=%s szAttr=%s szVal=%s", evt,
       szName ? szName : "(null)", szAttribute ? szAttribute : "(null)",
       szValue ? szValue : "(null)");
@@ -57,83 +134,19 @@ static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
       loader.object.visible = true;
     }
     break;
-
   case ADD_ATTRIBUTE:
-
-    intvalue = atoi(szValue);
-    if (!strcasecmp(szName, "objectgroup") &&
-        (!strcasecmp(szAttribute, "name"))) {
-      if (!strcasecmp(szValue, loader.layer->name))
-        loader.state = true;
-      else
-        loader.state = false;
-    }
-
-    else if (!strcasecmp(szName, "object")) {
-      if (!strcasecmp(szAttribute, "id"))
-        loader.object.id = (uint16_t)intvalue;
-      else if (!strcasecmp(szAttribute, "gid")) {
-        Tile tile;
-        tile.value = strtoul(szValue, NULL, 0);
-        loader.object.has_gid = true;
-        loader.object.flags = tile.flags;
-        loader.object.gid = tile.index;
-      } else if (!strcasecmp(szAttribute, "x"))
-        loader.object.x = intvalue;
-      else if (!strcasecmp(szAttribute, "y"))
-        loader.object.y = intvalue;
-      else if (!strcasecmp(szAttribute, "width"))
-        loader.object.width = intvalue;
-      else if (!strcasecmp(szAttribute, "height"))
-        loader.object.height = intvalue;
-      else if (!strcasecmp(szAttribute, "type"))
-        loader.object.type = (uint8_t)intvalue;
-      else if (!strcasecmp(szAttribute, "visible"))
-        loader.object.visible = (bool)intvalue;
-      else if (!strcasecmp(szAttribute, "name"))
-        strncpy(loader.object.name, szValue, sizeof(loader.object.name));
-    }
-
-    /* <property name="type" type="int" value="12"/> */
-    else if (!strcasecmp(szName, "property")) {
-      if (!strcasecmp(szAttribute, "name")) {
-        if (!strcasecmp(szValue, "priority"))
-          loader.property = PROPERTY_PRIORITY;
-        else
-          loader.property = PROPERTY_NONE;
-      } else if (!strcasecmp(szAttribute, "value")) {
-        if (loader.property == PROPERTY_PRIORITY) {
-          if (!strcasecmp(szValue, "true"))
-            loader.object.flags += FLAG_PRIORITY;
-        }
-      }
-    }
+    handle_add_attribute(szName, szAttribute, szValue);
     break;
-
   case FINISH_ATTRIBUTES:
-    if (loader.state == true && !strcasecmp(szName, "objectgroup")) {
-      loader.objects = TLN_CreateObjectList();
-      loader.objects->id = loader.layer->id;
-      loader.objects->visible = loader.layer->visible;
-    }
+    handle_finish_attributes(szName);
     break;
-
-  case ADD_CONTENT:
-    break;
-
   case FINISH_TAG:
-    if (loader.state == true) {
-      if (!strcasecmp(szName, "objectgroup"))
-        loader.state = false;
-      else if (!strcasecmp(szName, "object")) {
-        if (loader.object.has_gid)
-          loader.object.y -= loader.object.height;
-        CloneObjectToList(loader.objects, &loader.object);
-      }
-    }
+    handle_finish_tag(szName);
+    break;
+  default:
     break;
   }
-  return handler;
+  return &handler;
 }
 
 /*!
@@ -272,62 +285,63 @@ TLN_ObjectList TLN_LoadObjectList(const char *filename, const char *layername) {
   simpleXmlDestroyParser(parser);
   free(data);
 
-  if (loader.objects != NULL) {
-    TMXTileset const *tmxtileset;
-    struct _Object *item;
-    int gid = 0;
-    int c;
-
-    /* find suitable tileset */
-    item = loader.objects->list;
-    while (item != NULL && gid == 0) {
-      if (item->gid > 0)
-        gid = item->gid;
-      item = item->next;
-    }
-    ODB("searching tilesets for gid=%d, num_tilesets=%d", gid,
-        tmxinfo.num_tilesets);
-
-    /* load referenced tilesets */
-    TLN_Tileset tilesets[TMX_MAX_TILESET] = {0};
-    for (c = 0; c < tmxinfo.num_tilesets; c += 1) {
-      ODB("  loading tileset[%d] source='%s'", c, tmxinfo.tilesets[c].source);
-      tilesets[c] = TLN_LoadTileset(tmxinfo.tilesets[c].source);
-      ODB("  tileset[%d]=%p", c, (void *)tilesets[c]);
-    }
-
-    int suitable = TMXGetSuitableTileset(&tmxinfo, gid, tilesets);
-    ODB("suitable=%d", suitable);
-    if (suitable < 0 || suitable >= tmxinfo.num_tilesets) {
-      ODB("ERROR: suitable out of range! num_tilesets=%d",
-          tmxinfo.num_tilesets);
-      for (c = 0; c < tmxinfo.num_tilesets; c += 1)
-        TLN_DeleteTileset(tilesets[c]);
-      return loader.objects;
-    }
-    tmxtileset = &tmxinfo.tilesets[suitable];
-
-    /* correct with firstgid */
-    item = loader.objects->list;
-    while (item != NULL) {
-      if (item->gid > 0)
-        item->gid = (uint16_t)(item->gid - tmxtileset->firstgid);
-      item = item->next;
-    }
-
-    /* delete unused tilesets */
-    for (c = 0; c < tmxinfo.num_tilesets; c += 1) {
-      if (c != suitable)
-        TLN_DeleteTileset(tilesets[c]);
-    }
-
-    TLN_Tileset tileset = tilesets[suitable];
-    loader.objects->tileset = tileset;
-    loader.objects->width = tmxinfo.width * tmxinfo.tilewidth;
-    loader.objects->height = tmxinfo.height * tmxinfo.tileheight;
-  }
+  if (loader.objects != NULL)
+    resolve_object_tilesets(&tmxinfo);
 
   return loader.objects;
+}
+
+static void resolve_object_tilesets(TMXInfo *info) {
+  struct _Object *item;
+  int gid = 0;
+  int c;
+
+  /* find a gid to identify the suitable tileset */
+  item = loader.objects->list;
+  while (item != NULL && gid == 0) {
+    if (item->gid > 0)
+      gid = item->gid;
+    item = item->next;
+  }
+  ODB("searching tilesets for gid=%d, num_tilesets=%d", gid,
+      info->num_tilesets);
+
+  /* load referenced tilesets */
+  TLN_Tileset tilesets[TMX_MAX_TILESET] = {0};
+  for (c = 0; c < info->num_tilesets; c += 1) {
+    ODB("  loading tileset[%d] source='%s'", c, info->tilesets[c].source);
+    tilesets[c] = TLN_LoadTileset(info->tilesets[c].source);
+    ODB("  tileset[%d]=%p", c, (void *)tilesets[c]);
+  }
+
+  int suitable = TMXGetSuitableTileset(info, gid, tilesets);
+  ODB("suitable=%d", suitable);
+  if (suitable < 0 || suitable >= info->num_tilesets) {
+    ODB("ERROR: suitable out of range! num_tilesets=%d", info->num_tilesets);
+    for (c = 0; c < info->num_tilesets; c += 1)
+      TLN_DeleteTileset(tilesets[c]);
+    return;
+  }
+
+  TMXTileset const *tmxtileset = &info->tilesets[suitable];
+
+  /* correct gids with firstgid offset */
+  item = loader.objects->list;
+  while (item != NULL) {
+    if (item->gid > 0)
+      item->gid = (uint16_t)(item->gid - tmxtileset->firstgid);
+    item = item->next;
+  }
+
+  /* delete unused tilesets */
+  for (c = 0; c < info->num_tilesets; c += 1) {
+    if (c != suitable)
+      TLN_DeleteTileset(tilesets[c]);
+  }
+
+  loader.objects->tileset = tilesets[suitable];
+  loader.objects->width = info->width * info->tilewidth;
+  loader.objects->height = info->height * info->tileheight;
 }
 
 /*!

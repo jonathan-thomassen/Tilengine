@@ -92,6 +92,21 @@ static ResEntry *find_entry(ResPack rp, const char *filename) {
   return NULL;
 }
 
+/* CBC decryption using block-level aes_decrypt */
+static void aes_decrypt_cbc(const uint8_t *in, size_t in_len, uint8_t *out,
+                            const WORD *key, int keysize,
+                            const uint8_t *init_vec) {
+  uint8_t prev[AES_BLOCK_SIZE];
+  uint8_t temp[AES_BLOCK_SIZE];
+  memcpy(prev, init_vec, AES_BLOCK_SIZE);
+  for (size_t i = 0; i + AES_BLOCK_SIZE <= in_len; i += AES_BLOCK_SIZE) {
+    aes_decrypt(in + i, temp, key, keysize);
+    for (int j = 0; j < AES_BLOCK_SIZE; j++)
+      out[i + j] = temp[j] ^ prev[j];
+    memcpy(prev, in + i, AES_BLOCK_SIZE);
+  }
+}
+
 /* loads given asset to memory buffer */
 static void *load_asset(ResPack rp, ResEntry const *entry) {
   uint32_t crc;
@@ -252,7 +267,7 @@ FILE *ResPack_GetAssetFile(ResAsset asset) {
 }
 
 /* returns actual size of an opened asset */
-uint32_t ResPack_GetAssetSize(ResAsset asset) {
+uint32_t ResPack_GetAssetSize(struct _ResAsset const *asset) {
   if (asset != NULL)
     return asset->size;
   else
@@ -269,6 +284,7 @@ void ResPack_CloseAsset(ResAsset asset) {
   }
 }
 
+#ifdef RESPACK_LIB
 /* loads file to memory */
 static void *load_file(const char *filename, uint32_t *data_size) {
   FILE *pf;
@@ -296,7 +312,6 @@ static void *load_file(const char *filename, uint32_t *data_size) {
   return buffer;
 }
 
-#ifdef RESPACK_LIB
 /* builds a resource pack, returns number of assets */
 int ResPack_Build(const char *filelist, const char *passphrase) {
   FILE *pf_list;

@@ -1,7 +1,7 @@
 #ifndef _RACER_H
 #define _RACER_H
 
-#include "../src/Tilengine.h"
+#include "Tilengine.h"
 
 #define WIDTH 400
 #define HEIGHT 240

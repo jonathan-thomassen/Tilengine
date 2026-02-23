@@ -20,6 +20,22 @@ static const unsigned char d[] = {
     66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
     66, 66, 66, 66, 66, 66, 66, 66, 66};
 
+/* Accumulate one decoded character into buf; flush to out when full. */
+static int accumulate(unsigned char c, int *buf, unsigned char **out, int *len,
+                      int outLen) {
+  *buf = *buf << 6 | c;
+  if (!(*buf & 0x1000000))
+    return 0;
+  *len += 3;
+  if (*len > outLen)
+    return 1; /* buffer overflow */
+  *(*out)++ = (unsigned char)(*buf >> 16);
+  *(*out)++ = (unsigned char)(*buf >> 8);
+  *(*out)++ = (unsigned char)(*buf);
+  *buf = 1;
+  return 0;
+}
+
 int base64decode(const unsigned char *in, int inLen, unsigned char *out,
                  int *outLen) {
   const unsigned char *end = in + inLen;
@@ -41,17 +57,8 @@ int base64decode(const unsigned char *in, int inLen, unsigned char *out,
       in = end;
       continue;
     default:
-      buf = buf << 6 | c;
-
-      /* If the buffer is full, split it into bytes */
-      if (buf & 0x1000000) {
-        if ((len += 3) > *outLen)
-          return 1; /* buffer overflow */
-        *out++ = (unsigned char)(buf >> 16);
-        *out++ = (unsigned char)(buf >> 8);
-        *out++ = (unsigned char)(buf);
-        buf = 1;
-      }
+      if (accumulate(c, &buf, &out, &len, *outLen))
+        return 1;
     }
   }
 

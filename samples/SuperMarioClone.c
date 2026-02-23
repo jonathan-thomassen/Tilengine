@@ -1,4 +1,4 @@
-#include "../src/Tilengine.h"
+#include "Tilengine.h"
 #include <stdio.h>
 
 #define WIDTH 400
@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
   TLN_SetSpriteAnimation(0, seq_walking, 0);
 
   /* main loop */
-  TLN_CreateWindow(NULL, 0);
+  TLN_CreateWindow(NULL, CWF_NEAREST);
   while (TLN_ProcessWindow()) {
     player_x += 1;
     if (player_x >= WIDTH)

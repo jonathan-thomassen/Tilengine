@@ -1,5 +1,5 @@
 #include "Actor.h"
-#include "../src/Tilengine.h"
+#include "Tilengine.h"
 #include <stdlib.h>
 #include <string.h>
 

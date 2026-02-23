@@ -1,5 +1,5 @@
 #include "Simon.h"
-#include "../src/Tilengine.h"
+#include "Tilengine.h"
 
 typedef enum { SIMON_IDLE, SIMON_WALKING, SIMON_JUMPING } SimonState;
 
@@ -91,7 +91,6 @@ void SimonTasks(void) {
     if (input)
       SimonSetState(SIMON_WALKING);
     break;
-
   case SIMON_WALKING:
   case SIMON_JUMPING:
     if (input == DIR_RIGHT) {

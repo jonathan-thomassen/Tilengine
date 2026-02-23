@@ -11,7 +11,7 @@
  ******************************************************************************/
 
 #include "Racer.h"
-#include "../src/Tilengine.h"
+#include "Tilengine.h"
 #include "Tree.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
   spritesets[SPRITESET_TREES] = TLN_LoadSpriteset("trees");
 
   /* startup display */
-  TLN_CreateWindow(NULL, 0);
+  TLN_CreateWindow(NULL, CWF_NEAREST);
 
   CreateActors(MAX_ACTOR);
 
@@ -116,7 +116,7 @@ static void raster_callback(int line) {
   if (line < 56) {
     RGB color;
     InterpolateColor(line, 0, 56, &sky[0], &sky[1], &color);
-    TLN_SetBGColor(color.r, color.g, color.b);
+    TLN_SetBGColor((uint8_t)color.r, (uint8_t)color.g, (uint8_t)color.b);
   }
 
   /* road */

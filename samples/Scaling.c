@@ -1,4 +1,4 @@
-#include "../src/Tilengine.h"
+#include "Tilengine.h"
 #include <stdio.h>
 
 #define WIDTH 400
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
   scale = 100;
 
   /* main loop */
-  TLN_CreateWindow(NULL, 0);
+  TLN_CreateWindow(NULL, CWF_NEAREST);
   while (TLN_ProcessWindow()) {
     float fgscale;
     float bgscale;
@@ -111,6 +111,6 @@ static void raster_callback(int line) {
     color.r = lerp(line, 0, 152, sky[0].r, sky[1].r);
     color.g = lerp(line, 0, 152, sky[0].g, sky[1].g);
     color.b = lerp(line, 0, 152, sky[0].b, sky[1].b);
-    TLN_SetBGColor(color.r, color.g, color.b);
+    TLN_SetBGColor((uint8_t)color.r, (uint8_t)color.g, (uint8_t)color.b);
   }
 }

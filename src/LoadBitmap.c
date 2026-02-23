@@ -48,6 +48,17 @@ static bool set_add(Set *set, uint32_t value) {
   return true;
 }
 
+/* Normalizes alpha and registers the color in the set.
+ * Returns false if the color set is full (>255 unique colors). */
+static bool classify_pixel(RGBQUAD *color, Set *colors) {
+  if (color->a >= 128) {
+    color->a = 255;
+    return set_add(colors, color->value);
+  }
+  color->a = 0;
+  return true;
+}
+
 static TLN_Palette BuildPaletteFromSet(Set const *colors) {
   RGBQUAD srccolor;
 
@@ -122,12 +133,8 @@ static TLN_Bitmap Convert32ToIndexed(TLN_Bitmap source) {
   for (int y = 0; y < source->height; y += 1) {
     RGBQUAD *color = (RGBQUAD *)srcscan;
     for (int x = 0; x < source->width; x += 1) {
-      if (color->a >= 128) {
-        color->a = 255;
-        if (!set_add(&colors, color->value))
-          return NULL;
-      } else
-        color->a = 0;
+      if (!classify_pixel(color, &colors))
+        return NULL;
       color += 1;
     }
     srcscan += source->pitch;

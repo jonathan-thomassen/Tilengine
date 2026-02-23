@@ -26,7 +26,29 @@ typedef struct {
   uint32_t color; /* color for optional blend function */
 } LayerWindow;
 
-/* capa */
+/* render pipeline sub-struct */
+typedef struct {
+  ScanDrawPtr draw;
+  ScanBlitPtr blitters[2];
+  draw_t mode;
+  uint8_t *blend; /* pointer to blend table */
+} LayerRender;
+
+/* scaling/transform factors sub-struct */
+typedef struct {
+  fix_t xfactor;
+  fix_t dx;
+  fix_t dy;
+} LayerScale;
+
+/* boolean state flags sub-struct */
+typedef struct {
+  bool ok;
+  bool affine;
+  bool priority; /* whole layer in front of regular sprites */
+  bool dirty;    /* requires update before draw */
+} LayerFlags;
+
 typedef struct Layer {
   TLN_LayerType type;     /* layer type */
   TLN_Tilemap tilemap;    /* pointer to tilemap */
@@ -35,19 +57,12 @@ typedef struct Layer {
   TLN_ObjectList objects; /* pointer to object list (objects layer mode) */
   int width;              /* layer width in pixels */
   int height;             /* layer height in pixels */
-  bool ok;
-  bool affine;
-  ScanDrawPtr draw;
-  ScanBlitPtr blitters[2];
+  LayerRender render;
   Matrix3 transform;
   int *column; /* column offset (optional) */
-  fix_t xfactor;
-  fix_t dx;
-  fix_t dy;
-  uint8_t *blend;          /* pointer to blend table */
+  LayerScale scale;
   TLN_PixelMap *pixel_map; /* pointer to pixel mapping table */
-  draw_t mode;
-  bool priority; /* whole layer in front of regular sprites */
+  LayerFlags flags;
 
   /* world mode related data */
   struct {
@@ -56,7 +71,6 @@ typedef struct Layer {
     float xfactor;
     float yfactor;
   } world;
-  bool dirty; /* requires update before draw */
 
   /* */
   int hstart; /* horizontal start offset */

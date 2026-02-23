@@ -54,7 +54,7 @@ static TLN_SpriteData *load_txt_csv(const char *filename, int *num_entries) {
 }
 
 static void parse_json_frame(cJSON const *item, TLN_SpriteData *entry) {
-  cJSON *field;
+  cJSON const *field;
   cJSON const *frame;
 
   field = cJSON_GetObjectItem(item, "filename");

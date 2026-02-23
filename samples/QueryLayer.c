@@ -8,7 +8,7 @@
 *
 ******************************************************************************/
 
-#include "../src/Tilengine.h"
+#include "Tilengine.h"
 
 #define HRES 424
 #define VRES 240
@@ -43,7 +43,6 @@ static void show_layer_info(int nlayer) {
     printf("  Tilemap dimensions: %d rows, %d columns\n",
            TLN_GetTilemapRows(tilemap), TLN_GetTilemapCols(tilemap));
     break;
-
   case LAYER_OBJECT:
     object_list = TLN_GetLayerObjects(nlayer);
     printf("  Tileset: %p\n", TLN_GetLayerTileset(nlayer));
@@ -59,7 +58,6 @@ static void show_layer_info(int nlayer) {
       has_object = TLN_GetListObject(object_list, NULL);
     }
     break;
-
   case LAYER_BITMAP:
     printf("  Bitmap: %p\n", TLN_GetLayerBitmap(nlayer));
     break;

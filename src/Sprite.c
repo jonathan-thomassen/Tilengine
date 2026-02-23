@@ -866,8 +866,8 @@ bool TLN_SetSpritePivot(int nsprite, float px, float py) {
  * \param bottom_line Bottom scaline where masking ends
  */
 void TLN_SetSpritesMaskRegion(int top_line, int bottom_line) {
-  engine->sprite_mask_top = top_line;
-  engine->sprite_mask_bottom = bottom_line;
+  engine->sprite_mask.top = top_line;
+  engine->sprite_mask.bottom = bottom_line;
 }
 
 /* updates clipping rect cache */

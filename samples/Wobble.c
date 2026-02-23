@@ -9,11 +9,12 @@
  * change vertical position.
  *
  ******************************************************************************/
-#include "../src/Tilengine.h"
 #include "Sin.h"
+#include "Tilengine.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 
 #define WIDTH 320
 #define HEIGHT 192
@@ -52,7 +53,7 @@ int main(int argc, char *argv[]) {
   TLN_SetLayerColumnOffset(LAYER_BACKGROUND, column);
 
   /* main loop */
-  TLN_CreateWindow(NULL, 0);
+  TLN_CreateWindow(NULL, CWF_NEAREST);
   while (TLN_ProcessWindow()) {
     /* scroll */
     TLN_SetLayerPosition(LAYER_FOREGROUND, frame * 3, 0);

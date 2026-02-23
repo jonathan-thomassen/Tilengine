@@ -1,4 +1,4 @@
-#include "../src/Tilengine.h"
+#include "Tilengine.h"
 
 #define WIDTH 400
 #define HEIGHT 240
@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
   TLN_SetBGColor(32, 32, 128);
 
   /* main loop */
-  TLN_CreateWindow(NULL, 0);
+  TLN_CreateWindow(NULL, CWF_NEAREST);
   while (TLN_ProcessWindow()) {
     /* scroll the layer, one pixel per frame */
     TLN_SetLayerPosition(0, frame, 0);

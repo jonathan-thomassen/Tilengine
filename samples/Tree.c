@@ -9,8 +9,6 @@ typedef struct {
 } Tree;
 
 static void TreeTasks(Actor *actor);
-static float CalcPerspective(float u, float u0, float u1, float z, float z0,
-                             float z1);
 
 Actor *CreateTree(int x, int y, char side) {
   Actor *actor;
@@ -43,7 +41,7 @@ static void TreeTasks(Actor *actor) {
   else
     actor->x = 136 - actor->x;
   actor->y = tree->y / tree->depth - 52;
-  scale = (float)Z_NEAR / tree->depth;
+  scale = (float)Z_NEAR / (float)tree->depth;
   TLN_SetSpriteScaling(actor->index, scale, scale);
   tree->depth -= speed;
 

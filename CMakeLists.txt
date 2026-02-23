@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 
 project(Tilengine)
 
@@ -11,11 +11,14 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 file(GLOB SOURCES
      "src/*.c"
 )
+file(GLOB INCLUDE_SOURCES
+     "include/*.c"
+)
 
 
 # main library
 list(REMOVE_ITEM SOURCES "src/Test.c")
-add_library(${PROJECT_NAME} ${SOURCES})
+add_library(${PROJECT_NAME} ${SOURCES} ${INCLUDE_SOURCES})
 
 if (UNIX AND NOT APPLE)
 	set(CMAKE_C_FLAGS "-m64 -msse2")
@@ -52,7 +55,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE include)
 if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /W3 /std:c23)
 else()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c23 -O2 -fpic")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c23 -O2")
+    if (NOT WIN32)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic")
+    endif()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-result -Wno-format-truncation")
 endif()
 

@@ -13,7 +13,7 @@
  *
  ******************************************************************************/
 
-#include "../src/Tilengine.h"
+#include "Tilengine.h"
 #include <SDL3/SDL.h>
 #include <stdlib.h>
 
@@ -39,13 +39,13 @@ static TLN_Palette palette_select; /* color palette for selected entity */
 static TLN_Palette palette_sprite; /* color palette for regular entity */
 
 /* execute this when an entity is clicked */
-void on_entity_click(Entity *entity) {
+void on_entity_click(Entity const *entity) {
   TLN_SetSpritePalette(entity->sprite_index, palette_select);
   printf("Entity %d is clicked\n", entity->guid);
 }
 
 /* execute this when an entity is un-clicked */
-void on_entity_release(Entity *entity) {
+void on_entity_release(Entity const *entity) {
   TLN_SetSpritePalette(entity->sprite_index, palette_sprite);
   printf("Entity %d is un-clicked\n", entity->guid);
 }
@@ -56,26 +56,25 @@ static void sdl_callback(SDL_Event *evt) {
     SDL_MouseButtonEvent *mouse = (SDL_MouseButtonEvent *)evt;
 
     /* scale from window space to framebuffer space */
-    mouse->x = (mouse->x * WIDTH) / TLN_GetWindowWidth();
-    mouse->y = (mouse->y * HEIGHT) / TLN_GetWindowHeight();
+    mouse->x = (mouse->x * WIDTH) / (float)TLN_GetWindowWidth();
+    mouse->y = (mouse->y * HEIGHT) / (float)TLN_GetWindowHeight();
 
     /* search clicked entity */
     for (int c = 0; c < MAX_ENTITIES; c++) {
       Entity *entity = &entities[c];
-      if (entity->enabled && mouse->x >= entity->x && mouse->y >= entity->y &&
-          mouse->x < entity->x + entity->w &&
-          mouse->y < entity->y + entity->h) {
+      if (entity->enabled && mouse->x >= (float)entity->x &&
+          mouse->y >= (float)entity->y &&
+          mouse->x < (float)entity->x + (float)entity->w &&
+          mouse->y < (float)entity->y + (float)entity->h) {
         selected_entity = entity;
         on_entity_click(selected_entity);
       }
     }
   }
 
-  else if (evt->type == SDL_EVENT_MOUSE_BUTTON_UP) {
-    if (selected_entity != NULL) {
-      on_entity_release(selected_entity);
-      selected_entity = NULL;
-    }
+  else if (evt->type == SDL_EVENT_MOUSE_BUTTON_UP && selected_entity != NULL) {
+    on_entity_release(selected_entity);
+    selected_entity = NULL;
   }
 }
 
@@ -109,10 +108,12 @@ int main(int argc, char *argv[]) {
   }
 
   /* windows and main loop */
-  TLN_CreateWindow(NULL, 0);
+  TLN_CreateWindow(NULL, CWF_NEAREST);
   TLN_SetSDLCallback(sdl_callback);
-  while (TLN_ProcessWindow())
-    TLN_DrawFrame(frame++);
+  while (TLN_ProcessWindow()) {
+    TLN_DrawFrame(frame);
+    frame++;
+  }
 
   TLN_Deinit();
   return 0;

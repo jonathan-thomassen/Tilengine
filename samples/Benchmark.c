@@ -1,4 +1,4 @@
-#include "../src/Tilengine.h"
+#include "Tilengine.h"
 #include <stdio.h>
 #include <stdlib.h>
 

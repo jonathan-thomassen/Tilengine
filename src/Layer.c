@@ -20,6 +20,8 @@
 #include <string.h>
 
 static void SetBlitter(Layer *layer);
+static void apply_priority_attributes(struct Tileset const *tileset,
+                                      TLN_Tilemap tilemap);
 
 /*!
  * \deprecated Use \ref TLN_SetLayerTilemap instead
@@ -51,7 +53,7 @@ bool TLN_SetLayer(int nlayer, TLN_Tileset tileset, TLN_Tilemap tilemap) {
   }
 
   layer = &engine->layers[nlayer];
-  layer->ok = false;
+  layer->flags.ok = false;
   if (!CheckBaseObject(tilemap, OT_TILEMAP))
     return false;
 
@@ -76,18 +78,7 @@ bool TLN_SetLayer(int nlayer, TLN_Tileset tileset, TLN_Tilemap tilemap) {
       break;
 
     /* apply priority attribute */
-    if (tileset->attributes != NULL) {
-      const int num_tiles = tilemap->rows * tilemap->cols;
-      Tile *tile = tilemap->tiles;
-      for (int c = 0; c < num_tiles; c++, tile++) {
-        if (tile->index != 0 && tile->index < tileset->numtiles) {
-          if (tileset->attributes[tile->index - 1].priority == true)
-            tile->flags |= FLAG_PRIORITY;
-          else
-            tile->flags &= ~FLAG_PRIORITY;
-        }
-      }
-    }
+    apply_priority_attributes(tileset, tilemap);
 
     /* start animations */
     if (tileset->sp != NULL) {
@@ -105,8 +96,8 @@ bool TLN_SetLayer(int nlayer, TLN_Tileset tileset, TLN_Tilemap tilemap) {
   }
 
   if (tilemap->visible) {
-    layer->ok = true;
-    layer->draw = GetLayerDraw(layer);
+    layer->flags.ok = true;
+    layer->render.draw = GetLayerDraw(layer);
     SetBlitter(layer);
   }
 
@@ -150,7 +141,7 @@ bool TLN_SetLayerBitmap(int nlayer, TLN_Bitmap bitmap) {
   }
 
   layer = &engine->layers[nlayer];
-  layer->ok = false;
+  layer->flags.ok = false;
   if (!CheckBaseObject(bitmap, OT_BITMAP))
     return false;
 
@@ -163,13 +154,13 @@ bool TLN_SetLayerBitmap(int nlayer, TLN_Bitmap bitmap) {
   /* require palette */
   if (bitmap->palette != NULL) {
     layer->type = LAYER_BITMAP;
-    layer->ok = true;
-    layer->draw = GetLayerDraw(layer);
+    layer->flags.ok = true;
+    layer->render.draw = GetLayerDraw(layer);
     SetBlitter(layer);
     TLN_SetLastError(TLN_ERR_OK);
     return true;
   } else {
-    layer->ok = false;
+    layer->flags.ok = false;
     TLN_SetLastError(TLN_ERR_REF_PALETTE);
     return false;
   }
@@ -195,7 +186,7 @@ bool TLN_SetLayerObjects(int nlayer, TLN_ObjectList objects,
     return false;
   }
   layer = &engine->layers[nlayer];
-  layer->ok = false;
+  layer->flags.ok = false;
 
   if (!CheckBaseObject(objects, OT_OBJECTLIST)) {
     TLN_SetLastError(TLN_ERR_REF_LIST);
@@ -231,8 +222,8 @@ bool TLN_SetLayerObjects(int nlayer, TLN_ObjectList objects,
   }
 
   if (objects->visible) {
-    layer->ok = true;
-    layer->draw = GetLayerDraw(layer);
+    layer->flags.ok = true;
+    layer->render.draw = GetLayerDraw(layer);
     SetBlitter(layer);
   }
   TLN_SetLastError(TLN_ERR_OK);
@@ -253,7 +244,7 @@ bool TLN_SetLayerPriority(int nlayer, bool enable) {
   }
 
   layer = &engine->layers[nlayer];
-  layer->priority = enable;
+  layer->flags.priority = enable;
   return true;
 }
 
@@ -326,7 +317,7 @@ bool TLN_SetLayerBlendMode(int nlayer, TLN_Blend mode, uint8_t /*factor*/) {
   }
 
   layer = &engine->layers[nlayer];
-  layer->blend = SelectBlendTable(mode);
+  layer->render.blend = SelectBlendTable(mode);
   SetBlitter(layer);
   TLN_SetLastError(TLN_ERR_OK);
   return true;
@@ -360,7 +351,7 @@ bool TLN_SetLayerPalette(int nlayer, TLN_Palette palette) {
 
   layer = &engine->layers[nlayer];
   if (!CheckBaseObject(palette, OT_PALETTE)) {
-    layer->ok = false;
+    layer->flags.ok = false;
     return false;
   }
 
@@ -524,7 +515,7 @@ bool TLN_SetLayerPosition(int nlayer, int hstart, int vstart) {
   TLN_SetLastError(TLN_ERR_OK);
   if ((layer->tilemap && layer->tilemap->visible) ||
       (layer->objects && layer->objects->visible))
-    layer->ok = true;
+    layer->flags.ok = true;
   return true;
 }
 
@@ -707,7 +698,7 @@ bool TLN_EnableLayer(int nlayer) {
   if (layer->type == LAYER_TILE && layer->tilemap != NULL ||
       layer->type == LAYER_BITMAP && layer->bitmap != NULL ||
       layer->type == LAYER_OBJECT && layer->objects != NULL) {
-    layer->ok = true;
+    layer->flags.ok = true;
     TLN_SetLastError(TLN_ERR_IDX_LAYER);
     return true;
   }
@@ -736,7 +727,7 @@ bool TLN_DisableLayer(int nlayer) {
     return false;
   }
 
-  engine->layers[nlayer].ok = false;
+  engine->layers[nlayer].flags.ok = false;
   TLN_SetLastError(TLN_ERR_OK);
   return true;
 }
@@ -789,8 +780,8 @@ bool TLN_SetLayerAffineTransform(int nlayer, TLN_Affine const *affine) {
     Matrix3SetTranslation(&transform, dx, dy);
     Matrix3Multiply(&layer->transform, &transform);
 
-    layer->mode = MODE_TRANSFORM;
-    layer->draw = GetLayerDraw(layer);
+    layer->render.mode = MODE_TRANSFORM;
+    layer->render.draw = GetLayerDraw(layer);
     SetBlitter(layer);
 
     TLN_SetLastError(TLN_ERR_OK);
@@ -871,11 +862,11 @@ bool TLN_SetLayerScaling(int nlayer, float sx, float sy) {
   }
 
   layer = &engine->layers[nlayer];
-  layer->xfactor = float2fix(sx);
-  layer->dx = float2fix((1.0f / sx));
-  layer->dy = float2fix((1.0f / sy));
-  layer->mode = MODE_SCALING;
-  layer->draw = GetLayerDraw(layer);
+  layer->scale.xfactor = float2fix(sx);
+  layer->scale.dx = float2fix((1.0f / sx));
+  layer->scale.dy = float2fix((1.0f / sy));
+  layer->render.mode = MODE_SCALING;
+  layer->render.draw = GetLayerDraw(layer);
   SetBlitter(layer);
   TLN_SetLastError(TLN_ERR_OK);
   return true;
@@ -903,10 +894,10 @@ bool TLN_SetLayerPixelMapping(int nlayer, TLN_PixelMap *table) {
   layer = &engine->layers[nlayer];
   layer->pixel_map = table;
   if (table != NULL)
-    layer->mode = MODE_PIXEL_MAP;
+    layer->render.mode = MODE_PIXEL_MAP;
   else
-    layer->mode = MODE_NORMAL;
-  layer->draw = GetLayerDraw(layer);
+    layer->render.mode = MODE_NORMAL;
+  layer->render.draw = GetLayerDraw(layer);
   return true;
 }
 
@@ -930,8 +921,8 @@ bool TLN_ResetLayerMode(int nlayer) {
   }
 
   layer = &engine->layers[nlayer];
-  layer->mode = MODE_NORMAL;
-  layer->draw = GetLayerDraw(layer);
+  layer->render.mode = MODE_NORMAL;
+  layer->render.draw = GetLayerDraw(layer);
   SetBlitter(layer);
   TLN_SetLastError(TLN_ERR_OK);
   return true;
@@ -1125,10 +1116,27 @@ bool TLN_DisableLayerMosaic(int nlayer) {
 
 Layer *GetLayer(int index) { return &engine->layers[index]; }
 
-static void SetBlitter(Layer *layer) {
-  bool scaling = layer->mode == MODE_SCALING;
-  bool blend = layer->blend != NULL && layer->mosaic.h == 0;
+static void apply_priority_attributes(struct Tileset const *tileset,
+                                      TLN_Tilemap tilemap) {
+  if (tileset->attributes == NULL)
+    return;
 
-  layer->blitters[0] = SelectBlitter(false, scaling, blend);
-  layer->blitters[1] = SelectBlitter(true, scaling, blend);
+  const int num_tiles = tilemap->rows * tilemap->cols;
+  Tile *tile = tilemap->tiles;
+  for (int c = 0; c < num_tiles; c++, tile++) {
+    if (tile->index != 0 && tile->index < tileset->numtiles) {
+      if (tileset->attributes[tile->index - 1].priority)
+        tile->flags |= FLAG_PRIORITY;
+      else
+        tile->flags &= ~FLAG_PRIORITY;
+    }
+  }
+}
+
+static void SetBlitter(Layer *layer) {
+  bool scaling = layer->render.mode == MODE_SCALING;
+  bool blend = layer->render.blend != NULL && layer->mosaic.h == 0;
+
+  layer->render.blitters[0] = SelectBlitter(false, scaling, blend);
+  layer->render.blitters[1] = SelectBlitter(true, scaling, blend);
 }

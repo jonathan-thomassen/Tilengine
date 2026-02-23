@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 
 project(samples)
 
+include_directories(../src)
 
 if (UNIX AND NOT APPLE)
 	set(CMAKE_C_FLAGS "-m64 -msse2")
@@ -26,7 +27,10 @@ link_libraries(SDL3::SDL3)
 if (MSVC)
     add_compile_options(/W3)
 else()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -O2 -fpic")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c23 -O2")
+    if (NOT WIN32)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic")
+    endif()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-result -Wno-format-truncation")
 endif()
 
@@ -88,31 +92,36 @@ add_executable(forest
 add_executable(querylayer
      QueryLayer.c)
 
-# Copy required DLLs on MinGW after building samples
+add_executable(layerwindow
+     LayerWindow.c)
+
+add_executable(layercircle
+     LayerCircle.c)
+
+# Copy required DLLs on MinGW once for all samples
 if (MINGW)
-    # Find MSYS2 MinGW bin directory
     if (EXISTS "C:/msys64/mingw64/bin")
         set(MINGW_BIN_DIR "C:/msys64/mingw64/bin")
     endif()
-    
+
     if (DEFINED MINGW_BIN_DIR)
-        # List of all sample executables
-        set(SAMPLE_TARGETS 
-            barrel mode7 platformer racer scaling shadow shooter 
-            tutorial wobble colorcycle benchmark supermarioclone 
-            test_mouse forest querylayer
+        set(SAMPLE_TARGETS
+            barrel mode7 platformer racer scaling shadow shooter
+            tutorial wobble colorcycle benchmark supermarioclone
+            test_mouse forest querylayer layerwindow layercircle
         )
-        
-        # Copy DLLs after building each sample
+
+        add_custom_target(copy_sample_dlls
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${MINGW_BIN_DIR}/libpng16-16.dll"
+                "${MINGW_BIN_DIR}/zlib1.dll"
+                "${MINGW_BIN_DIR}/SDL3.dll"
+                "${CMAKE_CURRENT_BINARY_DIR}"
+            COMMENT "Copying required DLLs to samples directory"
+        )
+
         foreach(SAMPLE_TARGET ${SAMPLE_TARGETS})
-            add_custom_command(TARGET ${SAMPLE_TARGET} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                    "${MINGW_BIN_DIR}/libpng16-16.dll"
-                    "${MINGW_BIN_DIR}/zlib1.dll"
-                    "${MINGW_BIN_DIR}/SDL3.dll"
-                    $<TARGET_FILE_DIR:${SAMPLE_TARGET}>
-                COMMENT "Copying required DLLs to samples directory"
-            )
+            add_dependencies(${SAMPLE_TARGET} copy_sample_dlls)
         endforeach()
     endif()
 endif()

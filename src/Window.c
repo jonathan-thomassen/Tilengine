@@ -60,7 +60,7 @@ struct {
   CRTType type;
   bool blur;
   bool enable;
-} static crt_params = {CRT_SLOT, true, true};
+} static crt_params = {CRT_SLOT, true, false};
 
 #define MAX_PATH 260
 
@@ -221,7 +221,7 @@ static void calibrate_timing(WindowFlags flags) {
         break;
       }
     }
-    engine->target_fps = target_fps;
+    engine->timing.target_fps = target_fps;
   }
 
 #if defined WIN32
@@ -922,7 +922,7 @@ static void EndWindowFrame(void) {
     timeBeginPeriod(1);
 #endif
     Engine const *context = TLN_GetContext();
-    uint32_t due_time = wnd_params.t0 + (1000 / context->target_fps);
+    uint32_t due_time = wnd_params.t0 + (1000 / context->timing.target_fps);
     uint32_t now = (uint32_t)SDL_GetTicks();
     while (now < due_time) {
       if (due_time - now > wnd_params.min_delay)

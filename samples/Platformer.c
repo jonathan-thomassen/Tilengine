@@ -10,7 +10,7 @@
  *
  ******************************************************************************/
 
-#include "../src/Tilengine.h"
+#include "Tilengine.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
   inc_background[5] = 2.0f;
 
   /* startup display */
-  TLN_CreateWindow(NULL, 0);
+  TLN_CreateWindow(NULL, CWF_NEAREST);
 
   /* main loop */
   while (TLN_ProcessWindow()) {
@@ -150,10 +150,10 @@ static void raster_callback(int line) {
   /* background color gradients */
   if (line < 112) {
     InterpolateColor(line, 0, 112, &sky[0], &sky[1], &color);
-    TLN_SetBGColor(color.r, color.g, color.b);
+    TLN_SetBGColor((uint8_t)color.r, (uint8_t)color.g, (uint8_t)color.b);
   } else if (line >= 144) {
     InterpolateColor(line, 144, HEIGHT, &sky[2], &sky[3], &color);
-    TLN_SetBGColor(color.r, color.g, color.b);
+    TLN_SetBGColor((uint8_t)color.r, (uint8_t)color.g, (uint8_t)color.b);
   }
 }
 

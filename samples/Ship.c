@@ -61,7 +61,7 @@ void ShipTasks(Actor *actor) {
   else
     actor->vy = 0;
 
-  /* movimiento */
+  /* movement */
   if (GetActorTimeout(actor, 0)) {
     int index = TLN_GetSpritePicture(actor->index);
     SetActorTimeout(actor, 0, 6);
@@ -87,15 +87,13 @@ void ShipTasks(Actor *actor) {
     }
 
     /* izquierda */
-    if (actor->vx < 0) {
-      if (actor->x < 0)
-        actor->x = 0;
+    if (actor->vx < 0 && actor->x < 0) {
+      actor->x = 0;
     }
 
     /* derecha */
-    if (actor->vx > 0) {
-      if (actor->x > 396)
-        actor->x = 396;
+    if (actor->vx > 0 && actor->x > 396) {
+      actor->x = 396;
     }
   }
 

@@ -11,14 +11,15 @@
  ******************************************************************************/
 
 #include "Shooter.h"
-#include "../src/Tilengine.h"
 #include "Boss.h"
 #include "Enemy.h"
 #include "Explosion.h"
 #include "Ship.h"
+#include "Tilengine.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 
 /* fixed point helper */
 typedef int fix_t;
@@ -135,7 +136,7 @@ int main(int argc, char *argv[]) {
     palettes[c] = TLN_ClonePalette(TLN_GetTilesetPalette(layers[c].tileset));
 
   /* startup display */
-  TLN_CreateWindow(NULL, 0);
+  TLN_CreateWindow(NULL, CWF_NEAREST);
 
   /* main loop */
   while (TLN_ProcessWindow()) {
@@ -199,9 +200,9 @@ int main(int argc, char *argv[]) {
 static void raster_callback(int line) {
   /* sky color gradient */
   if (line < 64) {
-    uint8_t r = lerp(line, 0, 63, sky_hi[0], sky_lo[0]);
-    uint8_t g = lerp(line, 0, 63, sky_hi[1], sky_lo[1]);
-    uint8_t b = lerp(line, 0, 63, sky_hi[2], sky_lo[2]);
+    uint8_t r = (uint8_t)lerp(line, 0, 63, sky_hi[0], sky_lo[0]);
+    uint8_t g = (uint8_t)lerp(line, 0, 63, sky_hi[1], sky_lo[1]);
+    uint8_t b = (uint8_t)lerp(line, 0, 63, sky_hi[2], sky_lo[2]);
     TLN_SetBGColor(r, g, b);
   }
 

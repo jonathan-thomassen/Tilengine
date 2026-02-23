@@ -12,7 +12,7 @@
  *
  ******************************************************************************/
 
-#include "../src/Tilengine.h"
+#include "Tilengine.h"
 
 #define HRES 640
 #define VRES 360
@@ -47,7 +47,7 @@ int main(int arg, char *argv[]) {
   update_window();
 
   /* create window & main loop */
-  TLN_CreateWindow(NULL, 0);
+  TLN_CreateWindow(NULL, CWF_NEAREST);
   while (TLN_ProcessWindow()) {
     TLN_Input input = get_press();
     if (input == INPUT_BUTTON1)

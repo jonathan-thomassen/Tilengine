@@ -1,4 +1,4 @@
-#include "../src/Tilengine.h"
+#include "Tilengine.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
   TLN_SetPaletteAnimation(0, palette, sequence, true);
 
   /* main loop */
-  TLN_CreateWindow(NULL, 0);
+  TLN_CreateWindow(NULL, CWF_NEAREST);
   while (TLN_ProcessWindow())
     TLN_DrawFrame(0);
 

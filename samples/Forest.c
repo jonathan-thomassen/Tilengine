@@ -7,13 +7,13 @@
 *
 ******************************************************************************/
 
-#include "../src/Tilengine.h"
+#include "Tilengine.h"
 #include <stdio.h>
 
 #define HRES 424
 #define VRES 240
 
-/* layers, must mach "map.tmx" layer structure! */
+/* layers, must match "map.tmx" layer structure! */
 enum {
   LAYER_PROPS,        /* object layer */
   LAYER_FOREGROUND,   /* main foreground layer (tiles) */
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
   TLN_ConfigSprite(0, atlas, 0);
   TLN_SetSpriteAnimation(0, idle, 0);
   TLN_SetSpriteWorldPosition(0, xplayer, yplayer);
-  TLN_CreateWindow(NULL, 0);
+  TLN_CreateWindow(NULL, CWF_NEAREST);
   while (TLN_ProcessWindow()) {
     TLN_DrawFrame(0);
 

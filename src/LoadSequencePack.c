@@ -30,95 +30,115 @@ struct {
 
 static bool ishex(char dat);
 
+static void handle_add_subtag(const char *szName) {
+  if (!strcasecmp(szName, "cycle")) {
+    loader.count = 0;
+    memset(loader.strips, 0, sizeof(loader.strips));
+  }
+}
+
+static void handle_sequence_attribute(const char *szAttribute,
+                                      const char *szValue) {
+  if (!strcasecmp(szAttribute, "name"))
+    strncpy(loader.name, szValue, sizeof(loader.name));
+  else if (!strcasecmp(szAttribute, "delay"))
+    loader.delay = atoi(szValue);
+  else if (!strcasecmp(szAttribute, "first") ||
+           !strcasecmp(szAttribute, "target"))
+    loader.target = atoi(szValue);
+  else if (!strcasecmp(szAttribute, "count"))
+    loader.count = atoi(szValue);
+}
+
+static void handle_strip_attribute(const char *szAttribute,
+                                   const char *szValue) {
+  if (!strcasecmp(szAttribute, "delay"))
+    loader.strips[loader.count].delay = atoi(szValue);
+  else if (!strcasecmp(szAttribute, "first"))
+    loader.strips[loader.count].first = (uint8_t)atoi(szValue);
+  else if (!strcasecmp(szAttribute, "count"))
+    loader.strips[loader.count].count = (uint8_t)atoi(szValue);
+  else if (!strcasecmp(szAttribute, "dir"))
+    loader.strips[loader.count].dir = (uint8_t)atoi(szValue);
+}
+
+static void handle_add_attribute(const char *szName, const char *szAttribute,
+                                 const char *szValue) {
+  if (!strcasecmp(szName, "sequence"))
+    handle_sequence_attribute(szAttribute, szValue);
+  else if (!strcasecmp(szName, "cycle")) {
+    if (!strcasecmp(szAttribute, "name"))
+      strncpy(loader.name, szValue, sizeof(loader.name));
+  } else if (!strcasecmp(szName, "strip"))
+    handle_strip_attribute(szAttribute, szValue);
+
+  loader.name[sizeof(loader.name) - 1] = '\0';
+}
+
+static void handle_add_content(const char *szName, const char *szValue) {
+  if (strcasecmp(szName, "sequence") != 0)
+    return;
+
+  char const *ptr = szValue;
+  loader.count = 0;
+  while (*ptr) {
+    int value;
+
+    /* find number */
+    while (*ptr && !ishex(*ptr) && *ptr != '#')
+      ptr++;
+    if (!*ptr)
+      continue;
+
+    /* copy and find end of number */
+    if (*ptr == '#') {
+      ptr++;
+      sscanf(ptr, "%x", &value);
+    } else
+      sscanf(ptr, "%u", &value);
+
+    loader.frames[loader.count].index = value;
+    loader.frames[loader.count].delay = loader.delay;
+    loader.count++;
+    while (*ptr && ishex(*ptr))
+      ptr++;
+  }
+}
+
+static void handle_finish_tag(const char *szName) {
+  TLN_Sequence sequence = NULL;
+  if (!strcasecmp(szName, "sequence"))
+    sequence = TLN_CreateSequence(loader.name, loader.target, loader.count,
+                                  loader.frames);
+  else if (!strcasecmp(szName, "cycle"))
+    sequence = TLN_CreateCycle(loader.name, loader.count, loader.strips);
+  if (sequence)
+    TLN_AddSequenceToPack(loader.sp, sequence);
+}
+
 /* XML parser callback */
 static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
                      const char *szName, const char *szAttribute,
                      const char *szValue) {
-  TLN_Sequence sequence = NULL;
-
   switch (evt) {
   case ADD_SUBTAG:
-    if (!strcasecmp(szName, "cycle")) {
-      loader.count = 0;
-      memset(loader.strips, 0, sizeof(loader.strips));
-    }
+    handle_add_subtag(szName);
     break;
-
   case ADD_ATTRIBUTE:
-    if (!strcasecmp(szName, "sequence")) {
-      if (!strcasecmp(szAttribute, "name"))
-        strncpy(loader.name, szValue, sizeof(loader.name));
-      else if (!strcasecmp(szAttribute, "delay"))
-        loader.delay = atoi(szValue);
-      else if (!strcasecmp(szAttribute, "first") ||
-               !strcasecmp(szAttribute, "target"))
-        loader.target = atoi(szValue);
-      else if (!strcasecmp(szAttribute, "count"))
-        loader.count = atoi(szValue);
-    } else if (!strcasecmp(szName, "cycle")) {
-      if (!strcasecmp(szAttribute, "name"))
-        strncpy(loader.name, szValue, sizeof(loader.name));
-    } else if (!strcasecmp(szName, "strip")) {
-      if (!strcasecmp(szAttribute, "delay"))
-        loader.strips[loader.count].delay = atoi(szValue);
-      else if (!strcasecmp(szAttribute, "first"))
-        loader.strips[loader.count].first = (uint8_t)atoi(szValue);
-      else if (!strcasecmp(szAttribute, "count"))
-        loader.strips[loader.count].count = (uint8_t)atoi(szValue);
-      else if (!strcasecmp(szAttribute, "dir"))
-        loader.strips[loader.count].dir = (uint8_t)atoi(szValue);
-    }
-
-    loader.name[sizeof(loader.name) - 1] = '\0';
-
+    handle_add_attribute(szName, szAttribute, szValue);
     break;
-
   case FINISH_ATTRIBUTES:
     if (!strcasecmp(szName, "strip") && loader.strips[loader.count].delay != 0)
       loader.count++;
     break;
-
   case ADD_CONTENT:
-    if (!strcasecmp(szName, "sequence")) {
-      char const *ptr = szValue;
-
-      loader.count = 0;
-      while (*ptr) {
-        int value;
-
-        /* find number */
-        while (*ptr && !ishex(*ptr) && *ptr != '#')
-          ptr++;
-        if (!*ptr)
-          continue;
-
-        /* copy and find end of number */
-        if (*ptr == '#') {
-          ptr++;
-          sscanf(ptr, "%x", &value);
-        } else
-          sscanf(ptr, "%u", &value);
-
-        loader.frames[loader.count].index = value;
-        loader.frames[loader.count].delay = loader.delay;
-        loader.count++;
-        while (*ptr && ishex(*ptr))
-          ptr++;
-      }
-    }
+    handle_add_content(szName, szValue);
     break;
-
   case FINISH_TAG:
-    if (!strcasecmp(szName, "sequence"))
-      sequence = TLN_CreateSequence(loader.name, loader.target, loader.count,
-                                    loader.frames);
-    else if (!strcasecmp(szName, "cycle"))
-      sequence = TLN_CreateCycle(loader.name, loader.count, loader.strips);
-    if (sequence)
-      TLN_AddSequenceToPack(loader.sp, sequence);
+    handle_finish_tag(szName);
     break;
   }
-  return handler;
+  return &handler;
 }
 
 /*!
