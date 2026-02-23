@@ -17,8 +17,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define WIDTH 400
-#define HEIGHT 240
+#define WIDTH 480
+#define HEIGHT 270
 #define MAX_PALETTE 8
 
 #ifndef M_PI
