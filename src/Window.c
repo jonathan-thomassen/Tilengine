@@ -603,6 +603,23 @@ static void process_special_keys(SDL_Keycode key, uint16_t mod) {
   }
 }
 
+/* apply a new integer scale factor, handling fullscreen→windowed transition */
+static void set_window_scale(int factor) {
+  WindowFlags flags;
+  flags.value = (uint8_t)wnd_params.flags;
+  if (factor == flags.factor)
+    return;
+  if (flags.fullscreen) {
+    flags.factor = (uint8_t)factor;
+    flags.fullscreen = false;
+    wnd_params.flags = flags.value;
+    delete_window();
+    create_window();
+  } else {
+    resize_window(factor);
+  }
+}
+
 /* process window scale override (Alt+1 through Alt+5) */
 static void process_window_scale(SDL_Keycode key, uint16_t mod) {
   if (!(mod & SDL_KMOD_ALT))
@@ -610,19 +627,7 @@ static void process_window_scale(SDL_Keycode key, uint16_t mod) {
 
   for (int c = 1; c <= 5; c += 1) {
     if (key == ('0' + c)) {
-      WindowFlags flags;
-      flags.value = (uint8_t)wnd_params.flags;
-      if (c != flags.factor) {
-        if (flags.fullscreen) {
-          flags.factor = (uint8_t)c;
-          flags.fullscreen = false;
-          wnd_params.flags = flags.value;
-          delete_window();
-          create_window();
-        } else {
-          resize_window(c);
-        }
-      }
+      set_window_scale(c);
       break;
     }
   }
