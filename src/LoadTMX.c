@@ -16,13 +16,102 @@ static void init_current_layer(TLN_LayerType type) {
   layer->parallaxx = layer->parallaxy = 1.0f;
 }
 
+static void handle_map_attribute(const char *szAttribute, int intvalue,
+                                 const char *szValue) {
+  if (!strcasecmp(szAttribute, "width"))
+    tmxinfo.width = intvalue;
+  else if (!strcasecmp(szAttribute, "height"))
+    tmxinfo.height = intvalue;
+  else if (!strcasecmp(szAttribute, "tilewidth"))
+    tmxinfo.tilewidth = intvalue;
+  else if (!strcasecmp(szAttribute, "tileheight"))
+    tmxinfo.tileheight = intvalue;
+  else if (!strcasecmp(szAttribute, "backgroundcolor")) {
+    sscanf(&szValue[1], "%x", &tmxinfo.bgcolor);
+    tmxinfo.bgcolor += 0xFF000000;
+  }
+}
+
+static void handle_tileset_attribute(const char *szAttribute, int intvalue,
+                                     const char *szValue) {
+  TMXTileset *tileset = &tmxinfo.tilesets[tmxinfo.num_tilesets];
+  if (!strcasecmp(szAttribute, "firstgid"))
+    tileset->firstgid = intvalue;
+  else if (!strcasecmp(szAttribute, "source"))
+    strncpy(tileset->source, szValue, sizeof(tileset->source));
+}
+
+static void handle_layer_attribute(const char *szAttribute, int intvalue,
+                                   float floatvalue, const char *szValue) {
+  TMXLayer *layer = &tmxinfo.layers[tmxinfo.num_layers];
+  if (!strcasecmp(szAttribute, "name"))
+    strncpy(layer->name, szValue, sizeof(layer->name));
+  else if (!strcasecmp(szAttribute, "id"))
+    layer->id = intvalue;
+  else if (!strcasecmp(szAttribute, "visible"))
+    layer->visible = (bool)intvalue;
+  else if (!strcasecmp(szAttribute, "width"))
+    layer->width = intvalue;
+  else if (!strcasecmp(szAttribute, "height"))
+    layer->height = intvalue;
+  else if (!strcasecmp(szAttribute, "parallaxx"))
+    layer->parallaxx = floatvalue;
+  else if (!strcasecmp(szAttribute, "parallaxy"))
+    layer->parallaxy = floatvalue;
+  else if (!strcasecmp(szAttribute, "offsetx"))
+    layer->offsetx = floatvalue;
+  else if (!strcasecmp(szAttribute, "offsety"))
+    layer->offsety = floatvalue;
+  else if (!strcasecmp(szAttribute, "opacity"))
+    layer->opacity = floatvalue;
+  else if (!strcasecmp(szAttribute, "tintcolor"))
+    sscanf(&szValue[1], "%x", &layer->tintcolor);
+}
+
+static void handle_image_attribute(const char *szAttribute, int intvalue,
+                                   const char *szValue) {
+  TMXLayer *layer = &tmxinfo.layers[tmxinfo.num_layers];
+  if (!strcasecmp(szAttribute, "source"))
+    strncpy(layer->image, szValue, sizeof(layer->name));
+  else if (!strcasecmp(szAttribute, "width"))
+    layer->width = intvalue;
+  else if (!strcasecmp(szAttribute, "height"))
+    layer->height = intvalue;
+}
+
+static bool is_layer_tag(const char *szName) {
+  return !strcasecmp(szName, "layer") || !strcasecmp(szName, "objectgroup") ||
+         !strcasecmp(szName, "imagelayer");
+}
+
+static void handle_add_attribute(const char *szName, const char *szAttribute,
+                                 int intvalue, float floatvalue,
+                                 const char *szValue) {
+  if (!strcasecmp(szName, "map"))
+    handle_map_attribute(szAttribute, intvalue, szValue);
+  else if (!strcasecmp(szName, "tileset"))
+    handle_tileset_attribute(szAttribute, intvalue, szValue);
+  else if (is_layer_tag(szName))
+    handle_layer_attribute(szAttribute, intvalue, floatvalue, szValue);
+  else if (!strcasecmp(szName, "image"))
+    handle_image_attribute(szAttribute, intvalue, szValue);
+}
+
+static void handle_finish_tag(const char *szName) {
+  bool is_layer = is_layer_tag(szName);
+  if (!strcasecmp(szName, "tileset") &&
+      tmxinfo.num_tilesets < TMX_MAX_TILESET - 1)
+    tmxinfo.num_tilesets += 1;
+  else if (is_layer && tmxinfo.num_layers < TMX_MAX_LAYER - 1)
+    tmxinfo.num_layers += 1;
+  else if (!strcasecmp(szName, "object"))
+    tmxinfo.layers[tmxinfo.num_layers].num_objects += 1;
+}
+
 /* XML parser callback */
 static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
                      const char *szName, const char *szAttribute,
                      const char *szValue) {
-  int intvalue = 0;
-  float floatvalue = 0;
-
   switch (evt) {
   case ADD_SUBTAG:
     if (!strcasecmp(szName, "layer"))
@@ -36,96 +125,17 @@ static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
       memset(tileset, 0, sizeof(TMXTileset));
     }
     break;
-
   case ADD_ATTRIBUTE:
-    intvalue = atoi(szValue);
-    floatvalue = (float)atof(szValue);
-    if (!strcasecmp(szName, "map")) {
-      if (!strcasecmp(szAttribute, "width"))
-        tmxinfo.width = intvalue;
-      else if (!strcasecmp(szAttribute, "height"))
-        tmxinfo.height = intvalue;
-      else if (!strcasecmp(szAttribute, "tilewidth"))
-        tmxinfo.tilewidth = intvalue;
-      else if (!strcasecmp(szAttribute, "tileheight"))
-        tmxinfo.tileheight = intvalue;
-      else if (!strcasecmp(szAttribute, "backgroundcolor")) {
-        sscanf(&szValue[1], "%x", &tmxinfo.bgcolor);
-        tmxinfo.bgcolor += 0xFF000000;
-      }
-    }
-
-    else if (!strcasecmp(szName, "tileset")) {
-      TMXTileset *tileset = &tmxinfo.tilesets[tmxinfo.num_tilesets];
-      if (!strcasecmp(szAttribute, "firstgid"))
-        tileset->firstgid = intvalue;
-      else if (!strcasecmp(szAttribute, "source"))
-        strncpy(tileset->source, szValue, sizeof(tileset->source));
-    }
-
-    else if (!strcasecmp(szName, "layer") ||
-             !strcasecmp(szName, "objectgroup") ||
-             !strcasecmp(szName, "imagelayer")) {
-      TMXLayer *layer = &tmxinfo.layers[tmxinfo.num_layers];
-      if (!strcasecmp(szAttribute, "name"))
-        strncpy(layer->name, szValue, sizeof(layer->name));
-      else if (!strcasecmp(szAttribute, "id"))
-        layer->id = intvalue;
-      else if (!strcasecmp(szAttribute, "visible"))
-        layer->visible = (bool)intvalue;
-      else if (!strcasecmp(szAttribute, "width"))
-        layer->width = intvalue;
-      else if (!strcasecmp(szAttribute, "height"))
-        layer->height = intvalue;
-      else if (!strcasecmp(szAttribute, "parallaxx"))
-        layer->parallaxx = floatvalue;
-      else if (!strcasecmp(szAttribute, "parallaxy"))
-        layer->parallaxy = floatvalue;
-      else if (!strcasecmp(szAttribute, "offsetx"))
-        layer->offsetx = floatvalue;
-      else if (!strcasecmp(szAttribute, "offsety"))
-        layer->offsety = floatvalue;
-      else if (!strcasecmp(szAttribute, "opacity"))
-        layer->opacity = floatvalue;
-      else if (!strcasecmp(szAttribute, "tintcolor"))
-        sscanf(&szValue[1], "%x", &layer->tintcolor);
-    }
-
-    else if (!strcasecmp(szName, "image")) {
-      TMXLayer *layer = &tmxinfo.layers[tmxinfo.num_layers];
-      if (!strcasecmp(szAttribute, "source"))
-        strncpy(layer->image, szValue, sizeof(layer->name));
-      else if (!strcasecmp(szAttribute, "width"))
-        layer->width = intvalue;
-      else if (!strcasecmp(szAttribute, "height"))
-        layer->height = intvalue;
-    }
+    handle_add_attribute(szName, szAttribute, atoi(szValue),
+                         (float)atof(szValue), szValue);
     break;
-
-  case FINISH_ATTRIBUTES:
-    break;
-
-  case ADD_CONTENT:
-    break;
-
   case FINISH_TAG:
-    if (!strcasecmp(szName, "tileset") &&
-        tmxinfo.num_tilesets < TMX_MAX_TILESET - 1)
-      tmxinfo.num_tilesets += 1;
-    else if (!strcasecmp(szName, "layer") &&
-             tmxinfo.num_layers < TMX_MAX_LAYER - 1)
-      tmxinfo.num_layers += 1;
-    else if (!strcasecmp(szName, "objectgroup") &&
-             tmxinfo.num_layers < TMX_MAX_LAYER - 1)
-      tmxinfo.num_layers += 1;
-    else if (!strcasecmp(szName, "imagelayer") &&
-             tmxinfo.num_layers < TMX_MAX_LAYER - 1)
-      tmxinfo.num_layers += 1;
-    else if (!strcasecmp(szName, "object"))
-      tmxinfo.layers[tmxinfo.num_layers].num_objects += 1;
+    handle_finish_tag(szName);
+    break;
+  default:
     break;
   }
-  return handler;
+  return &handler;
 }
 
 static int compare(void const *d1, void const *d2) {
