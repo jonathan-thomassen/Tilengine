@@ -560,6 +560,32 @@ static void process_special_keys(SDL_Keycode key, uint16_t mod) {
     delete_window();
     wnd_params.flags ^= CWF_FULLSCREEN;
     create_window();
+  } else if ((key == SDLK_PLUS || key == SDLK_KP_PLUS || key == SDLK_EQUALS) &&
+             (mod & SDL_KMOD_CTRL)) {
+    WindowFlags flags;
+    flags.value = (uint8_t)wnd_params.flags;
+    if (!flags.fullscreen) {
+      const SDL_DisplayMode *mode =
+          SDL_GetDesktopDisplayMode(SDL_GetPrimaryDisplay());
+      int new_factor = flags.factor + 1;
+      if (mode && wnd_params.width * new_factor <= mode->w &&
+          wnd_params.height * new_factor <= mode->h) {
+        flags.factor = (uint8_t)new_factor;
+        wnd_params.flags = flags.value;
+        delete_window();
+        create_window();
+      }
+    }
+  } else if ((key == SDLK_MINUS || key == SDLK_KP_MINUS) &&
+             (mod & SDL_KMOD_CTRL)) {
+    WindowFlags flags;
+    flags.value = (uint8_t)wnd_params.flags;
+    if (!flags.fullscreen && flags.factor > 1) {
+      flags.factor -= 1;
+      wnd_params.flags = flags.value;
+      delete_window();
+      create_window();
+    }
   }
 }
 
