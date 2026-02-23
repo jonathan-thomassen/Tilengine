@@ -231,7 +231,7 @@ int TLN_GetBitmapDepth(TLN_Bitmap bitmap) {
 
 /*!
  * \brief
- * Returns the number of bytes per scaline (also known a stride)
+ * Returns the number of bytes per scanline (also known a stride)
  *
  * \param bitmap
  * Reference to the bitmap

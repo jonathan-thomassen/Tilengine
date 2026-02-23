@@ -122,10 +122,6 @@ static void calculate_window_dimensions(const SDL_DisplayMode *mode,
     *rflags = 0;
     if (flags->factor == 0) {
       flags->factor = 1;
-      while (wnd_params.width * (flags->factor + 1) < mode->w &&
-             wnd_params.height * (flags->factor + 1) < mode->h &&
-             flags->factor < 3)
-        flags->factor += 1;
     }
 
     wnd_width = wnd_params.width * flags->factor;
