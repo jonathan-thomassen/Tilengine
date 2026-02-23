@@ -93,6 +93,7 @@ typedef union {
 /* local prototypes */
 static bool create_window(void);
 static void delete_window(void);
+static void resize_window(int new_factor);
 static void calculate_window_dimensions(const SDL_DisplayMode *mode,
                                         WindowFlags *flags, int *rflags);
 static void initialize_default_input(void);
@@ -272,6 +273,27 @@ static bool create_window(void) {
 
   done = false;
   return true;
+}
+
+/* resize the existing window to a new integer scale factor */
+static void resize_window(int new_factor) {
+  WindowFlags flags;
+  flags.value = (uint8_t)wnd_params.flags;
+  flags.factor = (uint8_t)new_factor;
+  wnd_params.flags = flags.value;
+
+  wnd_width = wnd_params.width * new_factor;
+  wnd_height = wnd_params.height * new_factor;
+  dstrect.x = 0.0f;
+  dstrect.y = 0.0f;
+  dstrect.w = (float)wnd_width;
+  dstrect.h = (float)wnd_height;
+
+  SDL_SetWindowSize(window, wnd_width, wnd_height);
+
+  CRTDelete(crt);
+  crt = CRTCreate(renderer, backbuffer, crt_params.type, wnd_width, wnd_height,
+                  crt_params.blur);
 }
 
 /* destroy window delegate */
@@ -569,23 +591,15 @@ static void process_special_keys(SDL_Keycode key, uint16_t mod) {
           SDL_GetDesktopDisplayMode(SDL_GetPrimaryDisplay());
       int new_factor = flags.factor + 1;
       if (mode && wnd_params.width * new_factor <= mode->w &&
-          wnd_params.height * new_factor <= mode->h) {
-        flags.factor = (uint8_t)new_factor;
-        wnd_params.flags = flags.value;
-        delete_window();
-        create_window();
-      }
+          wnd_params.height * new_factor <= mode->h)
+        resize_window(new_factor);
     }
   } else if ((key == SDLK_MINUS || key == SDLK_KP_MINUS) &&
              (mod & SDL_KMOD_CTRL)) {
     WindowFlags flags;
     flags.value = (uint8_t)wnd_params.flags;
-    if (!flags.fullscreen && flags.factor > 1) {
-      flags.factor -= 1;
-      wnd_params.flags = flags.value;
-      delete_window();
-      create_window();
-    }
+    if (!flags.fullscreen && flags.factor > 1)
+      resize_window(flags.factor - 1);
   }
 }
 
@@ -599,11 +613,15 @@ static void process_window_scale(SDL_Keycode key, uint16_t mod) {
       WindowFlags flags;
       flags.value = (uint8_t)wnd_params.flags;
       if (c != flags.factor) {
-        flags.factor = (uint8_t)c;
-        flags.fullscreen = false;
-        wnd_params.flags = flags.value;
-        delete_window();
-        create_window();
+        if (flags.fullscreen) {
+          flags.factor = (uint8_t)c;
+          flags.fullscreen = false;
+          wnd_params.flags = flags.value;
+          delete_window();
+          create_window();
+        } else {
+          resize_window(c);
+        }
       }
       break;
     }
