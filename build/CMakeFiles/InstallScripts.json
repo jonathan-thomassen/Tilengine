@@ -1,8 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"C:/Users/jonyan/tilengine-true/Tilengine/build/cmake_install.cmake",
-		"C:/Users/jonyan/tilengine-true/Tilengine/build/samples/cmake_install.cmake"
-	],
-	"Parallel" : false
-}
