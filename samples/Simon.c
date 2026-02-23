@@ -62,15 +62,44 @@ void SimonSetState(int s) {
   }
 }
 
-static void check_floor(int ox, int oxworld, int *y2, int *psy) {
+/**
+ * Returns true if any tile exists along a vertical strip at the given world
+ * x position, sampled at three heights spanning the sprite body.
+ *
+ * \param world_x_pos  World x coordinate of the edge to test
+ * \param sprite_y     Current y position of the sprite
+ */
+static bool has_wall_tile(int world_x_pos, int sprite_y) {
+  for (int c = 8; c < 48; c += 16) {
+    TLN_TileInfo ti;
+    TLN_GetLayerTile(0, world_x_pos, sprite_y + c, &ti);
+    if (ti.index)
+      return true;
+  }
+  return false;
+}
+
+/**
+ * Checks for solid tiles directly below the sprite's feet and resolves
+ * vertical collision. Scans two sample points (x+8, x+16) one tile-height
+ * below the sprite.
+ *
+ * \param sprite_x    World x position of the sprite
+ * \param world_x     Horizontal world scroll offset
+ * \param inout_y     Pointer to the candidate new y position; adjusted upward
+ *                    when a tile is hit
+ * \param inout_vy    Pointer to the vertical velocity; zeroed on landing
+ */
+static void check_floor(int sprite_x, int world_x, int *inout_y,
+                        int *inout_vy) {
   for (int c = 8; c < 24; c += 8) {
     TLN_TileInfo ti;
-    TLN_GetLayerTile(0, ox + c + oxworld, *y2 + 48, &ti);
+    TLN_GetLayerTile(0, sprite_x + c + world_x, *inout_y + 48, &ti);
     if (ti.index) {
       if (ti.yoffset != 0)
-        *psy = 0;
-      *psy = 0;
-      *y2 -= ti.yoffset;
+        *inout_vy = 0;
+      *inout_vy = 0;
+      *inout_y -= ti.yoffset;
       break;
     }
   }
@@ -123,6 +152,16 @@ void SimonTasks(void) {
   if (jump && state != SIMON_JUMPING)
     SimonSetState(SIMON_JUMPING);
 
+  /* check wall collisions */
+  if (input == DIR_RIGHT && has_wall_tile(x + 24 + xworld, y)) {
+    if (x > 0)
+      x--;
+    else
+      xworld--;
+  } else if (input == DIR_LEFT && has_wall_tile(x + xworld - 1, y)) {
+    xworld++;
+  }
+
   /* gravity */
   s0 = sy;
   if (sy < 10)
@@ -135,6 +174,15 @@ void SimonTasks(void) {
   if (s0 > 0 && sy == 0)
     SimonSetState(SIMON_IDLE);
   y = y2;
+
+  /* reset if fallen below the viewport */
+  if (y > TLN_GetHeight()) {
+    x = 64;
+    y = 0;
+    sy = 0;
+    xworld = 0;
+    SimonSetState(SIMON_IDLE);
+  }
 
   TLN_SetSpritePosition(0, x, y);
 }
