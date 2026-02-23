@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 /* fixed point helper */
 typedef int fix_t;
 #define FIXED_BITS 16
@@ -78,7 +77,7 @@ static void LoadLayer(int index, char *name) {
   sprintf(filename, "%s.tmx", name);
   layer->tilemap = TLN_LoadTilemap(filename, NULL);
 
-  TLN_SetLayer(index, layer->tileset, layer->tilemap);
+  TLN_SetLayerTilemap(index, layer->tilemap);
 }
 
 /* helper for freeing a tileset + tilemap */
@@ -164,10 +163,8 @@ int main(int argc, char *argv[]) {
       pos_background[c] += inc_background[c];
 
     /* layers */
-    TLN_SetLayer(LAYER_BACKGROUND, layers[LAYER_FOREGROUND].tileset,
-                 layers[LAYER_FOREGROUND].tilemap);
-    TLN_SetLayer(LAYER_FOREGROUND, layers[LAYER_BACKGROUND].tileset,
-                 layers[LAYER_BACKGROUND].tilemap);
+    TLN_SetLayerTilemap(LAYER_BACKGROUND, layers[LAYER_FOREGROUND].tilemap);
+    TLN_SetLayerTilemap(LAYER_FOREGROUND, layers[LAYER_BACKGROUND].tilemap);
     TLN_SetLayerPosition(LAYER_BACKGROUND, time / 3, 160);
     TLN_SetLayerPosition(LAYER_FOREGROUND, fix2int(pos_background[0]), 64);
     TLN_SetLayerPalette(LAYER_FOREGROUND, palettes[LAYER_BACKGROUND]);
@@ -212,10 +209,8 @@ static void raster_callback(int line) {
 
   if (line == 64) {
     /* swap fore/background layers */
-    TLN_SetLayer(LAYER_BACKGROUND, layers[LAYER_BACKGROUND].tileset,
-                 layers[LAYER_BACKGROUND].tilemap);
-    TLN_SetLayer(LAYER_FOREGROUND, layers[LAYER_FOREGROUND].tileset,
-                 layers[LAYER_FOREGROUND].tilemap);
+    TLN_SetLayerTilemap(LAYER_BACKGROUND, layers[LAYER_BACKGROUND].tilemap);
+    TLN_SetLayerTilemap(LAYER_FOREGROUND, layers[LAYER_FOREGROUND].tilemap);
     TLN_SetLayerPosition(LAYER_BACKGROUND, fix2int(pos_background[0]), 64);
     TLN_SetLayerPalette(LAYER_FOREGROUND, palettes[LAYER_FOREGROUND]);
     TLN_SetLayerPalette(LAYER_BACKGROUND, palettes[LAYER_BACKGROUND]);

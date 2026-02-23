@@ -559,7 +559,6 @@ TLNAPI bool TLN_DeleteObjectList(TLN_ObjectList list);
  * \defgroup layer
  * \brief Background layers management
  * @{ */
-TLNAPI bool TLN_SetLayer(int nlayer, TLN_Tileset tileset, TLN_Tilemap tilemap);
 TLNAPI bool TLN_SetLayerTilemap(int nlayer, TLN_Tilemap tilemap);
 TLNAPI bool TLN_SetLayerBitmap(int nlayer, TLN_Bitmap bitmap);
 TLNAPI bool TLN_SetLayerPalette(int nlayer, TLN_Palette palette);

@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
 
   /* test layer */
   for (c = 0; c < 2; c++) {
-    TLN_SetLayer(0, NULL, tilemap);
+    TLN_SetLayerTilemap(0, tilemap);
     if (tilemap == NULL)
       tilemap = TLN_LoadTilemap("Sonic_md_bg1.tmx", NULL);
   }

@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
   tilemap = TLN_LoadTilemap("assets/sonic/Sonic_md_fg1.tmx", NULL);
 
   /* setup the layer */
-  TLN_SetLayer(0, NULL, tilemap);
+  TLN_SetLayerTilemap(0, tilemap);
   TLN_SetBGColor(32, 32, 128);
 
   /* main loop */

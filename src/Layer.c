@@ -24,29 +24,16 @@ static void apply_priority_attributes(struct Tileset const *tileset,
                                       TLN_Tilemap tilemap);
 
 /*!
- * \deprecated Use \ref TLN_SetLayerTilemap instead
- * \brief
- * Configures a background layer with the specified tileset and tilemap
- *
- * \param nlayer
- * Layer index [0, num_layers - 1]
- *
- * \param tileset
- * Optional reference to the tileset to assign. If the tilemap has a reference
- * to its own tileset, passing NULL will assign the default tileset.
- *
- * \param tilemap
- * Reference to the tilemap to assign
- *
- * \remarks
- * This function doesn't modify the current position nor the blend mode,
- * but assigns the palette of the specified tileset
- *
- * \see
- * TLN_DisableLayer()
+ * \brief Configures a tiled background layer with the specified tilemap
+ * \param nlayer Layer index [0, num_layers - 1]
+ * \param tilemap Reference to the tilemap to assign
+ * \returns true if success or false if error
+ * \see TLN_LoadTilemap()
  */
-bool TLN_SetLayer(int nlayer, TLN_Tileset tileset, TLN_Tilemap tilemap) {
+bool TLN_SetLayerTilemap(int nlayer, TLN_Tilemap tilemap) {
   Layer *layer;
+  TLN_Tileset tileset;
+
   if (nlayer >= engine->numlayers) {
     TLN_SetLastError(TLN_ERR_IDX_LAYER);
     return false;
@@ -57,9 +44,8 @@ bool TLN_SetLayer(int nlayer, TLN_Tileset tileset, TLN_Tilemap tilemap) {
   if (!CheckBaseObject(tilemap, OT_TILEMAP))
     return false;
 
-  /* select tilemsp's own tileset */
-  if (tileset == NULL)
-    tileset = tilemap->tilesets[0];
+  /* select tilemap's own tileset */
+  tileset = tilemap->tilesets[0];
 
   if (!CheckBaseObject(tileset, OT_TILESET))
     return false;
@@ -103,17 +89,6 @@ bool TLN_SetLayer(int nlayer, TLN_Tileset tileset, TLN_Tilemap tilemap) {
 
   TLN_SetLastError(TLN_ERR_OK);
   return true;
-}
-
-/*!
- * \brief Configures a tiled background layer with the specified tilemap
- * \param nlayer Layer index [0, num_layers - 1]
- * \param tilemap Reference to the tilemap to assign
- * \returns true if success or false if error
- * \see TLN_LoadTilemap()
- */
-bool TLN_SetLayerTilemap(int nlayer, TLN_Tilemap tilemap) {
-  return TLN_SetLayer(nlayer, NULL, tilemap);
 }
 
 /*!
