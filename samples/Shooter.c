@@ -63,6 +63,19 @@ int sky_lo[3];
 
 static void raster_callback(int line);
 
+static void update_sky_colors(unsigned int t) {
+  int c;
+  for (c = 0; c < 3; c++) {
+    sky_hi[c] = lerp(t, PAL_T0, PAL_T1, sky1[c], sky3[c]);
+    sky_lo[c] = lerp(t, PAL_T0, PAL_T1, sky2[c], sky4[c]);
+  }
+  for (c = 0; c < MAX_LAYER; c++) {
+    if (palettes[c])
+      TLN_DeletePalette(palettes[c]);
+    palettes[c] = TLN_ClonePalette(TLN_GetTilesetPalette(layers[c].tileset));
+  }
+}
+
 /* helper for loading a related tileset + tilemap and configure the appropiate
  * layer */
 static void LoadLayer(int index, char *name) {
@@ -143,20 +156,8 @@ int main(int argc, char *argv[]) {
     time = frame;
 
     /* bg color (sky) */
-    if (time >= PAL_T0 && time <= PAL_T1 && (time & 0x07) == 0) {
-      /* sky color */
-      for (c = 0; c < 3; c++) {
-        sky_hi[c] = lerp(time, PAL_T0, PAL_T1, sky1[c], sky3[c]);
-        sky_lo[c] = lerp(time, PAL_T0, PAL_T1, sky2[c], sky4[c]);
-      }
-
-      for (c = 0; c < MAX_LAYER; c++) {
-        if (palettes[c])
-          TLN_DeletePalette(palettes[c]);
-        palettes[c] =
-            TLN_ClonePalette(TLN_GetTilesetPalette(layers[c].tileset));
-      }
-    }
+    if (time >= PAL_T0 && time <= PAL_T1 && (time & 0x07) == 0)
+      update_sky_colors(time);
 
     /* scroll */
     for (c = 0; c < 3; c++)

@@ -59,6 +59,8 @@ static void show_layer_info(int nlayer) {
   case LAYER_BITMAP:
     printf("  Bitmap: %p\n", TLN_GetLayerBitmap(nlayer));
     break;
+  default:
+    break;
   }
 }
 

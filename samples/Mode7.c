@@ -131,8 +131,8 @@ static void raster_callback(int line) {
   if (line >= 24) {
     fix_t s0 = float2fix(0.2f);
     fix_t s1 = float2fix(5.0f);
-    fix_t s = lerp(line, 24, HEIGHT, s0, s1);
-    float scale = fix2float(s);
+    fix_t scale_fix = lerp(line, 24, HEIGHT, s0, s1);
+    float scale = fix2float(scale_fix);
     TLN_SetLayerTransform(LAYER_BACKGROUND, (float)angle, WIDTH / 2, HEIGHT,
                           scale, scale);
   }

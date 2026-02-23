@@ -62,6 +62,20 @@ void SimonSetState(int s) {
   }
 }
 
+static void check_floor(int ox, int oxworld, int *y2, int *psy) {
+  for (int c = 8; c < 24; c += 8) {
+    TLN_TileInfo ti;
+    TLN_GetLayerTile(0, ox + c + oxworld, *y2 + 48, &ti);
+    if (ti.index) {
+      if (ti.yoffset != 0)
+        *psy = 0;
+      *psy = 0;
+      *y2 -= ti.yoffset;
+      break;
+    }
+  }
+}
+
 void SimonTasks(void) {
   int y2;
   int s0;
@@ -116,17 +130,7 @@ void SimonTasks(void) {
   y2 = y + (sy >> 2);
 
   /* check tiles below */
-  for (int c = 8; c < 24; c += 8) {
-    TLN_TileInfo ti;
-    TLN_GetLayerTile(0, x + c + xworld, y2 + 48, &ti);
-    if (ti.index) {
-      if (ti.yoffset != 0)
-        sy = 0;
-      sy = 0;
-      y2 -= ti.yoffset;
-      break;
-    }
-  }
+  check_floor(x, xworld, &y2, &sy);
 
   if (s0 > 0 && sy == 0)
     SimonSetState(SIMON_IDLE);

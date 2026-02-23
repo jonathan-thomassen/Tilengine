@@ -51,11 +51,11 @@ int main(int arg, char *argv[]) {
   while (TLN_ProcessWindow()) {
     TLN_Input input = get_press();
     if (input == INPUT_BUTTON1)
-      state.invert ^= 1;
+      state.invert = !state.invert;
     else if (input == INPUT_BUTTON2)
-      state.color ^= 1;
+      state.color = !state.color;
     else if (input == INPUT_BUTTON3)
-      state.blend ^= 1;
+      state.blend = !state.blend;
 
     /* move window with d-pad */
     if (TLN_GetInput(INPUT_LEFT))

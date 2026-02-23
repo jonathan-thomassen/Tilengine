@@ -22,6 +22,41 @@ void ShipTasks(Actor *actor);
 void ClawTasks(Actor *actor);
 void ShotTasks(Actor *actor);
 
+static void apply_sprite_tilt(Actor *actor) {
+  if (!GetActorTimeout(actor, 0))
+    return;
+  int index = TLN_GetSpritePicture(actor->index);
+  SetActorTimeout(actor, 0, 6);
+
+  /* hacia arriba */
+  if (actor->vy < 0) {
+    if (index > 0)
+      TLN_SetSpritePicture(actor->index, index - 1);
+  }
+
+  /* hacia abajo */
+  else if (actor->vy > 0) {
+    if (index < 6)
+      TLN_SetSpritePicture(actor->index, index + 1);
+  }
+
+  /* centrado */
+  else {
+    if (index > 3)
+      TLN_SetSpritePicture(actor->index, index - 1);
+    else if (index < 3)
+      TLN_SetSpritePicture(actor->index, index + 1);
+  }
+
+  /* izquierda */
+  if (actor->vx < 0 && actor->x < 0)
+    actor->x = 0;
+
+  /* derecha */
+  if (actor->vx > 0 && actor->x > 396)
+    actor->x = 396;
+}
+
 /*
 *******************************************************************************
         Ship
@@ -62,40 +97,7 @@ void ShipTasks(Actor *actor) {
     actor->vy = 0;
 
   /* movement */
-  if (GetActorTimeout(actor, 0)) {
-    int index = TLN_GetSpritePicture(actor->index);
-    SetActorTimeout(actor, 0, 6);
-
-    /* hacia arriba */
-    if (actor->vy < 0) {
-      if (index > 0)
-        TLN_SetSpritePicture(actor->index, index - 1);
-    }
-
-    /* hacia abajo */
-    else if (actor->vy > 0) {
-      if (index < 6)
-        TLN_SetSpritePicture(actor->index, index + 1);
-    }
-
-    /* centrado */
-    else {
-      if (index > 3)
-        TLN_SetSpritePicture(actor->index, index - 1);
-      else if (index < 3)
-        TLN_SetSpritePicture(actor->index, index + 1);
-    }
-
-    /* izquierda */
-    if (actor->vx < 0 && actor->x < 0) {
-      actor->x = 0;
-    }
-
-    /* derecha */
-    if (actor->vx > 0 && actor->x > 396) {
-      actor->x = 396;
-    }
-  }
+  apply_sprite_tilt(actor);
 
   /* disparo */
   if (GetActorTimeout(actor, 1) && TLN_GetInput(INPUT_A)) {
