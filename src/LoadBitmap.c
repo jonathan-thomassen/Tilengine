@@ -264,7 +264,6 @@ static TLN_Bitmap LoadPNG(const char *filename) {
   height = png_get_image_height(png, info);
   color_type = png_get_color_type(png, info);
   bit_depth = png_get_bit_depth(png, info);
-  channels = png_get_channels(png, info);
 
   /* Unpack 1/2/4-bit indexed pixels to 1 byte per pixel so that the
    * downstream 8-bpp pipeline can handle them uniformly. Must be called
