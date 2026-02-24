@@ -7,7 +7,6 @@
 
 #define WIDTH 256
 #define HEIGHT 224
-#define MAX_PALETTE 16
 
 /* --------------------------------------------------------------------------
  * Palette-layer loader
@@ -83,40 +82,58 @@ static void *pal_handler(SimpleXmlParser parser, SimpleXmlEvent evt,
   return &pal_handler;
 }
 
-/* Load a palette from a plain-text file containing one #RRGGBB hex color per
- * line (as exported by GIMP).  Blank lines and lines not starting with '#'
- * are silently skipped.  Returns a new TLN_Palette on success, NULL on
- * failure. */
-static TLN_Palette load_palette_txt(const char *path) {
+/* Load a combined palette text file and split it into 8 sub-palettes.
+ * The file contains one #RRGGBB hex color per line (blank / non-'#' lines
+ * skipped).  Colors are read sequentially; sub-palette[i] gets 'stride'
+ * consecutive colors starting at offset i*stride.
+ * Each out[i] is a newly created TLN_Palette(stride); caller must free. */
+static void load_and_split_palette(const char *path, int stride,
+                                   TLN_Palette out[8]) {
   FILE *f = fopen(path, "r");
   if (!f)
-    return NULL;
+    return;
 
-  TLN_Palette palette = TLN_CreatePalette(256);
-  if (!palette) {
+  /* collect all colors from file – single allocation: [r0..rN | g0..gN |
+   * b0..bN] */
+  int total = stride * 8;
+  uint8_t *buf = calloc((size_t)total * 3, 1);
+  if (!buf) {
     fclose(f);
-    return NULL;
+    return;
   }
+  uint8_t *r = buf;
+  uint8_t *g = buf + total;
+  uint8_t *b = buf + total * 2;
 
   char line[32];
   int index = 0;
-  while (index < 256 && fgets(line, sizeof(line), f)) {
-    /* trim leading whitespace */
+  while (index < total && fgets(line, sizeof(line), f)) {
     char const *p = line;
     while (*p == ' ' || *p == '\t')
       p++;
-    /* skip blank / comment lines; parse #RRGGBB */
     if (*p == '#' && p[1] && p[2] && p[3] && p[4] && p[5] && p[6]) {
       unsigned int rgb = 0;
       if (sscanf(p + 1, "%6x", &rgb) == 1) {
-        TLN_SetPaletteColor(palette, index, (rgb >> 16) & 0xFF,
-                            (rgb >> 8) & 0xFF, rgb & 0xFF);
+        r[index] = (rgb >> 16) & 0xFF;
+        g[index] = (rgb >> 8) & 0xFF;
+        b[index] = rgb & 0xFF;
         index++;
       }
     }
   }
   fclose(f);
-  return palette;
+
+  /* build 8 individual palettes */
+  for (int i = 0; i < 8; i++) {
+    out[i] = TLN_CreatePalette(stride);
+    if (!out[i])
+      continue;
+    for (int c = 0; c < stride; c++)
+      TLN_SetPaletteColor(out[i], c, r[i * stride + c], g[i * stride + c],
+                          b[i * stride + c]);
+  }
+
+  free(buf);
 }
 
 /* Read a file into a malloc'd buffer; caller must free(). */
@@ -177,29 +194,25 @@ static void apply_palette_layer(TLN_Tilemap tilemap, const char *tmxpath) {
 int main(int argc, char *argv[]) {
   TLN_Tilemap tilemap;
   TLN_Tilemap tilemap2;
-  TLN_Palette palettes[MAX_PALETTE];
+  TLN_Tilemap tilemap3;
+  TLN_Palette palettes[8] = {0};
 
   /* setup engine */
-  TLN_Init(WIDTH, HEIGHT, 2, 0, 0);
+  TLN_Init(WIDTH, HEIGHT, 3, 0, 0);
   TLN_SetBGColor(0x02 * 8, 0, 0x04 * 8);
 
   /* load resources*/
   TLN_SetLoadPath("assets/sc4");
   tilemap = TLN_LoadTilemap("intro_ram.tmx", NULL);
   tilemap2 = TLN_LoadTilemap("intro_ram2.tmx", NULL);
+  tilemap3 = TLN_LoadTilemap("intro_ram3.tmx", NULL);
   TLN_SetLayerTilemap(1, tilemap);
   TLN_SetLayerTilemap(0, tilemap2);
+  TLN_SetLayerTilemap(2, tilemap3);
 
-  palettes[0] = load_palette_txt("assets/sc4/intro_pal0.txt");
-  palettes[2] = load_palette_txt("assets/sc4/intro_pal2.txt");
-  palettes[3] = load_palette_txt("assets/sc4/intro_pal3.txt");
-  palettes[4] = load_palette_txt("assets/sc4/intro_pal4.txt");
-  palettes[5] = load_palette_txt("assets/sc4/intro_pal5.txt");
-  palettes[6] = load_palette_txt("assets/sc4/intro_pal6.txt");
-
-  /* Register palettes 0-7 into global engine slots (tile->palette is 3 bits,
-   * range 0-7). layer->palette stays NULL so the renderer uses tile->palette
-   * to select from engine->palettes[]. */
+  /* Split intro_palettes.txt into 8 sub-palettes (stride=16 each) and
+   * register each in its matching global palette slot. */
+  load_and_split_palette("assets/sc4/intro_palettes.txt", 16, palettes);
   for (int c = 0; c < 8; c++)
     TLN_SetGlobalPalette(c, palettes[c]);
 
@@ -207,9 +220,10 @@ int main(int argc, char *argv[]) {
    * directly into each Tile's .palette bitfield. */
   apply_palette_layer(tilemap, "assets/sc4/intro_ram.tmx");
   apply_palette_layer(tilemap2, "assets/sc4/intro_ram2.tmx");
+  apply_palette_layer(tilemap3, "assets/sc4/intro_ram3.tmx");
 
   /* main loop */
-  TLN_CreateWindow(CWF_NEAREST | CWF_S5);
+  TLN_CreateWindow(CWF_NEAREST | CWF_S6);
   while (TLN_ProcessWindow()) {
     /* render to window */
     TLN_DrawFrame(0);
@@ -217,6 +231,10 @@ int main(int argc, char *argv[]) {
 
   TLN_DeleteTilemap(tilemap);
   TLN_DeleteTilemap(tilemap2);
+  TLN_DeleteTilemap(tilemap3);
+  for (int c = 0; c < 8; c++)
+    if (palettes[c])
+      TLN_DeletePalette(palettes[c]);
   TLN_Deinit();
   return 0;
 }

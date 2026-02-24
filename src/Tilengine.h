@@ -317,6 +317,9 @@ enum {
   CWF_S3 = (3 << 2), /*!< create a window 3x the size the framebuffer */
   CWF_S4 = (4 << 2), /*!< create a window 4x the size the framebuffer */
   CWF_S5 = (5 << 2), /*!< create a window 5x the size the framebuffer */
+  CWF_S6 = (6 << 2), /*!< create a window 6x the size the framebuffer */
+  CWF_S7 = (7 << 2), /*!< create a window 7x the size the framebuffer */
+  CWF_S8 = (8 << 2), /*!< create a window 8x the size the framebuffer */
   CWF_NEAREST = (1 << 6), /*<! unfiltered upscaling */
   CWF_NOVSYNC = (1 << 7)  /*<! disable default vsync */
 };
