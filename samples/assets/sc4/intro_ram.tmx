@@ -1,0 +1,4518 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="32" height="28" tilewidth="8" tileheight="8" infinite="0" nextlayerid="3" nextobjectid="897">
+  <tileset firstgid="1" source="intro_ram.tsx"/>
+  <layer id="1" name="Tiles" width="32" height="28">
+    <data encoding="csv">
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,4,8,9,6,1,1,1,1,1,1,1,1,1,11,12,114,115,114,114,115,1,1,1,1,1,1,1,1,1,1,1,
+8,9,7,3,10,15,16,1,1,1,1,1,1,17,18,19,116,117,118,117,119,115,1,1,1,1,1,1,1,1,1,1,
+20,21,13,22,23,24,1,25,1,1,1,1,26,27,28,29,120,121,122,123,19,124,6,1,1,1,1,1,1,1,1,1,
+30,31,32,33,34,35,36,37,1,1,1,1,1,38,39,40,125,3,126,127,116,117,10,1,1,1,1,1,1,1,1,1,
+41,42,43,44,45,46,47,48,1,1,1,1,1,49,50,51,99,128,129,130,120,121,131,132,1,1,1,1,1,1,1,1,
+52,53,54,55,56,57,58,59,1,1,1,1,1,60,61,62,54,133,134,135,136,130,137,138,139,1,1,1,1,1,1,1,
+52,63,55,55,64,65,66,1,1,1,1,1,1,67,55,68,140,55,141,142,55,143,144,145,146,1,1,1,1,1,1,1,
+52,69,70,71,72,73,74,4,1,1,1,1,1,75,70,76,147,148,149,150,151,130,130,152,153,1,1,1,1,1,1,1,
+55,77,28,78,79,80,81,5,1,1,1,1,1,82,83,84,154,155,156,136,130,143,143,157,14,158,1,1,1,1,1,1,
+85,86,38,39,87,88,89,90,1,91,92,93,1,2147483696,94,95,159,160,161,130,143,162,163,20,21,164,165,1,1,2147483649,1,1,
+96,97,98,50,99,3,100,101,102,103,55,104,1,2147483707,2147483653,105,166,167,168,143,162,2147483653,169,30,31,170,171,172,1,2147483652,1,1,
+106,107,108,109,83,110,111,112,5,66,55,55,91,93,2147483653,113,173,174,175,130,2147483653,176,177,41,42,178,179,180,158,2147483653,1,1,
+181,182,183,184,5,185,186,187,5,74,188,189,55,55,5,190,190,240,241,143,2147483653,242,243,52,53,244,245,246,247,2147483653,1,1,
+191,192,193,85,5,194,195,196,197,198,87,199,200,201,202,203,193,85,248,249,2147483653,250,251,52,63,252,253,3,3,2147483653,1,1,
+204,205,206,207,5,208,196,130,197,209,210,211,212,213,214,205,206,207,254,77,77,255,55,52,256,257,258,259,260,261,262,263,
+215,216,217,218,208,219,130,220,197,197,197,198,221,222,223,216,217,218,136,136,136,55,55,55,55,264,265,266,267,268,269,270,
+224,225,226,227,219,197,220,197,228,229,230,231,136,232,224,225,226,227,55,55,55,55,55,55,271,272,273,274,275,276,277,278,
+233,2147483881,232,233,234,234,235,197,236,237,235,238,2147483881,232,233,2147483881,232,233,234,234,234,234,234,279,280,281,282,283,284,285,286,287,
+239,239,239,239,239,239,239,239,239,239,239,239,239,239,239,239,239,239,239,239,239,239,239,239,239,239,239,239,239,288,289,285,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,290,291,292,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+    </data>
+  </layer>
+  <objectgroup id="2" name="Palette">
+    <object id="1" x="0" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="2" x="8" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="3" x="16" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="4" x="24" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="5" x="32" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="6" x="40" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="7" x="48" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="8" x="56" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="9" x="64" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="10" x="72" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="11" x="80" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="12" x="88" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="13" x="96" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="14" x="104" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="15" x="112" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="16" x="120" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="17" x="128" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="18" x="136" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="19" x="144" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="20" x="152" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="21" x="160" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="22" x="168" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="23" x="176" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="24" x="184" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="25" x="192" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="26" x="200" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="27" x="208" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="28" x="216" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="29" x="224" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="30" x="232" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="31" x="240" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="32" x="248" y="0" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="33" x="0" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="34" x="8" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="35" x="16" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="36" x="24" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="37" x="32" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="38" x="40" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="39" x="48" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="40" x="56" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="41" x="64" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="42" x="72" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="43" x="80" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="44" x="88" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="45" x="96" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="46" x="104" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="47" x="112" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="48" x="120" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="49" x="128" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="50" x="136" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="51" x="144" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="52" x="152" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="53" x="160" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="54" x="168" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="55" x="176" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="56" x="184" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="57" x="192" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="58" x="200" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="59" x="208" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="60" x="216" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="61" x="224" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="62" x="232" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="63" x="240" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="64" x="248" y="8" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="65" x="0" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="66" x="8" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="67" x="16" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="68" x="24" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="69" x="32" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="70" x="40" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="71" x="48" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="72" x="56" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="73" x="64" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="74" x="72" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="75" x="80" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="76" x="88" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="77" x="96" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="78" x="104" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="79" x="112" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="80" x="120" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="81" x="128" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="82" x="136" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="83" x="144" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="84" x="152" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="85" x="160" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="86" x="168" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="87" x="176" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="88" x="184" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="89" x="192" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="90" x="200" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="91" x="208" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="92" x="216" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="93" x="224" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="94" x="232" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="95" x="240" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="96" x="248" y="16" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="97" x="0" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="98" x="8" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="99" x="16" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="100" x="24" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="101" x="32" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="102" x="40" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="103" x="48" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="104" x="56" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="105" x="64" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="106" x="72" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="107" x="80" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="108" x="88" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="109" x="96" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="110" x="104" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="111" x="112" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="112" x="120" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="113" x="128" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="114" x="136" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="115" x="144" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="116" x="152" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="117" x="160" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="118" x="168" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="119" x="176" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="120" x="184" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="121" x="192" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="122" x="200" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="123" x="208" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="124" x="216" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="125" x="224" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="126" x="232" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="127" x="240" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="128" x="248" y="24" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="129" x="0" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="130" x="8" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="131" x="16" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="132" x="24" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="133" x="32" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="134" x="40" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="135" x="48" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="136" x="56" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="137" x="64" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="138" x="72" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="139" x="80" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="140" x="88" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="141" x="96" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="142" x="104" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="143" x="112" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="144" x="120" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="145" x="128" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="146" x="136" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="147" x="144" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="148" x="152" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="149" x="160" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="150" x="168" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="151" x="176" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="152" x="184" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="153" x="192" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="154" x="200" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="155" x="208" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="156" x="216" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="157" x="224" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="158" x="232" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="159" x="240" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="160" x="248" y="32" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="161" x="0" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="162" x="8" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="163" x="16" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="164" x="24" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="165" x="32" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="166" x="40" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="167" x="48" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="168" x="56" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="169" x="64" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="170" x="72" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="171" x="80" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="172" x="88" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="173" x="96" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="174" x="104" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="175" x="112" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="176" x="120" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="177" x="128" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="178" x="136" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="179" x="144" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="180" x="152" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="181" x="160" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="182" x="168" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="183" x="176" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="184" x="184" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="185" x="192" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="186" x="200" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="187" x="208" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="188" x="216" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="189" x="224" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="190" x="232" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="191" x="240" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="192" x="248" y="40" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="193" x="0" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="194" x="8" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="195" x="16" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="196" x="24" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="197" x="32" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="198" x="40" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="199" x="48" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="200" x="56" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="201" x="64" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="202" x="72" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="203" x="80" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="204" x="88" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="205" x="96" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="206" x="104" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="207" x="112" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="208" x="120" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="209" x="128" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="210" x="136" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="211" x="144" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="212" x="152" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="213" x="160" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="214" x="168" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="215" x="176" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="216" x="184" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="217" x="192" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="218" x="200" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="219" x="208" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="220" x="216" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="221" x="224" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="222" x="232" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="223" x="240" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="224" x="248" y="48" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="225" x="0" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="226" x="8" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="227" x="16" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="228" x="24" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="229" x="32" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="230" x="40" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="231" x="48" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="232" x="56" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="233" x="64" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="234" x="72" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="235" x="80" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="236" x="88" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="237" x="96" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="238" x="104" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="239" x="112" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="240" x="120" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="241" x="128" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="242" x="136" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="243" x="144" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="244" x="152" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="245" x="160" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="246" x="168" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="247" x="176" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="248" x="184" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="249" x="192" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="250" x="200" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="251" x="208" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="252" x="216" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="253" x="224" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="254" x="232" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="255" x="240" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="256" x="248" y="56" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="257" x="0" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="258" x="8" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="259" x="16" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="260" x="24" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="261" x="32" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="262" x="40" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="263" x="48" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="264" x="56" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="265" x="64" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="266" x="72" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="267" x="80" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="268" x="88" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="269" x="96" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="270" x="104" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="271" x="112" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="272" x="120" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="273" x="128" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="274" x="136" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="275" x="144" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="276" x="152" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="277" x="160" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="278" x="168" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="279" x="176" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="280" x="184" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="281" x="192" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="282" x="200" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="283" x="208" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="284" x="216" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="285" x="224" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="286" x="232" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="287" x="240" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="288" x="248" y="64" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="289" x="0" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="290" x="8" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="291" x="16" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="292" x="24" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="293" x="32" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="294" x="40" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="295" x="48" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="296" x="56" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="297" x="64" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="298" x="72" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="299" x="80" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="300" x="88" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="301" x="96" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="302" x="104" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="303" x="112" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="304" x="120" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="305" x="128" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="306" x="136" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="307" x="144" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="308" x="152" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="309" x="160" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="310" x="168" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="311" x="176" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="312" x="184" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="313" x="192" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="314" x="200" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="315" x="208" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="316" x="216" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="317" x="224" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="318" x="232" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="319" x="240" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="320" x="248" y="72" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="321" x="0" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="322" x="8" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="323" x="16" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="324" x="24" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="325" x="32" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="326" x="40" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="327" x="48" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="328" x="56" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="329" x="64" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="330" x="72" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="331" x="80" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="332" x="88" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="333" x="96" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="334" x="104" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="335" x="112" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="336" x="120" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="337" x="128" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="338" x="136" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="339" x="144" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="340" x="152" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="341" x="160" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="342" x="168" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="343" x="176" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="344" x="184" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="345" x="192" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="346" x="200" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="347" x="208" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="348" x="216" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="349" x="224" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="350" x="232" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="351" x="240" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="352" x="248" y="80" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="353" x="0" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="354" x="8" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="355" x="16" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="356" x="24" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="357" x="32" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="358" x="40" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="359" x="48" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="360" x="56" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="361" x="64" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="362" x="72" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="363" x="80" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="364" x="88" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="365" x="96" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="366" x="104" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="367" x="112" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="368" x="120" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="369" x="128" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="370" x="136" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="371" x="144" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="372" x="152" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="373" x="160" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="374" x="168" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="375" x="176" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="376" x="184" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="377" x="192" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="378" x="200" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="379" x="208" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="380" x="216" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="381" x="224" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="382" x="232" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="383" x="240" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="384" x="248" y="88" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="385" x="0" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="386" x="8" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="387" x="16" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="388" x="24" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="389" x="32" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="390" x="40" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="391" x="48" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="392" x="56" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="393" x="64" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="394" x="72" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="395" x="80" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="396" x="88" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="397" x="96" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="398" x="104" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="399" x="112" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="400" x="120" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="401" x="128" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="402" x="136" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="403" x="144" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="404" x="152" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="405" x="160" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="406" x="168" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="407" x="176" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="408" x="184" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="409" x="192" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="410" x="200" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="411" x="208" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="412" x="216" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="413" x="224" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="414" x="232" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="415" x="240" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="416" x="248" y="96" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="417" x="0" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="418" x="8" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="419" x="16" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="420" x="24" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="421" x="32" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="422" x="40" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="423" x="48" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="424" x="56" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="425" x="64" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="426" x="72" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="427" x="80" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="428" x="88" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="429" x="96" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="430" x="104" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="431" x="112" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="432" x="120" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="433" x="128" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="434" x="136" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="435" x="144" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="436" x="152" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="437" x="160" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="438" x="168" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="439" x="176" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="440" x="184" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="441" x="192" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="442" x="200" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="443" x="208" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="444" x="216" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="445" x="224" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="446" x="232" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="447" x="240" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="448" x="248" y="104" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="449" x="0" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="450" x="8" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="451" x="16" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="452" x="24" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="453" x="32" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="454" x="40" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="455" x="48" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="456" x="56" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="457" x="64" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="458" x="72" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="459" x="80" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="460" x="88" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="461" x="96" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="462" x="104" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="463" x="112" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="464" x="120" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="465" x="128" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="466" x="136" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="467" x="144" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="468" x="152" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="469" x="160" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="470" x="168" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="471" x="176" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="472" x="184" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="473" x="192" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="474" x="200" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="475" x="208" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="476" x="216" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="477" x="224" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="478" x="232" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="479" x="240" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="480" x="248" y="112" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="481" x="0" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="482" x="8" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="483" x="16" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="484" x="24" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="485" x="32" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="486" x="40" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="487" x="48" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="488" x="56" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="489" x="64" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="490" x="72" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="491" x="80" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="492" x="88" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="493" x="96" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="494" x="104" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="495" x="112" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="496" x="120" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="497" x="128" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="498" x="136" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="499" x="144" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="500" x="152" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="501" x="160" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="502" x="168" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="503" x="176" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="504" x="184" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="505" x="192" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="506" x="200" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="507" x="208" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="508" x="216" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="509" x="224" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="510" x="232" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="511" x="240" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="512" x="248" y="120" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="513" x="0" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="514" x="8" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="515" x="16" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="516" x="24" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="517" x="32" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="518" x="40" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="519" x="48" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="520" x="56" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="521" x="64" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="522" x="72" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="523" x="80" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="524" x="88" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="525" x="96" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="526" x="104" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="527" x="112" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="528" x="120" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="529" x="128" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="530" x="136" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="531" x="144" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="532" x="152" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="533" x="160" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="534" x="168" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="535" x="176" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="536" x="184" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="537" x="192" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="538" x="200" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="539" x="208" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="540" x="216" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="541" x="224" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="542" x="232" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="543" x="240" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="544" x="248" y="128" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="545" x="0" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="546" x="8" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="547" x="16" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="548" x="24" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="549" x="32" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="550" x="40" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="551" x="48" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="552" x="56" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="553" x="64" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="554" x="72" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="555" x="80" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="556" x="88" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="557" x="96" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="558" x="104" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="559" x="112" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="560" x="120" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="561" x="128" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="562" x="136" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="563" x="144" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="564" x="152" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="565" x="160" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="566" x="168" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="567" x="176" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="568" x="184" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="569" x="192" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="570" x="200" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="571" x="208" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="572" x="216" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="573" x="224" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="574" x="232" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="575" x="240" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="576" x="248" y="136" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="577" x="0" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="578" x="8" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="579" x="16" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="580" x="24" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="581" x="32" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="582" x="40" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="583" x="48" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="584" x="56" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="585" x="64" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="586" x="72" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="587" x="80" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="588" x="88" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="589" x="96" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="590" x="104" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="591" x="112" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="592" x="120" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="593" x="128" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="594" x="136" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="595" x="144" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="596" x="152" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="597" x="160" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="598" x="168" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="599" x="176" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="600" x="184" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="601" x="192" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="602" x="200" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="603" x="208" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="604" x="216" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="605" x="224" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="606" x="232" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="607" x="240" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="608" x="248" y="144" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="609" x="0" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="610" x="8" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="611" x="16" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="612" x="24" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="613" x="32" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="614" x="40" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="615" x="48" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="616" x="56" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="617" x="64" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="618" x="72" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="619" x="80" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="620" x="88" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="621" x="96" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="622" x="104" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="623" x="112" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="624" x="120" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="625" x="128" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="626" x="136" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="627" x="144" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="628" x="152" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="629" x="160" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="630" x="168" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="631" x="176" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="632" x="184" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="633" x="192" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="634" x="200" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="635" x="208" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="636" x="216" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="637" x="224" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="638" x="232" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="639" x="240" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="640" x="248" y="152" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="641" x="0" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="642" x="8" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="643" x="16" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="644" x="24" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="645" x="32" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="646" x="40" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="647" x="48" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="648" x="56" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="649" x="64" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="650" x="72" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="651" x="80" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="652" x="88" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="653" x="96" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="654" x="104" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="655" x="112" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="656" x="120" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="657" x="128" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="658" x="136" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="659" x="144" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="660" x="152" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="661" x="160" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="662" x="168" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="663" x="176" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="664" x="184" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="665" x="192" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="666" x="200" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="667" x="208" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="668" x="216" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="669" x="224" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="670" x="232" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="671" x="240" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="672" x="248" y="160" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="673" x="0" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="674" x="8" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="675" x="16" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="676" x="24" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="677" x="32" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="2"/>
+      </properties>
+    </object>
+    <object id="678" x="40" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="2"/>
+      </properties>
+    </object>
+    <object id="679" x="48" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="680" x="56" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="681" x="64" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="682" x="72" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="683" x="80" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="684" x="88" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="5"/>
+      </properties>
+    </object>
+    <object id="685" x="96" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="686" x="104" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="687" x="112" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="688" x="120" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="689" x="128" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="690" x="136" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="691" x="144" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="2"/>
+      </properties>
+    </object>
+    <object id="692" x="152" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="2"/>
+      </properties>
+    </object>
+    <object id="693" x="160" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="2"/>
+      </properties>
+    </object>
+    <object id="694" x="168" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="2"/>
+      </properties>
+    </object>
+    <object id="695" x="176" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="2"/>
+      </properties>
+    </object>
+    <object id="696" x="184" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="697" x="192" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="698" x="200" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="699" x="208" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="700" x="216" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="701" x="224" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="702" x="232" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="703" x="240" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="704" x="248" y="168" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="705" x="0" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="706" x="8" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="707" x="16" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="708" x="24" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="709" x="32" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="710" x="40" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="711" x="48" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="712" x="56" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="713" x="64" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="714" x="72" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="715" x="80" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="716" x="88" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="717" x="96" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="718" x="104" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="719" x="112" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="720" x="120" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="721" x="128" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="722" x="136" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="723" x="144" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="724" x="152" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="725" x="160" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="726" x="168" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="727" x="176" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="728" x="184" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="729" x="192" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="730" x="200" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="731" x="208" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="732" x="216" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="733" x="224" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="734" x="232" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="735" x="240" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="736" x="248" y="176" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="737" x="0" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="738" x="8" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="739" x="16" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="740" x="24" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="741" x="32" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="742" x="40" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="743" x="48" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="744" x="56" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="745" x="64" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="746" x="72" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="747" x="80" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="748" x="88" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="749" x="96" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="750" x="104" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="751" x="112" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="752" x="120" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="753" x="128" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="754" x="136" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="755" x="144" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="756" x="152" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="757" x="160" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="758" x="168" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="759" x="176" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="760" x="184" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="761" x="192" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="762" x="200" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="763" x="208" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="764" x="216" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="765" x="224" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="3"/>
+      </properties>
+    </object>
+    <object id="766" x="232" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="767" x="240" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="768" x="248" y="184" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="6"/>
+      </properties>
+    </object>
+    <object id="769" x="0" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="770" x="8" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="771" x="16" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="772" x="24" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="773" x="32" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="774" x="40" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="775" x="48" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="776" x="56" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="777" x="64" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="778" x="72" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="779" x="80" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="780" x="88" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="781" x="96" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="782" x="104" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="783" x="112" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="784" x="120" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="785" x="128" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="786" x="136" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="787" x="144" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="788" x="152" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="789" x="160" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="790" x="168" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="791" x="176" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="792" x="184" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="793" x="192" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="794" x="200" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="795" x="208" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="796" x="216" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="797" x="224" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="798" x="232" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="799" x="240" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="800" x="248" y="192" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="801" x="0" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="802" x="8" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="803" x="16" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="804" x="24" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="805" x="32" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="806" x="40" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="807" x="48" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="808" x="56" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="809" x="64" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="810" x="72" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="811" x="80" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="812" x="88" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="813" x="96" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="814" x="104" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="815" x="112" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="816" x="120" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="817" x="128" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="818" x="136" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="819" x="144" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="820" x="152" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="821" x="160" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="822" x="168" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="823" x="176" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="824" x="184" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="825" x="192" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="826" x="200" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="827" x="208" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="828" x="216" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="829" x="224" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="830" x="232" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="831" x="240" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="832" x="248" y="200" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="833" x="0" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="834" x="8" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="835" x="16" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="836" x="24" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="837" x="32" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="838" x="40" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="839" x="48" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="840" x="56" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="841" x="64" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="842" x="72" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="843" x="80" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="844" x="88" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="845" x="96" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="846" x="104" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="847" x="112" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="848" x="120" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="849" x="128" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="850" x="136" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="851" x="144" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="852" x="152" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="853" x="160" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="854" x="168" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="855" x="176" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="856" x="184" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="857" x="192" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="858" x="200" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="859" x="208" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="860" x="216" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="861" x="224" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="862" x="232" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="863" x="240" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="864" x="248" y="208" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="865" x="0" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="866" x="8" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="867" x="16" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="868" x="24" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="869" x="32" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="870" x="40" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="871" x="48" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="872" x="56" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="873" x="64" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="874" x="72" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="875" x="80" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="876" x="88" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="877" x="96" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="878" x="104" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="879" x="112" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="880" x="120" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="881" x="128" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="882" x="136" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="883" x="144" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="884" x="152" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="885" x="160" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="886" x="168" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="887" x="176" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="888" x="184" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="889" x="192" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="890" x="200" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="891" x="208" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="892" x="216" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="893" x="224" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="894" x="232" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="895" x="240" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+    <object id="896" x="248" y="216" width="8" height="8">
+      <properties>
+        <property name="palette" type="int" value="0"/>
+      </properties>
+    </object>
+  </objectgroup>
+</map>

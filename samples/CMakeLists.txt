@@ -34,7 +34,17 @@ else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-result -Wno-format-truncation")
 endif()
 
-file(COPY assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+# Copy assets at build time so changes to source assets are reflected
+# on every incremental build, not only when CMake is re-configured.
+add_custom_target(copy_assets ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/assets"
+        "${CMAKE_CURRENT_BINARY_DIR}/assets"
+    COMMENT "Syncing assets to build directory"
+)
+
+add_executable(intro 
+     Intro.c)
 
 add_executable(barrel 
      Barrel.c
@@ -98,6 +108,18 @@ add_executable(layerwindow
 add_executable(layercircle
      LayerCircle.c)
 
+# Master list of all sample targets, used for dependency wiring below.
+set(SAMPLE_TARGETS
+    intro barrel mode7 platformer racer scaling shadow shooter
+    tutorial wobble colorcycle benchmark supermarioclone
+    test_mouse forest querylayer layerwindow layercircle
+)
+
+# Every sample must wait for assets to be in the build directory.
+foreach(SAMPLE_TARGET ${SAMPLE_TARGETS})
+    add_dependencies(${SAMPLE_TARGET} copy_assets)
+endforeach()
+
 # Copy required DLLs on MinGW once for all samples
 if (MINGW)
     if (EXISTS "C:/msys64/mingw64/bin")
@@ -105,12 +127,6 @@ if (MINGW)
     endif()
 
     if (DEFINED MINGW_BIN_DIR)
-        set(SAMPLE_TARGETS
-            barrel mode7 platformer racer scaling shadow shooter
-            tutorial wobble colorcycle benchmark supermarioclone
-            test_mouse forest querylayer layerwindow layercircle
-        )
-
         add_custom_target(copy_sample_dlls
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${MINGW_BIN_DIR}/libpng16-16.dll"

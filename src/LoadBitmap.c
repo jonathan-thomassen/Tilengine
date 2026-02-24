@@ -266,7 +266,18 @@ static TLN_Bitmap LoadPNG(const char *filename) {
   bit_depth = png_get_bit_depth(png, info);
   channels = png_get_channels(png, info);
 
+  /* Unpack 1/2/4-bit indexed pixels to 1 byte per pixel so that the
+   * downstream 8-bpp pipeline can handle them uniformly. Must be called
+   * before png_read_update_info(). */
+  if (color_type == PNG_COLOR_TYPE_PALETTE && bit_depth < 8)
+    png_set_packing(png);
+
   png_read_update_info(png, info);
+
+  /* Re-read after any transforms so bit_depth reflects the actual row stride.
+   */
+  bit_depth = png_get_bit_depth(png, info);
+  channels = png_get_channels(png, info);
 
   /* adjust actual bit depth */
   bit_depth *= channels;

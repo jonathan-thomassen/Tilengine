@@ -196,6 +196,8 @@ bool TMXLoad(const char *filename, TMXInfo *info) {
  * tileset found */
 int TMXGetSuitableTileset(const TMXInfo *info, int gid, TLN_Tileset *tilesets) {
   for (int c = 0; c < info->num_tilesets; c += 1) {
+    if (tilesets[c] == NULL)
+      continue;
     const int first = info->tilesets[c].firstgid;
     if (gid >= first && gid < first + tilesets[c]->numtiles)
       return c;

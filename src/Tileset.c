@@ -98,8 +98,10 @@ TLN_Tileset TLN_CreateTileset(int numtiles, int width, int height,
   if (attributes != NULL)
     memcpy(tileset->attributes, attributes,
            numtiles * sizeof(TLN_TileAttributes));
-  tileset->tiles = (uint16_t *)calloc(numtiles, sizeof(uint16_t));
-  for (c = 0; c < numtiles; c += 1)
+  /* Allocate numtiles+1 so that the maximum valid tile->index (numtiles,
+   * assigned as GID - firstgid + 1) is always in-bounds. */
+  tileset->tiles = (uint16_t *)calloc(numtiles + 1, sizeof(uint16_t));
+  for (c = 0; c <= numtiles; c += 1)
     tileset->tiles[c] = (uint16_t)c;
 
   /* create animations */
@@ -218,7 +220,7 @@ TLN_Tileset TLN_CloneTileset(TLN_Tileset src) {
   if (tileset == NULL)
     return NULL;
 
-  const int size_tiles = src->numtiles * sizeof(uint16_t);
+  const int size_tiles = (src->numtiles + 1) * sizeof(uint16_t);
   const int size_color = src->numtiles * src->height;
   const int size_attributes = src->numtiles * sizeof(TLN_TileAttributes);
 

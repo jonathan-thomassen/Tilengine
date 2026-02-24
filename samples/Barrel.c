@@ -34,7 +34,7 @@
 /* layers */
 enum { LAYER_FOREGROUND, LAYER_BACKGROUND, MAX_LAYER };
 
-TLN_Palette palette;
+TLN_Palette palette0;
 TLN_Palette palettes[MAX_PALETTE];
 TLN_Affine transform;
 int xpos;
@@ -59,10 +59,10 @@ int main(int argc, char *argv[]) {
   TLN_SetLayerTilemap(LAYER_BACKGROUND, tilemaps[LAYER_BACKGROUND]);
 
   /* tweak palettes */
-  palette = TLN_GetLayerPalette(LAYER_BACKGROUND);
+  palette0 = TLN_GetLayerPalette(LAYER_BACKGROUND);
   for (int c = 0; c < MAX_PALETTE; c++) {
     int inc = c * 7;
-    palettes[c] = TLN_ClonePalette(palette);
+    palettes[c] = TLN_ClonePalette(palette0);
     TLN_SubPaletteColor(palettes[c], (uint8_t)inc, (uint8_t)inc, (uint8_t)inc,
                         1, 255);
   }
