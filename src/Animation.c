@@ -235,7 +235,7 @@ bool SetTilesetAnimation(TLN_Tileset tileset, int index,
  * Starts a sprite animation
  *
  * \param nsprite
- * If of the sprite to animate (0 <= id < num_sprites)
+ * Id of the sprite to animate (0 <= id < num_sprites)
  *
  * \param sequence
  * Reference of the sequence to assign

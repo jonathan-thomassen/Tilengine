@@ -21,8 +21,8 @@ SimonState state;
 Direction direction;
 
 void SimonInit(void) {
-  simon = TLN_LoadSpriteset("Simon");
-  sp = TLN_LoadSequencePack("Simon.sqx");
+  simon = TLN_LoadSpriteset("simon_walk");
+  sp = TLN_LoadSequencePack("simon_walk.sqx");
   walk = TLN_FindSequence(sp, "walk");
 
   TLN_SetSpriteSet(0, simon);
@@ -94,10 +94,8 @@ static void check_floor(int sprite_x, int world_x, int *inout_y,
                         int *inout_vy) {
   for (int c = 8; c < 24; c += 8) {
     TLN_TileInfo ti;
-    TLN_GetLayerTile(0, sprite_x + c + world_x, *inout_y + 48, &ti);
-    if (ti.index) {
-      if (ti.yoffset != 0)
-        *inout_vy = 0;
+    TLN_GetLayerTile(0, sprite_x + c + world_x, *inout_y + 46, &ti);
+    if (ti.index == 5) {
       *inout_vy = 0;
       *inout_y -= ti.yoffset;
       break;
@@ -153,14 +151,14 @@ void SimonTasks(void) {
     SimonSetState(SIMON_JUMPING);
 
   /* check wall collisions */
-  if (input == DIR_RIGHT && has_wall_tile(x + 24 + xworld, y)) {
+  /* if (input == DIR_RIGHT && has_wall_tile(x + 24 + xworld, y)) {
     if (x > 0)
       x--;
     else
       xworld--;
   } else if (input == DIR_LEFT && has_wall_tile(x + xworld - 1, y)) {
     xworld++;
-  }
+  } */
 
   /* gravity */
   s0 = sy;
@@ -180,7 +178,6 @@ void SimonTasks(void) {
     x = 64;
     y = 0;
     sy = 0;
-    xworld = 0;
     SimonSetState(SIMON_IDLE);
   }
 

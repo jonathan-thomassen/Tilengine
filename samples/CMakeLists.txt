@@ -44,7 +44,9 @@ add_custom_target(copy_assets ALL
 )
 
 add_executable(intro 
-     Intro.c)
+     Intro.c
+     PaletteLayer.c
+     Simon.c)
 
 add_executable(barrel 
      Barrel.c
