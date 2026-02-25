@@ -6,7 +6,7 @@
 #include <stdio.h>
 #define debugmsg printf
 #else
-static void debugmsg(const char* format, ...) {}
+#define debugmsg(format, ...) ((void)0)
 #endif
 
 #endif

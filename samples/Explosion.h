@@ -3,6 +3,6 @@
 
 #include "Shooter.h"
 
-Actor* CreateExplosion (int index, int x, int y, TLN_Sequence sequence);
+Actor *CreateExplosion(int index, int x, int y, TLN_Sequence sequence);
 
 #endif

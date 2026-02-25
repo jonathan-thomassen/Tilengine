@@ -36,7 +36,7 @@ By default Tilengine doesn't create a window when it's initialized, because it i
 To create a window, call \ref TLN_CreateWindow **after** having called \ref TLN_Init:
 
 ```C
-TLN_CreateWindow(NULL, 0);
+TLN_CreateWindow(0);
 ```
 
 This creates a default window. There are some key bindings:

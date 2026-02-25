@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.16)
 
 project(samples)
 
+include_directories(../src)
 
 if (UNIX AND NOT APPLE)
 	set(CMAKE_C_FLAGS "-m64 -msse2")
@@ -11,17 +12,39 @@ endif()
 
 include_directories(../include)
 link_libraries("Tilengine")
-link_libraries("c")
+
+if (UNIX)
+    link_libraries("c")
+    link_libraries("m")
+endif()
+
 link_libraries("z")
 link_libraries("png")
-link_libraries("m")
-find_package(SDL2 REQUIRED)
-link_libraries(${SDL2_LIBRARIES})
+find_package(SDL3 REQUIRED CONFIG)
+link_libraries(SDL3::SDL3)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -O2 -fpic -DLIB_EXPORTS")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-result -Wno-format-truncation")
+# Compiler-specific flags
+if (MSVC)
+    add_compile_options(/W3)
+else()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c23 -O2")
+    if (NOT WIN32)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic")
+    endif()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-result -Wno-format-truncation")
+endif()
 
-file(COPY assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+# Copy assets at build time so changes to source assets are reflected
+# on every incremental build, not only when CMake is re-configured.
+add_custom_target(copy_assets ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/assets"
+        "${CMAKE_CURRENT_BINARY_DIR}/assets"
+    COMMENT "Syncing assets to build directory"
+)
+
+add_executable(intro 
+     Intro.c)
 
 add_executable(barrel 
      Barrel.c
@@ -79,5 +102,43 @@ add_executable(forest
 add_executable(querylayer
      QueryLayer.c)
 
+add_executable(layerwindow
+     LayerWindow.c)
 
+add_executable(layercircle
+     LayerCircle.c)
+
+# Master list of all sample targets, used for dependency wiring below.
+set(SAMPLE_TARGETS
+    intro barrel mode7 platformer racer scaling shadow shooter
+    tutorial wobble colorcycle benchmark supermarioclone
+    test_mouse forest querylayer layerwindow layercircle
+)
+
+# Every sample must wait for assets to be in the build directory.
+foreach(SAMPLE_TARGET ${SAMPLE_TARGETS})
+    add_dependencies(${SAMPLE_TARGET} copy_assets)
+endforeach()
+
+# Copy required DLLs on MinGW once for all samples
+if (MINGW)
+    if (EXISTS "C:/msys64/mingw64/bin")
+        set(MINGW_BIN_DIR "C:/msys64/mingw64/bin")
+    endif()
+
+    if (DEFINED MINGW_BIN_DIR)
+        add_custom_target(copy_sample_dlls
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${MINGW_BIN_DIR}/libpng16-16.dll"
+                "${MINGW_BIN_DIR}/zlib1.dll"
+                "${MINGW_BIN_DIR}/SDL3.dll"
+                "${CMAKE_CURRENT_BINARY_DIR}"
+            COMMENT "Copying required DLLs to samples directory"
+        )
+
+        foreach(SAMPLE_TARGET ${SAMPLE_TARGETS})
+            add_dependencies(${SAMPLE_TARGET} copy_sample_dlls)
+        endforeach()
+    endif()
+endif()
 

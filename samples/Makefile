@@ -1,7 +1,7 @@
 CC       = gcc
 SOURCES  = $(wildcard *.c)
 OBJECTS  = $(SOURCES:.c=.o)
-TARGETS  = barrel mode7 platformer racer scaling shadow shooter tutorial wobble colorcycle benchmark supermarioclone test_mouse forest querylayer layerwindow layercircle
+TARGETS  = intro barrel mode7 platformer racer scaling shadow shooter tutorial wobble colorcycle benchmark supermarioclone test_mouse forest querylayer layerwindow layercircle
 
 # Windows specific flags
 ifeq ($(OS),Windows_NT)
@@ -37,6 +37,9 @@ CFLAGS += -I"../include" -std=c99 -O2
 .PHONY: all all-before all-after clean clean-custom
 
 all: $(TARGETS)
+
+intro: Intro.o
+	$(CC) Intro.o -o intro $(LDFLAGS)
 
 barrel: Barrel.o Simon.o
 	$(CC) Barrel.o Simon.o -o barrel $(LDFLAGS)

@@ -3,8 +3,8 @@
 
 #include "Shooter.h"
 
-Actor* CreateShip (void);
-Actor* CreateClaw (int id);
-Actor* CreateShot (int type, int x, int y);
+Actor *CreateShip(void);
+Actor *CreateClaw(int id);
+Actor *CreateShot(int type, int x, int y);
 
 #endif

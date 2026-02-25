@@ -13,7 +13,7 @@ else
 	
 	# Linux specific flags (i686, x64 and arm)
 	ifeq ($(name),Linux)
-		LIBS = -lSDL2 -lc -lz -lpng
+		LIBS = -lSDL3 -lc -lz -lpng
 		BIN  = libTilengine.so
 		LDFLAGS = -shared -s
 		LIBPATH = ../lib/linux_$(arch)
@@ -27,7 +27,7 @@ else
 	
 	# OSX specific flags
 	ifeq ($(name),Darwin)
-		LIBS = -lpng -lz -framework SDL2 -lc
+		LIBS = -lpng -lz -framework SDL3 -lc
 		BIN  = Tilengine.dylib
 		LDFLAGS = -dynamiclib
 		LIBPATH = ../lib/darwin_x86_64
