@@ -45,6 +45,7 @@ int main(int argc, char *argv[]) {
 
   /* main loop */
   TLN_CreateWindow(CWF_NEAREST | CWF_S6);
+  TLN_SetTargetFps(60);
   while (TLN_ProcessWindow()) {
     ypos++;
     SimonTasks();

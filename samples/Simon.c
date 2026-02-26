@@ -139,8 +139,12 @@ void SimonTasks(void) {
         x++;
       else
         xworld++;
-    } else if (input == DIR_LEFT)
-      xworld--;
+    } else if (input == DIR_LEFT) {
+      if (xworld > 0)
+        xworld--;
+      else if (x > 0)
+        x--;
+    }
 
     if (state == SIMON_WALKING && !input)
       SimonSetState(SIMON_IDLE);
