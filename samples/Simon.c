@@ -20,7 +20,7 @@ int xworld;
 SimonState state;
 Direction direction;
 
-void SimonInit(void) {
+void SimonInit() {
   simon = TLN_LoadSpriteset("simon_walk");
   sp = TLN_LoadSequencePack("simon_walk.sqx");
   walk = TLN_FindSequence(sp, "walk");
@@ -94,8 +94,8 @@ static void check_floor(int sprite_x, int world_x, int *inout_y,
                         int *inout_vy) {
   for (int c = 8; c < 24; c += 8) {
     TLN_TileInfo ti;
-    TLN_GetLayerTile(0, sprite_x + c + world_x, *inout_y + 46, &ti);
-    if (ti.index == 5) {
+    TLN_GetLayerTile(1, sprite_x + c + world_x, *inout_y + 46, &ti);
+    if (ti.index == 517) {
       *inout_vy = 0;
       *inout_y -= ti.yoffset;
       break;
@@ -127,6 +127,7 @@ void SimonTasks(void) {
     TLN_EnableSpriteFlag(0, FLAG_FLIPX, true);
   }
 
+  int width = TLN_GetWidth();
   switch (state) {
   case SIMON_IDLE:
     if (input)
@@ -135,15 +136,23 @@ void SimonTasks(void) {
   case SIMON_WALKING:
   case SIMON_JUMPING:
     if (input == DIR_RIGHT) {
-      if (x < 120)
+      if (x < 112)
         x++;
-      else
-        xworld++;
+      else {
+        if (xworld < TLN_GetLayerWidth(1) - width)
+          xworld++;
+        else if (x < width - 16)
+          x++;
+      }
     } else if (input == DIR_LEFT) {
-      if (xworld > 0)
-        xworld--;
-      else if (x > 0)
+      if (x > 128)
         x--;
+      else {
+        if (xworld > 0)
+          xworld--;
+        else if (x > 16)
+          x--;
+      }
     }
 
     if (state == SIMON_WALKING && !input)
@@ -179,7 +188,6 @@ void SimonTasks(void) {
 
   /* reset if fallen below the viewport */
   if (y > TLN_GetHeight()) {
-    x = 64;
     y = 0;
     sy = 0;
     SimonSetState(SIMON_IDLE);

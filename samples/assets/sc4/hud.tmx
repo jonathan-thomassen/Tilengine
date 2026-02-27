@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="64" height="32" tilewidth="8" tileheight="8" infinite="0" nextlayerid="3" nextobjectid="1">
-  <tileset firstgid="1" source="drawbridge_intro3.tsx"/>
+  <tileset firstgid="1" source="hud.tsx"/>
   <layer id="1" name="Tiles" width="64" height="32">
     <data encoding="csv">
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,29,30,30,30,2147483677,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
