@@ -36,7 +36,10 @@ endif()
 
 # Copy assets at build time so changes to source assets are reflected
 # on every incremental build, not only when CMake is re-configured.
+# The destination is removed first so deleted source files don't linger.
 add_custom_target(copy_assets ALL
+    COMMAND ${CMAKE_COMMAND} -E rm -rf
+        "${CMAKE_CURRENT_BINARY_DIR}/assets"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_CURRENT_SOURCE_DIR}/assets"
         "${CMAKE_CURRENT_BINARY_DIR}/assets"
