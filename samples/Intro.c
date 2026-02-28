@@ -1,9 +1,13 @@
+#include "Sandblock.h"
 #include "Simon.h"
 #include "Tilengine.h"
 #include <stdio.h>
+#include <string.h>
 
 #define WIDTH 256
 #define HEIGHT 224
+#define OBJECT_LAYER "Objects"
+#define TILE_LAYER "Tiles"
 
 int xpos;
 
@@ -16,7 +20,7 @@ int main(int argc, char *argv[]) {
   TLN_Tilemap colission;
 
   /* setup engine */
-  TLN_Init(WIDTH, HEIGHT, 5, 1, 0);
+  TLN_Init(WIDTH, HEIGHT, 5, 1 + MAX_SANDBLOCKS, 0);
   TLN_SetBGColor(0x10, 0x00, 0x20);
 
   /* load resources*/
@@ -24,7 +28,7 @@ int main(int argc, char *argv[]) {
   drawbridge_bg = TLN_LoadTilemap("drawbridge_bg.tmx", NULL);
   drawbridge_rocks = TLN_LoadTilemap("drawbridge_rocks.tmx", NULL);
   drawbridge_water = TLN_LoadTilemap("drawbridge_water.tmx", NULL);
-  drawbridge_main = TLN_LoadTilemap("drawbridge_main.tmx", "Tiles");
+  drawbridge_main = TLN_LoadTilemap("drawbridge_main.tmx", TILE_LAYER);
   colission = TLN_LoadTilemap("drawbridge_main.tmx", "Colission");
   TLN_SetLayerTilemap(4, colission);
   TLN_SetLayerTilemap(3, drawbridge_bg);
@@ -33,6 +37,32 @@ int main(int argc, char *argv[]) {
   TLN_SetLayerTilemap(0, drawbridge_main);
 
   SimonInit();
+  SandblockInit();
+
+  /* place entities from the object layer */
+  TLN_ObjectList objects =
+      TLN_LoadObjectList("drawbridge_main.tmx", OBJECT_LAYER);
+  if (objects != NULL) {
+    TLN_ObjectInfo info;
+    bool ok = TLN_GetListObject(objects, &info);
+    while (ok) {
+      if (!strcasecmp(info.name, "Simon")) {
+        /* Tiled tile-object y is bottom of sprite; convert to top-left */
+        SimonSetPosition(info.x, info.y - info.height);
+      } else if (!strcasecmp(info.name, "Sandblock")) {
+        SandblockSpawn(info.x, info.y - info.height);
+      } else {
+        printf("[objects] unknown object '%s' at (%d,%d)\n", info.name, info.x,
+               info.y);
+      }
+      ok = TLN_GetListObject(objects, NULL);
+    }
+    TLN_DeleteObjectList(objects);
+  } else {
+    printf("[objects] warning: could not load object layer '%s' from "
+           "drawbridge_main.tmx\n",
+           OBJECT_LAYER);
+  }
 
   TLN_SetLayerBlendMode(1, BLEND_MIX50);
 
@@ -40,17 +70,15 @@ int main(int argc, char *argv[]) {
   TLN_CreateWindow(CWF_NEAREST | CWF_S6 | CWF_NOVSYNC);
   TLN_SetTargetFps(60);
 
-  int frame = 0;
   while (TLN_ProcessWindow()) {
-    frame++;
     char title[48];
-    snprintf(title, sizeof(title), "Frame: %d | FPS: %d", frame,
-             TLN_GetAverageFps());
+    snprintf(title, sizeof(title), "FPS: %d", TLN_GetAverageFps());
     TLN_SetWindowTitle(title);
     SimonTasks();
 
     /* scroll */
     xpos = SimonGetPosition();
+    SandblockTasks(xpos);
     TLN_SetLayerPosition(0, xpos, 0);
     TLN_SetLayerPosition(1, xpos, 0);
     TLN_SetLayerPosition(2, xpos, 0);
@@ -61,6 +89,7 @@ int main(int argc, char *argv[]) {
     TLN_DrawFrame(0);
   }
 
+  SandblockDeinit();
   SimonDeinit();
   TLN_DeleteTilemap(colission);
   TLN_DeleteTilemap(drawbridge_bg);

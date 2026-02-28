@@ -325,3 +325,10 @@ void SimonTasks(void) {
 }
 
 int SimonGetPosition(void) { return xworld; }
+
+void SimonSetPosition(int px, int py) {
+  x = px;
+  y = py;
+  xworld = 0;
+  TLN_SetSpritePosition(0, x, y);
+}
