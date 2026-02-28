@@ -18,6 +18,7 @@ TLN_Sequence walk;
 int x;
 int y;
 int sy = 0;
+int apex_hang = 0;
 int xworld;
 SimonState state;
 Direction direction;
@@ -65,20 +66,69 @@ void SimonSetState(int s) {
 }
 
 /**
- * Returns true if any tile exists along a vertical strip at the given world
- * x position, sampled at three heights spanning the sprite body.
+ * Returns true if a solid tile is present on the right edge of the sprite
+ * body, sampled at three heights.
  *
- * \param world_x_pos  World x coordinate of the edge to test
- * \param sprite_y     Current y position of the sprite
+ * \param sprite_x  Screen x position of the sprite
+ * \param world_x   Horizontal world scroll offset
+ * \param sprite_y  Current y position of the sprite
  */
-static bool has_wall_tile(int world_x_pos, int sprite_y) {
-  for (int c = 8; c < 48; c += 16) {
+static bool check_wall_right(int sprite_x, int world_x, int sprite_y) {
+  for (int c = 4; c < 44; c += 16) {
     TLN_TileInfo ti;
-    TLN_GetLayerTile(0, world_x_pos, sprite_y + c, &ti);
-    if (ti.index)
+    TLN_GetLayerTile(4, sprite_x + 24 + world_x, sprite_y + c, &ti);
+    if (!ti.empty)
       return true;
   }
   return false;
+}
+
+/**
+ * Returns true if a solid tile is present on the left edge of the sprite
+ * body, sampled at three heights.
+ *
+ * \param sprite_x  Screen x position of the sprite
+ * \param world_x   Horizontal world scroll offset
+ * \param sprite_y  Current y position of the sprite
+ */
+static bool check_wall_left(int sprite_x, int world_x, int sprite_y) {
+  for (int c = 4; c < 44; c += 16) {
+    TLN_TileInfo ti;
+    TLN_GetLayerTile(4, sprite_x + world_x, sprite_y + c, &ti);
+    if (!ti.empty)
+      return true;
+  }
+  return false;
+}
+
+static void move_right(int width) {
+  int x_pre = x;
+  int xw_pre = xworld;
+  if (x < 112)
+    x++;
+  else if (xworld < TLN_GetLayerWidth(1) - width)
+    xworld++;
+  else if (x < width - 16)
+    x++;
+  if (check_wall_right(x, xworld, y)) {
+    x = x_pre;
+    xworld = xw_pre;
+  }
+}
+
+static void move_left(void) {
+  int x_pre = x;
+  int xw_pre = xworld;
+  if (x > 128)
+    x--;
+  else if (xworld > 0)
+    xworld--;
+  else if (x > -4)
+    x--;
+  if (check_wall_left(x, xworld, y)) {
+    x = x_pre;
+    xworld = xw_pre;
+  }
 }
 
 /**
@@ -133,21 +183,7 @@ static void check_floor(int sprite_x, int world_x, int *inout_y,
   }
 }
 
-void SimonTasks(void) {
-  int y2;
-  int s0;
-  Direction input = 0;
-  bool jump = false;
-
-  /* input */
-  if (TLN_GetInput(INPUT_LEFT))
-    input = DIR_LEFT;
-  else if (TLN_GetInput(INPUT_RIGHT))
-    input = DIR_RIGHT;
-  if (TLN_GetInput(INPUT_A))
-    jump = true;
-
-  /* direction flags */
+static void update_facing(Direction input) {
   if (input == DIR_RIGHT && direction == DIR_LEFT) {
     direction = input;
     TLN_EnableSpriteFlag(0, FLAG_FLIPX, false);
@@ -156,20 +192,25 @@ void SimonTasks(void) {
     direction = input;
     TLN_EnableSpriteFlag(0, FLAG_FLIPX, true);
   }
+}
 
-  int width = TLN_GetWidth();
-  /* track direction committed in the air; throttle only on mid-air direction
-   * changes */
+/**
+ * Handles air-throttle tracking and drives the movement state machine.
+ * Horizontally moving Simon one pixel per call, subject to direction-change
+ * delay when airborne.
+ */
+static void apply_movement(Direction input, int width) {
   static int air_dir = 0;
   static int dir_change_timer = 0;
+
   if (state != SIMON_JUMPING) {
     air_dir = input;
     dir_change_timer = 0;
   } else if (input == DIR_NONE) {
-    /* released direction in the air — treat next press as a new direction
-     * change */
+    /* released in the air — treat next press as a new direction change */
     air_dir = DIR_NONE;
   }
+
   int changing_dir =
       (state == SIMON_JUMPING && input != DIR_NONE && input != air_dir);
   if (changing_dir)
@@ -184,81 +225,72 @@ void SimonTasks(void) {
     break;
   case SIMON_WALKING:
   case SIMON_JUMPING:
-    /* block movement for N frames on direction change, then move freely */
-    if (state == SIMON_WALKING || !changing_dir ||
-        dir_change_timer > HANGTIME) {
-      if (changing_dir && dir_change_timer > HANGTIME)
+    if (!changing_dir || dir_change_timer > HANGTIME) {
+      if (changing_dir)
         air_dir = input; /* commit new direction after delay */
-      if (input == DIR_RIGHT) {
-        if (x < 112)
-          x++;
-        else {
-          if (xworld < TLN_GetLayerWidth(1) - width)
-            xworld++;
-          else if (x < width - 16)
-            x++;
-        }
-      } else if (input == DIR_LEFT) {
-        if (x > 128)
-          x--;
-        else {
-          if (xworld > 0)
-            xworld--;
-          else if (x > -4)
-            x--;
-        }
-      }
+      if (input == DIR_RIGHT)
+        move_right(width);
+      else if (input == DIR_LEFT)
+        move_left();
     }
-
     if (state == SIMON_WALKING && !input)
       SimonSetState(SIMON_IDLE);
     break;
   }
+}
 
-  if (jump && state != SIMON_JUMPING)
-    SimonSetState(SIMON_JUMPING);
-
-  /* check wall collisions */
-  /* if (input == DIR_RIGHT && has_wall_tile(x + 24 + xworld, y)) {
-    if (x > 0)
-      x--;
-    else
-      xworld--;
-  } else if (input == DIR_LEFT && has_wall_tile(x + xworld - 1, y)) {
-    xworld++;
-  } */
-
-  /* gravity - hold at apex for 5 extra frames before resuming */
-  s0 = sy;
-  static int apex_hang = 0;
-  if (sy < 10) {
-    if (sy == 0 && apex_hang < HANGTIME) {
-      apex_hang++;
-    } else {
-      if (sy != 0)
-        apex_hang = 0;
-      sy++;
-    }
+/** Advances vertical velocity by one step, respecting apex hang. */
+static void advance_gravity(void) {
+  if (sy >= 10)
+    return;
+  if (sy == 0 && apex_hang < HANGTIME) {
+    apex_hang++;
+    return;
   }
-  y2 = y + (sy >> 2);
+  if (sy != 0)
+    apex_hang = 0;
+  sy++;
+}
 
-  /* check tiles above when moving upward */
+/**
+ * Applies ceiling/floor collision and detects landing.
+ * \param s0  Vertical velocity captured before advance_gravity() was called.
+ */
+static void apply_collisions(int s0) {
+  int y2 = y + (sy >> 2);
   if (sy < 0 && check_ceiling(x, xworld, &y2, &sy, y))
-    apex_hang = 0; /* reset hang — pause at ceiling before falling */
-
-  /* check tiles below */
+    apex_hang = 0;
   check_floor(x, xworld, &y2, &sy);
-
   if (s0 > 0 && sy == 0)
     SimonSetState(SIMON_IDLE);
   y = y2;
-
-  /* reset if fallen below the viewport */
   if (y > TLN_GetHeight()) {
     y = 0;
     sy = 0;
     SimonSetState(SIMON_IDLE);
   }
+}
+
+void SimonTasks(void) {
+  Direction input = DIR_NONE;
+  bool jump = false;
+
+  if (TLN_GetInput(INPUT_LEFT))
+    input = DIR_LEFT;
+  else if (TLN_GetInput(INPUT_RIGHT))
+    input = DIR_RIGHT;
+  if (TLN_GetInput(INPUT_A))
+    jump = true;
+
+  update_facing(input);
+  apply_movement(input, TLN_GetWidth());
+
+  if (jump && state != SIMON_JUMPING)
+    SimonSetState(SIMON_JUMPING);
+
+  int s0 = sy;
+  advance_gravity();
+  apply_collisions(s0);
 
   TLN_SetSpritePosition(0, x, y);
 }
