@@ -8,6 +8,7 @@
 #define HEIGHT 224
 #define OBJECT_LAYER "Objects"
 #define TILE_LAYER "Tiles"
+#define COLISSION_LAYER "Colission"
 
 int xpos;
 
@@ -29,7 +30,7 @@ int main(int argc, char *argv[]) {
   drawbridge_rocks = TLN_LoadTilemap("drawbridge_rocks.tmx", NULL);
   drawbridge_water = TLN_LoadTilemap("drawbridge_water.tmx", NULL);
   drawbridge_main = TLN_LoadTilemap("drawbridge_main.tmx", TILE_LAYER);
-  colission = TLN_LoadTilemap("drawbridge_main.tmx", "Colission");
+  colission = TLN_LoadTilemap("drawbridge_main.tmx", COLISSION_LAYER);
   TLN_SetLayerTilemap(4, colission);
   TLN_SetLayerTilemap(3, drawbridge_bg);
   TLN_SetLayerTilemap(2, drawbridge_water);
