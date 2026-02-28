@@ -1,6 +1,8 @@
 #include "Simon.h"
 #include "Tilengine.h"
 
+#define HANGTIME 10
+
 typedef enum { SIMON_IDLE, SIMON_WALKING, SIMON_JUMPING } SimonState;
 
 typedef enum {
@@ -30,8 +32,8 @@ void SimonInit() {
 
   SimonSetState(SIMON_IDLE);
   direction = DIR_RIGHT;
-  x = 64;
-  y = -48;
+  x = 33;
+  y = 146;
 }
 
 void SimonDeinit(void) {
@@ -75,6 +77,34 @@ static bool has_wall_tile(int world_x_pos, int sprite_y) {
     TLN_GetLayerTile(0, world_x_pos, sprite_y + c, &ti);
     if (ti.index)
       return true;
+  }
+  return false;
+}
+
+/**
+ * Checks for solid tiles directly above the sprite's head and resolves
+ * vertical collision. Stops upward velocity and pushes Simon down below
+ * the tile.
+ *
+ * \param sprite_x    World x position of the sprite
+ * \param world_x     Horizontal world scroll offset
+ * \param inout_y     Pointer to the candidate new y position; adjusted
+ *                    downward when a tile is hit
+ * \param inout_vy    Pointer to the vertical velocity; zeroed on ceiling hit
+ * \param prev_y      The y position from the previous frame, used to snap
+ *                    back without overshooting
+ * \return            true if a ceiling tile was hit
+ */
+static bool check_ceiling(int sprite_x, int world_x, int *inout_y,
+                          int *inout_vy, int prev_y) {
+  for (int c = 8; c < 24; c += 8) {
+    TLN_TileInfo ti;
+    TLN_GetLayerTile(4, sprite_x + c + world_x, *inout_y, &ti);
+    if (!ti.empty) {
+      *inout_vy = 0;
+      *inout_y = prev_y; /* restore to position before the frame's movement */
+      return true;
+    }
   }
   return false;
 }
@@ -128,6 +158,25 @@ void SimonTasks(void) {
   }
 
   int width = TLN_GetWidth();
+  /* track direction committed in the air; throttle only on mid-air direction
+   * changes */
+  static int air_dir = 0;
+  static int dir_change_timer = 0;
+  if (state != SIMON_JUMPING) {
+    air_dir = input;
+    dir_change_timer = 0;
+  } else if (input == DIR_NONE) {
+    /* released direction in the air — treat next press as a new direction
+     * change */
+    air_dir = DIR_NONE;
+  }
+  int changing_dir =
+      (state == SIMON_JUMPING && input != DIR_NONE && input != air_dir);
+  if (changing_dir)
+    dir_change_timer++;
+  else
+    dir_change_timer = 0;
+
   switch (state) {
   case SIMON_IDLE:
     if (input)
@@ -135,23 +184,29 @@ void SimonTasks(void) {
     break;
   case SIMON_WALKING:
   case SIMON_JUMPING:
-    if (input == DIR_RIGHT) {
-      if (x < 112)
-        x++;
-      else {
-        if (xworld < TLN_GetLayerWidth(1) - width)
-          xworld++;
-        else if (x < width - 16)
+    /* block movement for N frames on direction change, then move freely */
+    if (state == SIMON_WALKING || !changing_dir ||
+        dir_change_timer > HANGTIME) {
+      if (changing_dir && dir_change_timer > HANGTIME)
+        air_dir = input; /* commit new direction after delay */
+      if (input == DIR_RIGHT) {
+        if (x < 112)
           x++;
-      }
-    } else if (input == DIR_LEFT) {
-      if (x > 128)
-        x--;
-      else {
-        if (xworld > 0)
-          xworld--;
-        else if (x > -4)
+        else {
+          if (xworld < TLN_GetLayerWidth(1) - width)
+            xworld++;
+          else if (x < width - 16)
+            x++;
+        }
+      } else if (input == DIR_LEFT) {
+        if (x > 128)
           x--;
+        else {
+          if (xworld > 0)
+            xworld--;
+          else if (x > -4)
+            x--;
+        }
       }
     }
 
@@ -173,11 +228,23 @@ void SimonTasks(void) {
     xworld++;
   } */
 
-  /* gravity */
+  /* gravity - hold at apex for 5 extra frames before resuming */
   s0 = sy;
-  if (sy < 10)
-    sy++;
+  static int apex_hang = 0;
+  if (sy < 10) {
+    if (sy == 0 && apex_hang < HANGTIME) {
+      apex_hang++;
+    } else {
+      if (sy != 0)
+        apex_hang = 0;
+      sy++;
+    }
+  }
   y2 = y + (sy >> 2);
+
+  /* check tiles above when moving upward */
+  if (sy < 0 && check_ceiling(x, xworld, &y2, &sy, y))
+    apex_hang = 0; /* reset hang — pause at ceiling before falling */
 
   /* check tiles below */
   check_floor(x, xworld, &y2, &sy);
