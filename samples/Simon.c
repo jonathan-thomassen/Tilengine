@@ -1,4 +1,5 @@
 #include "Simon.h"
+#include "Sandblock.h"
 #include "Tilengine.h"
 
 #define HANGTIME 8
@@ -291,6 +292,7 @@ static void apply_collisions(int s0) {
   if (sy < 0 && check_ceiling(x, xworld, &y2, &sy, y))
     apex_hang = 0;
   check_floor(x, xworld, &y2, &sy);
+  SandblockCheckFloor(x, xworld, &y2, &sy);
   if (s0 > 0 && sy == 0)
     SimonSetState(SIMON_IDLE);
   y = y2;

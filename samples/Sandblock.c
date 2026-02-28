@@ -6,6 +6,10 @@
 /* Tilengine sprite slots reserved for sandblocks start right after Simon (0) */
 #define SPRITE_BASE 1
 
+/* Pixel dimensions of one sandblock sprite */
+#define SANDBLOCK_W 16
+#define SANDBLOCK_H 16
+
 typedef struct {
   bool active;
   int world_x;
@@ -53,4 +57,25 @@ void SandblockTasks(int xworld) {
     int screen_y = blocks[i].world_y;
     TLN_SetSpritePosition(SPRITE_BASE + i, screen_x, screen_y);
   }
+}
+
+bool SandblockCheckFloor(int sprite_x, int world_x, int *inout_y,
+                         int *inout_vy) {
+  int foot_y = *inout_y + 46;
+  for (int i = 0; i < MAX_SANDBLOCKS; i++) {
+    if (!blocks[i].active)
+      continue;
+    for (int c = 8; c < 24; c += 8) {
+      int foot_x = sprite_x + c + world_x;
+      if (foot_x >= blocks[i].world_x &&
+          foot_x < blocks[i].world_x + SANDBLOCK_W &&
+          foot_y >= blocks[i].world_y &&
+          foot_y < blocks[i].world_y + SANDBLOCK_H) {
+        *inout_vy = 0;
+        *inout_y = blocks[i].world_y - 46;
+        return true;
+      }
+    }
+  }
+  return false;
 }
