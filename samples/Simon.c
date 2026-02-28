@@ -1,7 +1,7 @@
 #include "Simon.h"
 #include "Tilengine.h"
 
-#define HANGTIME 10
+#define HANGTIME 8
 
 typedef enum { SIMON_IDLE, SIMON_WALKING, SIMON_JUMPING } SimonState;
 
@@ -202,6 +202,7 @@ static void update_facing(Direction input) {
 static void apply_movement(Direction input, int width) {
   static int air_dir = 0;
   static int dir_change_timer = 0;
+  static Direction prev_input = DIR_NONE;
 
   if (state != SIMON_JUMPING) {
     air_dir = input;
@@ -218,6 +219,12 @@ static void apply_movement(Direction input, int width) {
   else
     dir_change_timer = 0;
 
+  /* first frame of a new press: change sprite but don't move yet */
+  bool first_frame = (prev_input == DIR_NONE && input != DIR_NONE);
+  prev_input = input;
+
+  static int move_frame = 0;
+
   switch (state) {
   case SIMON_IDLE:
     if (input)
@@ -225,13 +232,20 @@ static void apply_movement(Direction input, int width) {
     break;
   case SIMON_WALKING:
   case SIMON_JUMPING:
-    if (!changing_dir || dir_change_timer > HANGTIME) {
+    if (!first_frame && (!changing_dir || dir_change_timer > HANGTIME)) {
       if (changing_dir)
         air_dir = input; /* commit new direction after delay */
-      if (input == DIR_RIGHT)
+      if (input == DIR_RIGHT) {
         move_right(width);
-      else if (input == DIR_LEFT)
+        if (++move_frame % 4 == 0)
+          move_right(width);
+      } else if (input == DIR_LEFT) {
         move_left();
+        if (++move_frame % 4 == 0)
+          move_left();
+      }
+    } else {
+      move_frame = 0;
     }
     if (state == SIMON_WALKING && !input)
       SimonSetState(SIMON_IDLE);

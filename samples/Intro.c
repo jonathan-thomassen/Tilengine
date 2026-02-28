@@ -1,11 +1,11 @@
 #include "Simon.h"
 #include "Tilengine.h"
+#include <stdio.h>
 
 #define WIDTH 256
 #define HEIGHT 224
 
 int xpos;
-int ypos;
 
 /* entry point */
 int main(int argc, char *argv[]) {
@@ -37,11 +37,16 @@ int main(int argc, char *argv[]) {
   TLN_SetLayerBlendMode(1, BLEND_MIX50);
 
   /* main loop */
-  TLN_CreateWindow(CWF_NEAREST | CWF_S6);
+  TLN_CreateWindow(CWF_NEAREST | CWF_S6 | CWF_NOVSYNC);
   TLN_SetTargetFps(60);
 
+  int frame = 0;
   while (TLN_ProcessWindow()) {
-    ypos++;
+    frame++;
+    char title[48];
+    snprintf(title, sizeof(title), "Frame: %d | FPS: %d", frame,
+             TLN_GetAverageFps());
+    TLN_SetWindowTitle(title);
     SimonTasks();
 
     /* scroll */

@@ -964,7 +964,20 @@ static void EndWindowFrame(void) {
     timeBeginPeriod(1);
 #endif
     Engine const *context = TLN_GetContext();
-    uint32_t due_time = wnd_params.t0 + (1000 / context->timing.target_fps);
+    const int fps = context->timing.target_fps;
+    /* sub-millisecond accumulator: tracks the fractional ms remainder so the
+     * average frame interval converges to exactly 1000/fps ms even though
+     * individual delays are whole milliseconds. */
+    static uint32_t remainder = 0;
+    static int last_fps = 0;
+    if (fps != last_fps) {
+      remainder = 0;
+      last_fps = fps;
+    }
+    remainder += 1000;
+    uint32_t delay_ms = remainder / (uint32_t)fps;
+    remainder %= (uint32_t)fps;
+    uint32_t due_time = wnd_params.t0 + delay_ms;
     uint32_t now = (uint32_t)SDL_GetTicks();
     while (now < due_time) {
       if (due_time - now > wnd_params.min_delay)
