@@ -1,3 +1,4 @@
+#include "Pillar.h"
 #include "Sandblock.h"
 #include "Simon.h"
 #include "Tilengine.h"
@@ -21,7 +22,7 @@ int main(int argc, char *argv[]) {
   TLN_Tilemap colission;
 
   /* setup engine */
-  TLN_Init(WIDTH, HEIGHT, 5, 1 + MAX_SANDBLOCKS, 0);
+  TLN_Init(WIDTH, HEIGHT, 5, 1 + MAX_SANDBLOCKS + MAX_PILLARS, 0);
   TLN_SetBGColor(0x10, 0x00, 0x20);
 
   /* load resources*/
@@ -39,6 +40,7 @@ int main(int argc, char *argv[]) {
 
   SimonInit();
   SandblockInit();
+  PillarInit();
 
   /* place entities from the object layer */
   TLN_ObjectList objects =
@@ -52,6 +54,8 @@ int main(int argc, char *argv[]) {
         SimonSetPosition(info.x, info.y - info.height);
       } else if (!strcasecmp(info.name, "Sandblock")) {
         SandblockSpawn(info.x, info.y - info.height);
+      } else if (!strcasecmp(info.name, "Pillar")) {
+        PillarSpawn(info.x, info.y - info.height);
       } else {
         printf("[objects] unknown object '%s' at (%d,%d)\n", info.name, info.x,
                info.y);
@@ -80,6 +84,7 @@ int main(int argc, char *argv[]) {
     /* scroll */
     xpos = SimonGetPosition();
     SandblockTasks(xpos);
+    PillarTasks(xpos);
     TLN_SetLayerPosition(0, xpos, 0);
     TLN_SetLayerPosition(1, xpos, 0);
     TLN_SetLayerPosition(2, xpos, 0);
@@ -90,6 +95,7 @@ int main(int argc, char *argv[]) {
     TLN_DrawFrame(0);
   }
 
+  PillarDeinit();
   SandblockDeinit();
   SimonDeinit();
   TLN_DeleteTilemap(colission);

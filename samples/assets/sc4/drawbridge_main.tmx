@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="128" height="32" tilewidth="8" tileheight="8" infinite="0" nextlayerid="5" nextobjectid="6">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="128" height="32" tilewidth="8" tileheight="8" infinite="0" nextlayerid="5" nextobjectid="7">
  <tileset firstgid="1" source="drawbridge_main.tsx"/>
  <tileset firstgid="209" source="colission.tsx"/>
  <layer id="1" name="Tiles" width="128" height="32">
@@ -88,6 +88,9 @@
    <point/>
   </object>
   <object id="5" name="sandblock" x="720" y="176">
+   <point/>
+  </object>
+  <object id="6" name="pillar" x="976" y="0">
    <point/>
   </object>
  </objectgroup>

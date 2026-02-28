@@ -50,7 +50,8 @@ add_executable(intro
      Intro.c
      PaletteLayer.c
      Simon.c
-     Sandblock.c)
+     Sandblock.c
+     Pillar.c)
 
 add_executable(barrel 
      Barrel.c
