@@ -10,9 +10,9 @@ int xpos;
 /* entry point */
 int main(int argc, char *argv[]) {
   TLN_Tilemap drawbridge_bg;
-  TLN_Tilemap drawbridge_fg0;
-  TLN_Tilemap drawbridge_fg1;
-  TLN_Tilemap drawbridge_fg2;
+  TLN_Tilemap drawbridge_rocks;
+  TLN_Tilemap drawbridge_water;
+  TLN_Tilemap drawbridge_main;
   TLN_Tilemap colission;
 
   /* setup engine */
@@ -22,15 +22,15 @@ int main(int argc, char *argv[]) {
   /* load resources*/
   TLN_SetLoadPath("assets/sc4");
   drawbridge_bg = TLN_LoadTilemap("drawbridge_bg.tmx", NULL);
-  drawbridge_fg0 = TLN_LoadTilemap("drawbridge_fg0.tmx", NULL);
-  drawbridge_fg1 = TLN_LoadTilemap("drawbridge_fg1.tmx", NULL);
-  drawbridge_fg2 = TLN_LoadTilemap("drawbridge_fg2.tmx", "Tiles");
-  colission = TLN_LoadTilemap("drawbridge_fg2.tmx", "Colission");
+  drawbridge_rocks = TLN_LoadTilemap("drawbridge_rocks.tmx", NULL);
+  drawbridge_water = TLN_LoadTilemap("drawbridge_water.tmx", NULL);
+  drawbridge_main = TLN_LoadTilemap("drawbridge_main.tmx", "Tiles");
+  colission = TLN_LoadTilemap("drawbridge_main.tmx", "Colission");
   TLN_SetLayerTilemap(4, colission);
   TLN_SetLayerTilemap(3, drawbridge_bg);
-  TLN_SetLayerTilemap(1, drawbridge_fg0);
-  TLN_SetLayerTilemap(2, drawbridge_fg1);
-  TLN_SetLayerTilemap(0, drawbridge_fg2);
+  TLN_SetLayerTilemap(2, drawbridge_water);
+  TLN_SetLayerTilemap(1, drawbridge_rocks);
+  TLN_SetLayerTilemap(0, drawbridge_main);
 
   SimonInit();
 
@@ -64,9 +64,9 @@ int main(int argc, char *argv[]) {
   SimonDeinit();
   TLN_DeleteTilemap(colission);
   TLN_DeleteTilemap(drawbridge_bg);
-  TLN_DeleteTilemap(drawbridge_fg0);
-  TLN_DeleteTilemap(drawbridge_fg1);
-  TLN_DeleteTilemap(drawbridge_fg2);
+  TLN_DeleteTilemap(drawbridge_rocks);
+  TLN_DeleteTilemap(drawbridge_water);
+  TLN_DeleteTilemap(drawbridge_main);
   TLN_Deinit();
   return 0;
 }

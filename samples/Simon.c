@@ -4,6 +4,7 @@
 #define HANGTIME 8
 #define TERM_VELOCITY 10
 #define AIR_TURN_DELAY 6
+#define COLISSION_LAYER 4
 
 typedef enum { SIMON_IDLE, SIMON_WALKING, SIMON_JUMPING } SimonState;
 
@@ -101,7 +102,7 @@ static bool check_wall_right(int sprite_x, int world_x, int sprite_y) {
 static bool check_wall_left(int sprite_x, int world_x, int sprite_y) {
   for (int c = 4; c < 44; c += 16) {
     TLN_TileInfo ti;
-    TLN_GetLayerTile(4, sprite_x + world_x, sprite_y + c, &ti);
+    TLN_GetLayerTile(COLISSION_LAYER, sprite_x + world_x, sprite_y + c, &ti);
     if (!ti.empty)
       return true;
   }
