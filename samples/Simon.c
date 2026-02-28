@@ -23,6 +23,11 @@ int xworld;
 SimonState state;
 Direction direction;
 
+static Direction air_dir = DIR_NONE;
+static int dir_change_timer = 0;
+static Direction prev_input = DIR_NONE;
+static int move_frame = 0;
+
 void SimonInit() {
   simon = TLN_LoadSpriteset("simon_walk");
   sp = TLN_LoadSequencePack("simon_walk.sqx");
@@ -195,15 +200,10 @@ static void update_facing(Direction input) {
 }
 
 /**
- * Handles air-throttle tracking and drives the movement state machine.
- * Horizontally moving Simon one pixel per call, subject to direction-change
- * delay when airborne.
+ * Updates air-throttle state and returns whether Simon is changing direction
+ * mid-air.
  */
-static void apply_movement(Direction input, int width) {
-  static int air_dir = 0;
-  static int dir_change_timer = 0;
-  static Direction prev_input = DIR_NONE;
-
+static bool update_air_throttle(Direction input) {
   if (state != SIMON_JUMPING) {
     air_dir = input;
     dir_change_timer = 0;
@@ -211,19 +211,40 @@ static void apply_movement(Direction input, int width) {
     /* released in the air — treat next press as a new direction change */
     air_dir = DIR_NONE;
   }
-
-  int changing_dir =
+  bool changing_dir =
       (state == SIMON_JUMPING && input != DIR_NONE && input != air_dir);
   if (changing_dir)
     dir_change_timer++;
   else
     dir_change_timer = 0;
+  return changing_dir;
+}
 
-  /* first frame of a new press: change sprite but don't move yet */
+/** Commits the direction change and moves Simon one (or two) pixels. */
+static void execute_move(Direction input, int width, bool changing_dir) {
+  if (changing_dir)
+    air_dir = input; /* commit new direction after delay */
+  if (input == DIR_RIGHT) {
+    move_right(width);
+    if (++move_frame % 4 == 0)
+      move_right(width);
+  } else if (input == DIR_LEFT) {
+    move_left();
+    if (++move_frame % 4 == 0)
+      move_left();
+  }
+}
+
+/**
+ * Handles air-throttle tracking and drives the movement state machine.
+ * Horizontally moving Simon one pixel per call, subject to direction-change
+ * delay when airborne.
+ */
+static void apply_movement(Direction input, int width) {
+  bool changing_dir = update_air_throttle(input);
+
   bool first_frame = (prev_input == DIR_NONE && input != DIR_NONE);
   prev_input = input;
-
-  static int move_frame = 0;
 
   switch (state) {
   case SIMON_IDLE:
@@ -232,21 +253,10 @@ static void apply_movement(Direction input, int width) {
     break;
   case SIMON_WALKING:
   case SIMON_JUMPING:
-    if (!first_frame && (!changing_dir || dir_change_timer > HANGTIME)) {
-      if (changing_dir)
-        air_dir = input; /* commit new direction after delay */
-      if (input == DIR_RIGHT) {
-        move_right(width);
-        if (++move_frame % 4 == 0)
-          move_right(width);
-      } else if (input == DIR_LEFT) {
-        move_left();
-        if (++move_frame % 4 == 0)
-          move_left();
-      }
-    } else {
+    if (!first_frame && (!changing_dir || dir_change_timer > HANGTIME))
+      execute_move(input, width, changing_dir);
+    else
       move_frame = 0;
-    }
     if (state == SIMON_WALKING && !input)
       SimonSetState(SIMON_IDLE);
     break;
