@@ -1,8 +1,6 @@
 #include "Simon.h"
-#include "Pillar.h"
 #include "Sandblock.h"
 #include "Tilengine.h"
-
 
 #define HANGTIME 8
 #define TERM_VELOCITY 10
@@ -121,7 +119,7 @@ static void move_right(int width) {
     xworld++;
   else if (x < width - 16)
     x++;
-  if (check_wall_right(x, xworld, y) || PillarCheckWallRight(x, xworld, y)) {
+  if (check_wall_right(x, xworld, y)) {
     x = x_pre;
     xworld = xw_pre;
   }
@@ -136,7 +134,7 @@ static void move_left(void) {
     xworld--;
   else if (x > -4)
     x--;
-  if (check_wall_left(x, xworld, y) || PillarCheckWallLeft(x, xworld, y)) {
+  if (check_wall_left(x, xworld, y)) {
     x = x_pre;
     xworld = xw_pre;
   }
@@ -295,7 +293,6 @@ static void apply_collisions(int s0) {
     apex_hang = 0;
   check_floor(x, xworld, &y2, &sy);
   SandblockCheckFloor(x, xworld, &y2, &sy);
-  PillarCheckFloor(x, xworld, &y2, &sy);
   if (s0 > 0 && sy == 0)
     SimonSetState(SIMON_IDLE);
   y = y2;

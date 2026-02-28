@@ -32,35 +32,4 @@ int PillarSpawn(int world_x, int world_y);
  */
 void PillarTasks(int xworld);
 
-/**
- * Checks whether Simon's feet have landed on top of any active pillar.
- * Resolves collision identically to a tilemap floor hit.
- *
- * \param sprite_x   Simon's screen x position
- * \param world_x    Horizontal world scroll offset
- * \param inout_y    Candidate new y; snapped to pillar top on hit
- * \param inout_vy   Vertical velocity; zeroed on landing
- * \return           true if a pillar top was hit
- */
-bool PillarCheckFloor(int sprite_x, int world_x, int *inout_y, int *inout_vy);
-
-/**
- * Returns true if Simon's right edge overlaps a pillar body.
- * Uses the same sampling pattern as Simon's tilemap wall check.
- *
- * \param sprite_x  Simon's screen x position
- * \param world_x   Horizontal world scroll offset
- * \param sprite_y  Simon's screen y position
- */
-bool PillarCheckWallRight(int sprite_x, int world_x, int sprite_y);
-
-/**
- * Returns true if Simon's left edge overlaps a pillar body.
- *
- * \param sprite_x  Simon's screen x position
- * \param world_x   Horizontal world scroll offset
- * \param sprite_y  Simon's screen y position
- */
-bool PillarCheckWallLeft(int sprite_x, int world_x, int sprite_y);
-
 #endif

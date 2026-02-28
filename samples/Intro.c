@@ -35,8 +35,8 @@ int main(int argc, char *argv[]) {
   TLN_SetLayerTilemap(4, colission);
   TLN_SetLayerTilemap(3, drawbridge_bg);
   TLN_SetLayerTilemap(2, drawbridge_water);
-  TLN_SetLayerTilemap(1, drawbridge_rocks);
-  TLN_SetLayerTilemap(0, drawbridge_main);
+  TLN_SetLayerTilemap(1, drawbridge_main);
+  TLN_SetLayerTilemap(0, drawbridge_rocks);
 
   SimonInit();
   SandblockInit();
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
            OBJECT_LAYER);
   }
 
-  TLN_SetLayerBlendMode(1, BLEND_MIX50);
+  TLN_SetLayerBlendMode(0, BLEND_MIX50);
 
   /* main loop */
   TLN_CreateWindow(CWF_NEAREST | CWF_S6 | CWF_NOVSYNC);
