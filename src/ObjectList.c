@@ -303,6 +303,13 @@ static void resolve_object_tilesets(TMXInfo *info) {
       gid = item->gid;
     item = item->next;
   }
+
+  /* pure point/rect layer — no tile objects, no tileset resolution needed */
+  if (gid == 0) {
+    ODB("no gid objects found, skipping tileset resolution");
+    return;
+  }
+
   ODB("searching tilesets for gid=%d, num_tilesets=%d", gid,
       info->num_tilesets);
 

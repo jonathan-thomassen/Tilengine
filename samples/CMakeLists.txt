@@ -55,7 +55,9 @@ add_executable(intro
 
 add_executable(barrel 
      Barrel.c
-     Simon.c)
+     Simon.c
+     Sandblock.c
+     Pillar.c)
 
 add_executable(mode7
      Mode7.c
