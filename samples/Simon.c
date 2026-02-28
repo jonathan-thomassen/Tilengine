@@ -2,6 +2,8 @@
 #include "Tilengine.h"
 
 #define HANGTIME 8
+#define TERM_VELOCITY 10
+#define AIR_TURN_DELAY 6
 
 typedef enum { SIMON_IDLE, SIMON_WALKING, SIMON_JUMPING } SimonState;
 
@@ -223,7 +225,8 @@ static bool update_air_throttle(Direction input) {
 /** Commits the direction change and moves Simon one (or two) pixels. */
 static void execute_move(Direction input, int width, bool changing_dir) {
   if (changing_dir)
-    air_dir = input; /* commit new direction after delay */
+    air_dir = input;    /* commit new direction after delay */
+  update_facing(input); /* flip sprite only when movement commits */
   if (input == DIR_RIGHT) {
     move_right(width);
     if (++move_frame % 4 == 0)
@@ -253,7 +256,7 @@ static void apply_movement(Direction input, int width) {
     break;
   case SIMON_WALKING:
   case SIMON_JUMPING:
-    if (!first_frame && (!changing_dir || dir_change_timer > HANGTIME))
+    if (!first_frame && (!changing_dir || dir_change_timer > AIR_TURN_DELAY))
       execute_move(input, width, changing_dir);
     else
       move_frame = 0;
@@ -265,7 +268,7 @@ static void apply_movement(Direction input, int width) {
 
 /** Advances vertical velocity by one step, respecting apex hang. */
 static void advance_gravity(void) {
-  if (sy >= 10)
+  if (sy >= TERM_VELOCITY)
     return;
   if (sy == 0 && apex_hang < HANGTIME) {
     apex_hang++;
@@ -273,7 +276,8 @@ static void advance_gravity(void) {
   }
   if (sy != 0)
     apex_hang = 0;
-  sy++;
+  /* accelerate twice as fast on the way down for a snappier fall */
+  sy += (sy > 0) ? 2 : 1;
 }
 
 /**
@@ -281,7 +285,8 @@ static void advance_gravity(void) {
  * \param s0  Vertical velocity captured before advance_gravity() was called.
  */
 static void apply_collisions(int s0) {
-  int y2 = y + (sy >> 2);
+  /* rising: gentle arc (>> 2); falling: medium pull (/ 3) */
+  int y2 = y + (sy > 0 ? sy / 3 : sy >> 2);
   if (sy < 0 && check_ceiling(x, xworld, &y2, &sy, y))
     apex_hang = 0;
   check_floor(x, xworld, &y2, &sy);
@@ -306,7 +311,6 @@ void SimonTasks(void) {
   if (TLN_GetInput(INPUT_A))
     jump = true;
 
-  update_facing(input);
   apply_movement(input, TLN_GetWidth());
 
   if (jump && state != SIMON_JUMPING)
