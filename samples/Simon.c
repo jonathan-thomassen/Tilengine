@@ -94,8 +94,8 @@ static void check_floor(int sprite_x, int world_x, int *inout_y,
                         int *inout_vy) {
   for (int c = 8; c < 24; c += 8) {
     TLN_TileInfo ti;
-    TLN_GetLayerTile(1, sprite_x + c + world_x, *inout_y + 46, &ti);
-    if (ti.index == 517) {
+    TLN_GetLayerTile(4, sprite_x + c + world_x, *inout_y + 46, &ti);
+    if (!ti.empty) {
       *inout_vy = 0;
       *inout_y -= ti.yoffset;
       break;
@@ -150,7 +150,7 @@ void SimonTasks(void) {
       else {
         if (xworld > 0)
           xworld--;
-        else if (x > 16)
+        else if (x > -4)
           x--;
       }
     }

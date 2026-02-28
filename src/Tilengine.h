@@ -86,6 +86,7 @@ typedef enum {
   BLEND_MIX25,  /*!< color averaging 1 */
   BLEND_MIX50,  /*!< color averaging 2 */
   BLEND_MIX75,  /*!< color averaging 3 */
+  BLEND_MIX90,  /*!< color averaging 4 (90% layer, 10% background) */
   BLEND_ADD,    /*!< color is always brighter (simulate light effects) */
   BLEND_SUB,    /*!< color is always darker (simulate shadow effects) */
   BLEND_MOD,    /*!< color is always darker (simulate shadow effects) */
@@ -572,6 +573,7 @@ TLNAPI bool TLN_SetLayerTransform(int layer, float angle, float dx, float dy,
                                   float sx, float sy);
 TLNAPI bool TLN_SetLayerPixelMapping(int nlayer, TLN_PixelMap *table);
 TLNAPI bool TLN_SetLayerColumnOffset(int nlayer, int *offset);
+TLNAPI bool TLN_SetLayerBlendMode(int nlayer, TLN_Blend blend);
 TLNAPI bool TLN_SetLayerWindow(int nlayer, int x1, int y1, int x2, int y2,
                                bool invert);
 TLNAPI bool TLN_SetLayerWindowColor(int nlayer, uint8_t r, uint8_t g, uint8_t b,

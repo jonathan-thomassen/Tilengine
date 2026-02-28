@@ -34,9 +34,9 @@ bool CreateBlendTables(void) {
   for (int a = 0; a < 256; a++) {
     for (int b = 0; b < 256; b++) {
       const int offset = (a << 8) + b;
-      _blend_tables[BLEND_MIX25][offset] = (uint8_t)(a + b + b) / 3;
-      _blend_tables[BLEND_MIX50][offset] = (uint8_t)(a + b) >> 1;
-      _blend_tables[BLEND_MIX75][offset] = (uint8_t)(a + a + b) / 3;
+      _blend_tables[BLEND_MIX25][offset] = (uint8_t)((a + b + b) / 3);
+      _blend_tables[BLEND_MIX50][offset] = (uint8_t)((a + b) >> 1);
+      _blend_tables[BLEND_MIX75][offset] = (uint8_t)((a + a + b) / 3);
       _blend_tables[BLEND_ADD][offset] = (a + b) > 255 ? 255 : (uint8_t)(a + b);
       _blend_tables[BLEND_SUB][offset] = (a - b) < 0 ? 0 : (uint8_t)(a - b);
       _blend_tables[BLEND_MOD][offset] = (uint8_t)(a * b) / 255;

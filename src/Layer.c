@@ -860,6 +860,25 @@ bool TLN_ResetLayerMode(int nlayer) {
 }
 
 /*!
+ * \brief Sets blending mode for a layer
+ * \param nlayer Layer index [0, num_layers - 1]
+ * \param blend One of the available TLN_Blend modes, or BLEND_NONE to disable
+ * \see TLN_ResetLayerMode()
+ */
+bool TLN_SetLayerBlendMode(int nlayer, TLN_Blend blend) {
+  if (nlayer >= engine->numlayers) {
+    TLN_SetLastError(TLN_ERR_IDX_LAYER);
+    return false;
+  }
+
+  Layer *layer = &engine->layers[nlayer];
+  layer->render.blend = SelectBlendTable(blend);
+  SetBlitter(layer);
+  TLN_SetLastError(TLN_ERR_OK);
+  return true;
+}
+
+/*!
  * \brief Enables clipping window on selected layer
  *
  * \param nlayer Layer index [0, num_layers - 1]
