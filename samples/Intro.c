@@ -56,10 +56,13 @@ int main(int argc, char *argv[]) {
         SandblockSpawn(info.x, info.y - info.height);
         /* Moon is screen-fixed and renders behind all tilemap layers.
          * Tiled x/y give the desired screen position directly. */
-      } else if (!strcasecmp(info.name, "moon") &&
-                 (PropSpawnBackground(info.name, info.x, info.y) < 0)) {
-        printf("[objects] could not spawn background prop 'moon' at (%d,%d)\n",
-               info.x, info.y);
+      } else if (!strcasecmp(info.name, "moon")) {
+        /* Moon is screen-fixed and renders behind all tilemap layers.
+         * Tiled x/y give the desired screen position directly. */
+        if (PropSpawnBackground(info.name, info.x, info.y) < 0)
+          printf(
+              "[objects] could not spawn background prop 'moon' at (%d,%d)\n",
+              info.x, info.y);
         /* Any other named object is spawned as an inert prop.
          * The object name is used as the spriteset filename. */
       } else if (PropSpawn(info.name, info.x, info.y) < 0) {
