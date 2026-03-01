@@ -42,7 +42,27 @@ void SandblockTasks(int xworld);
  * \param inout_vy   Vertical velocity; zeroed on landing
  * \return           true if a sandblock floor was hit
  */
-bool SandblockCheckFloor(int sprite_x, int world_x, int *inout_y,
-                         int *inout_vy);
+/** Read-only snapshot of a sandblock used for external collision queries. */
+typedef struct {
+  bool falling;
+  int world_x;
+  int world_y;
+} SandblockState;
+
+/** Pixel dimensions of one sandblock — needed for AABB tests in Simon.c. */
+#define SANDBLOCK_W 16
+#define SANDBLOCK_H 16
+
+/**
+ * Fills \p out with the state of slot \p index.
+ * Returns true if the slot is active, false if empty (\p out is not written).
+ */
+bool SandblockGet(int index, SandblockState *out);
+
+/**
+ * Marks slot \p index as stood-on this frame so SandblockTasks() can
+ * advance its crumble counter.  Call when Simon's floor check hits a block.
+ */
+void SandblockMarkStood(int index);
 
 #endif

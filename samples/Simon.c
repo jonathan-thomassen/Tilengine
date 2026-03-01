@@ -89,6 +89,18 @@ static bool check_wall_right(int sprite_x, int world_x, int sprite_y) {
     if (!ti.empty)
       return true;
   }
+  int wall_x = sprite_x + 24 + world_x;
+  SandblockState sb;
+  for (int i = 0; i < MAX_SANDBLOCKS; i++) {
+    if (!SandblockGet(i, &sb) || sb.falling)
+      continue;
+    if (wall_x < sb.world_x || wall_x >= sb.world_x + SANDBLOCK_W)
+      continue;
+    for (int c = 4; c < 44; c += 16) {
+      if (sprite_y + c >= sb.world_y && sprite_y + c < sb.world_y + SANDBLOCK_H)
+        return true;
+    }
+  }
   return false;
 }
 
@@ -106,6 +118,18 @@ static bool check_wall_left(int sprite_x, int world_x, int sprite_y) {
     TLN_GetLayerTile(COLISSION_LAYER, sprite_x + world_x, sprite_y + c, &ti);
     if (!ti.empty)
       return true;
+  }
+  int wall_x = sprite_x + world_x;
+  SandblockState sb;
+  for (int i = 0; i < MAX_SANDBLOCKS; i++) {
+    if (!SandblockGet(i, &sb) || sb.falling)
+      continue;
+    if (wall_x < sb.world_x || wall_x >= sb.world_x + SANDBLOCK_W)
+      continue;
+    for (int c = 4; c < 44; c += 16) {
+      if (sprite_y + c >= sb.world_y && sprite_y + c < sb.world_y + SANDBLOCK_H)
+        return true;
+    }
   }
   return false;
 }
@@ -188,7 +212,23 @@ static void check_floor(int sprite_x, int world_x, int *inout_y,
     if (!ti.empty) {
       *inout_vy = 0;
       *inout_y -= ti.yoffset;
-      break;
+      return;
+    }
+  }
+  int foot_y = *inout_y + 46;
+  SandblockState sb;
+  for (int i = 0; i < MAX_SANDBLOCKS; i++) {
+    if (!SandblockGet(i, &sb) || sb.falling)
+      continue;
+    for (int c = 8; c < 24; c += 8) {
+      int foot_x = sprite_x + c + world_x;
+      if (foot_x >= sb.world_x && foot_x < sb.world_x + SANDBLOCK_W &&
+          foot_y >= sb.world_y && foot_y < sb.world_y + SANDBLOCK_H) {
+        *inout_vy = 0;
+        *inout_y = sb.world_y - 46;
+        SandblockMarkStood(i);
+        return;
+      }
     }
   }
 }
@@ -293,7 +333,6 @@ static void apply_collisions(int s0) {
   if (sy < 0 && check_ceiling(x, xworld, &y2, &sy, y))
     apex_hang = 0;
   check_floor(x, xworld, &y2, &sy);
-  SandblockCheckFloor(x, xworld, &y2, &sy);
   if (s0 > 0 && sy == 0)
     SimonSetState(SIMON_IDLE);
   y = y2;

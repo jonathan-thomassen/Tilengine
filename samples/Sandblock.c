@@ -116,24 +116,16 @@ void SandblockTasks(int xworld) {
   }
 }
 
-bool SandblockCheckFloor(int sprite_x, int world_x, int *inout_y,
-                         int *inout_vy) {
-  int foot_y = *inout_y + 46;
-  for (int i = 0; i < MAX_SANDBLOCKS; i++) {
-    if (!blocks[i].active || blocks[i].falling)
-      continue;
-    for (int c = 8; c < 24; c += 8) {
-      int foot_x = sprite_x + c + world_x;
-      if (foot_x >= blocks[i].world_x &&
-          foot_x < blocks[i].world_x + SANDBLOCK_W &&
-          foot_y >= blocks[i].world_y &&
-          foot_y < blocks[i].world_y + SANDBLOCK_H) {
-        *inout_vy = 0;
-        *inout_y = blocks[i].world_y - 46;
-        blocks[i].stood_this_frame = true;
-        return true;
-      }
-    }
-  }
-  return false;
+bool SandblockGet(int index, SandblockState *out) {
+  if (index < 0 || index >= MAX_SANDBLOCKS || !blocks[index].active)
+    return false;
+  out->falling = blocks[index].falling;
+  out->world_x = blocks[index].world_x;
+  out->world_y = blocks[index].world_y;
+  return true;
+}
+
+void SandblockMarkStood(int index) {
+  if (index >= 0 && index < MAX_SANDBLOCKS)
+    blocks[index].stood_this_frame = true;
 }
