@@ -314,15 +314,22 @@ void SimonTasks(void) {
   if (TLN_GetInput(INPUT_A))
     jump = true;
 
+  apply_movement(input, TLN_GetWidth());
+
+  if (jump && state != SIMON_JUMPING)
+    SimonSetState(SIMON_JUMPING);
+
   int s0 = sy;
   advance_gravity();
   apply_collisions(s0);
 
-  apply_movement(input, TLN_GetWidth());
+  /* If collisions landed Simon into IDLE but a direction is still held,
+   * promote immediately to WALKING so the idle sprite never shows for one
+   * frame. */
+  if (state == SIMON_IDLE && input != DIR_NONE)
+    SimonSetState(SIMON_WALKING);
 
-  if (jump && state != SIMON_JUMPING)
-
-    TLN_SetSpritePosition(0, x, y);
+  TLN_SetSpritePosition(0, x, y);
 }
 
 int SimonGetPosition(void) { return xworld; }
