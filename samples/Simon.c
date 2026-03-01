@@ -5,7 +5,6 @@
 #define HANGTIME 8
 #define TERM_VELOCITY 10
 #define AIR_TURN_DELAY 6
-#define COLISSION_LAYER 4
 
 typedef enum { SIMON_IDLE, SIMON_WALKING, SIMON_JUMPING } SimonState;
 
@@ -85,7 +84,8 @@ void SimonSetState(int s) {
 static bool check_wall_right(int sprite_x, int world_x, int sprite_y) {
   for (int c = 4; c < 44; c += 16) {
     TLN_TileInfo ti;
-    TLN_GetLayerTile(4, sprite_x + 24 + world_x, sprite_y + c, &ti);
+    TLN_GetLayerTile(COLISSION_LAYER, sprite_x + 24 + world_x, sprite_y + c,
+                     &ti);
     if (!ti.empty)
       return true;
   }
@@ -158,7 +158,7 @@ static bool check_ceiling(int sprite_x, int world_x, int *inout_y,
                           int *inout_vy, int prev_y) {
   for (int c = 8; c < 24; c += 8) {
     TLN_TileInfo ti;
-    TLN_GetLayerTile(4, sprite_x + c + world_x, *inout_y, &ti);
+    TLN_GetLayerTile(COLISSION_LAYER, sprite_x + c + world_x, *inout_y, &ti);
     if (!ti.empty) {
       *inout_vy = 0;
       *inout_y = prev_y; /* restore to position before the frame's movement */
@@ -183,7 +183,8 @@ static void check_floor(int sprite_x, int world_x, int *inout_y,
                         int *inout_vy) {
   for (int c = 8; c < 24; c += 8) {
     TLN_TileInfo ti;
-    TLN_GetLayerTile(4, sprite_x + c + world_x, *inout_y + 46, &ti);
+    TLN_GetLayerTile(COLISSION_LAYER, sprite_x + c + world_x, *inout_y + 46,
+                     &ti);
     if (!ti.empty) {
       *inout_vy = 0;
       *inout_y -= ti.yoffset;

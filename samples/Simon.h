@@ -3,6 +3,8 @@
 
 #include "Tilengine.h"
 
+#define COLISSION_LAYER 5
+
 void SimonInit(void);
 void SimonDeinit(void);
 void SimonTasks(void);
