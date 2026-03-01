@@ -96,7 +96,7 @@
   <object id="7" name="chain" x="848" y="40">
    <point/>
   </object>
-  <object id="8" name="moon" x="56" y="56">
+  <object id="8" name="moon" x="56" y="48">
    <point/>
   </object>
  </objectgroup>
