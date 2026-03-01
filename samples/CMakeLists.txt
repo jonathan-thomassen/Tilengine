@@ -51,13 +51,13 @@ add_executable(intro
      PaletteLayer.c
      Simon.c
      Sandblock.c
-     Pillar.c)
+     Prop.c)
 
 add_executable(barrel 
      Barrel.c
      Simon.c
      Sandblock.c
-     Pillar.c)
+     Prop.c)
 
 add_executable(mode7
      Mode7.c

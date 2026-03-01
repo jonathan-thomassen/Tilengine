@@ -1,4 +1,4 @@
-#include "Pillar.h"
+#include "Prop.h"
 #include "Sandblock.h"
 #include "Simon.h"
 #include "Tilengine.h"
@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
   TLN_Tilemap colission;
 
   /* setup engine */
-  TLN_Init(WIDTH, HEIGHT, 5, 1 + MAX_SANDBLOCKS + MAX_PILLARS, 0);
+  TLN_Init(WIDTH, HEIGHT, 5, 1 + MAX_SANDBLOCKS + MAX_PROPS, 0);
   TLN_SetBGColor(0x10, 0x00, 0x20);
 
   /* load resources*/
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 
   SimonInit();
   SandblockInit();
-  PillarInit();
+  PropInit();
 
   /* place entities from the object layer */
   TLN_ObjectList objects =
@@ -54,11 +54,12 @@ int main(int argc, char *argv[]) {
         SimonSetPosition(info.x, info.y - info.height);
       } else if (!strcasecmp(info.name, "Sandblock")) {
         SandblockSpawn(info.x, info.y - info.height);
-      } else if (!strcasecmp(info.name, "Pillar")) {
-        PillarSpawn(info.x, info.y - info.height);
       } else {
-        printf("[objects] unknown object '%s' at (%d,%d)\n", info.name, info.x,
-               info.y);
+        /* Any other named object is spawned as an inert prop.
+         * The object name is used as the spriteset filename. */
+        if (PropSpawn(info.name, info.x, info.y) < 0)
+          printf("[objects] could not spawn prop '%s' at (%d,%d)\n",
+                 info.name, info.x, info.y);
       }
       ok = TLN_GetListObject(objects, NULL);
     }
@@ -84,7 +85,7 @@ int main(int argc, char *argv[]) {
     /* scroll */
     xpos = SimonGetPosition();
     SandblockTasks(xpos);
-    PillarTasks(xpos);
+    PropTasks(xpos);
     TLN_SetLayerPosition(0, xpos, 0);
     TLN_SetLayerPosition(1, xpos, 0);
     TLN_SetLayerPosition(2, xpos, 0);
@@ -95,7 +96,7 @@ int main(int argc, char *argv[]) {
     TLN_DrawFrame(0);
   }
 
-  PillarDeinit();
+  PropDeinit();
   SandblockDeinit();
   SimonDeinit();
   TLN_DeleteTilemap(colission);
