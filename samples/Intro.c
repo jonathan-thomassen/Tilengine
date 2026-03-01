@@ -36,7 +36,7 @@ static void spawn_object(TLN_ObjectInfo const *info) {
 
 /* entry point */
 int main(int argc, char *argv[]) {
-  TLN_Tilemap colission;
+  TLN_Tilemap collision;
   TLN_Tilemap drawbridge_bg;
   TLN_Tilemap drawbridge_water;
   TLN_Tilemap drawbridge_main;
@@ -49,13 +49,13 @@ int main(int argc, char *argv[]) {
 
   /* load resources*/
   TLN_SetLoadPath("assets/sc4");
-  colission = TLN_LoadTilemap("drawbridge_main.tmx", "Colission");
+  collision = TLN_LoadTilemap("drawbridge_main.tmx", "Collision");
   drawbridge_bg = TLN_LoadTilemap("drawbridge_bg.tmx", NULL);
   drawbridge_water = TLN_LoadTilemap("drawbridge_water.tmx", NULL);
   drawbridge_main = TLN_LoadTilemap("drawbridge_main.tmx", "Tiles");
   drawbridge_rocks = TLN_LoadTilemap("drawbridge_rocks.tmx", NULL);
   hud = TLN_LoadTilemap("hud.tmx", NULL);
-  TLN_SetLayerTilemap(COLISSION_LAYER, colission);
+  TLN_SetLayerTilemap(COLLISION_LAYER, collision);
   TLN_SetLayerTilemap(BACKGROUND_LAYER, drawbridge_bg);
   TLN_SetLayerTilemap(WATER_LAYER, drawbridge_water);
   TLN_SetLayerTilemap(MAIN_LAYER, drawbridge_main);
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
     TLN_SetLayerPosition(MAIN_LAYER, xpos, 0);
     TLN_SetLayerPosition(WATER_LAYER, xpos, 0);
     TLN_SetLayerPosition(BACKGROUND_LAYER, xpos * 2 / 5, 0);
-    TLN_SetLayerPosition(COLISSION_LAYER, xpos, 0);
+    TLN_SetLayerPosition(COLLISION_LAYER, xpos, 0);
 
     /* render to window */
     TLN_DrawFrame(0);
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
   PropDeinit();
   SandblockDeinit();
   SimonDeinit();
-  TLN_DeleteTilemap(colission);
+  TLN_DeleteTilemap(collision);
   TLN_DeleteTilemap(drawbridge_bg);
   TLN_DeleteTilemap(drawbridge_rocks);
   TLN_DeleteTilemap(drawbridge_water);
