@@ -9,6 +9,7 @@
  * */
 
 #include "ObjectList.h"
+#include "Engine.h"
 #include "LoadFile.h"
 #include "LoadTMX.h"
 #include "Sprite.h"
@@ -18,10 +19,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 #define ODB(msg, ...)                                                          \
   do {                                                                         \
-    printf("[OBJ] " msg "\n", ##__VA_ARGS__);                                  \
-    fflush(stdout);                                                            \
+    char _odb_buf[256];                                                        \
+    snprintf(_odb_buf, sizeof(_odb_buf), "[OBJ] " msg, ##__VA_ARGS__);         \
+    tln_trace(TLN_LOG_VERBOSE, _odb_buf);                                      \
   } while (0)
 
 /* properties */

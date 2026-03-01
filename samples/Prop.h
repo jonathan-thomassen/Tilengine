@@ -32,6 +32,20 @@ void PropDeinit(void);
 int PropSpawn(const char *name, int world_x, int world_y);
 
 /**
+ * Spawns a screen-fixed background prop rendered behind all tilemap layers.
+ *
+ * The prop is positioned at \p screen_x / \p screen_y in screen space and
+ * never re-positioned during \c PropTasks(), so it does not scroll.
+ * It is drawn before the first tilemap layer, appearing behind everything.
+ *
+ * \param name      Spriteset filename without extension (e.g. "moon")
+ * \param screen_x  Fixed screen x position (pixels from left edge)
+ * \param screen_y  Fixed screen y position (pixels from top edge)
+ * \return          Slot index on success, -1 if no free slot or load failed
+ */
+int PropSpawnBackground(const char *name, int screen_x, int screen_y);
+
+/**
  * Repositions all active prop sprites to match the current scroll offset.
  * Call once per frame before TLN_DrawFrame().
  *

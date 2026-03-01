@@ -76,6 +76,7 @@ typedef enum {
   FLAG_MASKED = BITVAL(11),   /*!< sprite won't be drawn inside masked region */
   FLAG_TILESET = (15 << 7),   /*!< tileset index (0 - 15) */
   FLAG_PALETTE = (7 << 4),    /*!< palette index (0 - 7) */
+  FLAG_BACKGROUND = BITVAL(3), /*!< sprite renders behind all layers */
 } TLN_TileFlags;
 
 /*!

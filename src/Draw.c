@@ -204,6 +204,23 @@ static void update_sprite_if_dirty(Sprite *sprite) {
   SetSpriteFlag(sprite, SPRITE_FLAG_DIRTY, false);
 }
 
+/* draws all background sprites (FLAG_BACKGROUND) — rendered below every layer
+ */
+static void draw_background_sprites(uint32_t *scan, int line) {
+  if (engine->numsprites == 0)
+    return;
+  List const *list = &engine->list_sprites;
+  int index = list->first;
+  while (index != -1) {
+    Sprite *sprite = &engine->sprites[index];
+    update_sprite_if_dirty(sprite);
+    if (check_sprite_coverage(sprite, line) &&
+        (sprite->flags & FLAG_BACKGROUND))
+      sprite->funcs.draw(index, scan, line, 0, 0);
+    index = sprite->list_node.next;
+  }
+}
+
 /* draws all non-priority sprites; returns true if any priority sprites exist */
 static bool draw_regular_sprites(uint32_t *scan, int line) {
   bool sprite_priority = false;
@@ -217,8 +234,11 @@ static bool draw_regular_sprites(uint32_t *scan, int line) {
     Sprite *sprite = &engine->sprites[index];
     update_sprite_if_dirty(sprite);
     bool has_coverage = check_sprite_coverage(sprite, line);
+    bool has_background = (sprite->flags & FLAG_BACKGROUND) != 0;
     bool has_priority = (sprite->flags & FLAG_PRIORITY) != 0;
-    if (has_coverage && !has_priority)
+    if (has_background) {
+      /* already drawn before layers — skip */
+    } else if (has_coverage && !has_priority)
       sprite->funcs.draw(index, scan, line, 0, 0);
     else if (has_coverage && has_priority)
       sprite_priority = true;
@@ -270,6 +290,7 @@ bool DrawScanline(void) {
     engine->callbacks.raster(line);
 
   fill_background(scan, engine->framebuffer.width, line);
+  draw_background_sprites(scan, line); /* behind all layers */
 
   bool background_priority = draw_regular_layers(line);
   bool sprite_priority = draw_regular_sprites(scan, line);

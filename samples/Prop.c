@@ -15,6 +15,7 @@ typedef struct {
 
 typedef struct {
   bool active;
+  bool fixed;   /* screen-fixed background prop (FLAG_BACKGROUND, no scroll) */
   int type_idx; /* index into types[] */
   int world_x;
   int world_y;
@@ -46,6 +47,7 @@ void PropInit(void) {
   num_types = 0;
   for (int i = 0; i < MAX_PROPS; i++) {
     props[i].active = false;
+    props[i].fixed = false;
     TLN_DisableSprite(SPRITE_BASE + i);
   }
 }
@@ -72,6 +74,7 @@ int PropSpawn(const char *name, int world_x, int world_y) {
     if (props[i].active)
       continue;
     props[i].active = true;
+    props[i].fixed = false;
     props[i].type_idx = type_idx;
     props[i].world_x = world_x;
     props[i].world_y = world_y;
@@ -82,10 +85,37 @@ int PropSpawn(const char *name, int world_x, int world_y) {
   return -1; /* no free slot */
 }
 
+int PropSpawnBackground(const char *name, int screen_x, int screen_y) {
+  int type_idx = find_or_load_type(name);
+  if (type_idx < 0)
+    return -1;
+
+  for (int i = 0; i < MAX_PROPS; i++) {
+    if (props[i].active)
+      continue;
+    props[i].active = true;
+    props[i].fixed = true;
+    props[i].type_idx = type_idx;
+    props[i].world_x = screen_x;
+    props[i].world_y = screen_y;
+    int slot = SPRITE_BASE + i;
+    TLN_SetSpriteSet(slot, types[type_idx].ss);
+    TLN_SetSpritePicture(slot, 0);
+    /* render behind all tilemap layers */
+    TLN_EnableSpriteFlag(slot, FLAG_BACKGROUND, true);
+    /* position once — stays fixed on screen */
+    TLN_SetSpritePosition(slot, screen_x, screen_y);
+    return i;
+  }
+  return -1; /* no free slot */
+}
+
 void PropTasks(int xworld) {
   for (int i = 0; i < MAX_PROPS; i++) {
     if (!props[i].active)
       continue;
+    if (props[i].fixed)
+      continue; /* screen-fixed: position never changes after spawn */
     TLN_SetSpritePosition(SPRITE_BASE + i, props[i].world_x - xworld,
                           props[i].world_y);
   }
