@@ -54,12 +54,11 @@ int main(int argc, char *argv[]) {
         SimonSetPosition(info.x, info.y - info.height);
       } else if (!strcasecmp(info.name, "Sandblock")) {
         SandblockSpawn(info.x, info.y - info.height);
-      } else {
         /* Any other named object is spawned as an inert prop.
          * The object name is used as the spriteset filename. */
-        if (PropSpawn(info.name, info.x, info.y) < 0)
-          printf("[objects] could not spawn prop '%s' at (%d,%d)\n",
-                 info.name, info.x, info.y);
+      } else if (PropSpawn(info.name, info.x, info.y) < 0) {
+        printf("[objects] could not spawn prop '%s' at (%d,%d)\n", info.name,
+               info.x, info.y);
       }
       ok = TLN_GetListObject(objects, NULL);
     }
