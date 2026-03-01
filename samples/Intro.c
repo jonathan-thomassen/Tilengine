@@ -1,3 +1,4 @@
+#include "Hud.h"
 #include "Prop.h"
 #include "Sandblock.h"
 #include "Simon.h"
@@ -64,6 +65,7 @@ int main(int argc, char *argv[]) {
   SimonInit();
   SandblockInit();
   PropInit();
+  HudInit(hud);
 
   /* place entities from the object layer */
   TLN_ObjectList objects = TLN_LoadObjectList("drawbridge_main.tmx", "Objects");
@@ -92,6 +94,7 @@ int main(int argc, char *argv[]) {
     snprintf(title, sizeof(title), "FPS: %d", TLN_GetAverageFps());
     TLN_SetWindowTitle(title);
     SimonTasks();
+    HudTasks();
 
     /* scroll */
     xpos = SimonGetPosition();

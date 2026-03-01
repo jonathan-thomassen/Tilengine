@@ -51,7 +51,8 @@ add_executable(intro
      PaletteLayer.c
      Simon.c
      Sandblock.c
-     Prop.c)
+     Prop.c
+     Hud.c)
 
 add_executable(barrel 
      Barrel.c
