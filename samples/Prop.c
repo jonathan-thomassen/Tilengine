@@ -2,6 +2,7 @@
 #include "Sandblock.h" /* for MAX_SANDBLOCKS — defines where our slots begin */
 #include "Tilengine.h"
 #include <stdbool.h>
+#include <stdio.h>
 #include <string.h>
 
 /* Prop sprite slots follow Simon (0) and the sandblocks (1..MAX_SANDBLOCKS). */
@@ -11,6 +12,7 @@
 typedef struct {
   char name[32];
   TLN_Spriteset ss;
+  TLN_SequencePack sp; /* NULL if no matching .sqx file exists */
 } PropType;
 
 typedef struct {
@@ -38,6 +40,10 @@ static int find_or_load_type(const char *name) {
   if (ss == NULL)
     return -1;
   types[num_types].ss = ss;
+  /* Try to load a same-named sequence pack; silently skip if absent. */
+  char sqx_name[36];
+  snprintf(sqx_name, sizeof(sqx_name), "%s.sqx", name);
+  types[num_types].sp = TLN_LoadSequencePack(sqx_name);
   strncpy(types[num_types].name, name, sizeof(types[num_types].name) - 1);
   types[num_types].name[sizeof(types[num_types].name) - 1] = '\0';
   return num_types++;
@@ -60,7 +66,10 @@ void PropDeinit(void) {
   for (int i = 0; i < num_types; i++) {
     if (types[i].ss != NULL)
       TLN_DeleteSpriteset(types[i].ss);
+    if (types[i].sp != NULL)
+      TLN_DeleteSequencePack(types[i].sp);
     types[i].ss = NULL;
+    types[i].sp = NULL;
   }
   num_types = 0;
 }
@@ -80,6 +89,9 @@ int PropSpawn(const char *name, int world_x, int world_y) {
     props[i].world_y = world_y;
     TLN_SetSpriteSet(SPRITE_BASE + i, types[type_idx].ss);
     TLN_SetSpritePicture(SPRITE_BASE + i, 0);
+    if (types[type_idx].sp != NULL)
+      TLN_SetSpriteAnimation(SPRITE_BASE + i,
+                             TLN_GetSequence(types[type_idx].sp, 0), 0);
     return i;
   }
   return -1; /* no free slot */
@@ -101,6 +113,8 @@ int PropSpawnBackground(const char *name, int screen_x, int screen_y) {
     int slot = SPRITE_BASE + i;
     TLN_SetSpriteSet(slot, types[type_idx].ss);
     TLN_SetSpritePicture(slot, 0);
+    if (types[type_idx].sp != NULL)
+      TLN_SetSpriteAnimation(slot, TLN_GetSequence(types[type_idx].sp, 0), 0);
     /* render behind all tilemap layers */
     TLN_EnableSpriteFlag(slot, FLAG_BACKGROUND, true);
     /* position once — stays fixed on screen */
