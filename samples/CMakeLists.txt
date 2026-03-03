@@ -52,7 +52,8 @@ add_executable(intro
      Simon.c
      Sandblock.c
      Prop.c
-     Hud.c)
+     Hud.c
+     Drawbridge.c)
 
 add_executable(barrel 
      Barrel.c

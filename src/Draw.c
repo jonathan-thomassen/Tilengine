@@ -579,11 +579,13 @@ static bool DrawTiledScanlineAffine(int nlayer, uint32_t *dstpixel, int nscan,
       if ((tile->flags & (FLAG_FLIPX + FLAG_FLIPY + FLAG_ROTATE)) != 0)
         process_flip_rotation(tile->flags, &scan);
 
-      /* paint RGB pixel value */
+      /* paint RGB pixel value (skip palette index 0 = transparent) */
       const struct Palette *palette =
           layer->palette != NULL ? layer->palette : tileset2->palette;
-      *dstpixel = palette->data[GetTilesetPixel(tileset2, tile_index, scan.srcx,
-                                                scan.srcy)];
+      const uint8_t pix =
+          GetTilesetPixel(tileset2, tile_index, scan.srcx, scan.srcy);
+      if (pix != 0)
+        *dstpixel = palette->data[pix];
     }
 
     /* next pixel */

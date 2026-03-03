@@ -1,8 +1,10 @@
+#include "Drawbridge.h"
 #include "Hud.h"
 #include "Prop.h"
 #include "Sandblock.h"
 #include "Simon.h"
 #include "Tilengine.h"
+#include <SDL3/SDL_events.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -42,9 +44,10 @@ int main(int argc, char *argv[]) {
   TLN_Tilemap drawbridge_main;
   TLN_Tilemap drawbridge_rocks;
   TLN_Tilemap hud;
+  TLN_Tilemap drawbridge_drawbridge = NULL;
 
   /* setup engine */
-  TLN_Init(WIDTH, HEIGHT, 6, 1 + MAX_SANDBLOCKS + MAX_PROPS, 0);
+  TLN_Init(WIDTH, HEIGHT, 7, 1 + MAX_SANDBLOCKS + MAX_PROPS, 0);
   TLN_SetBGColor(0x10, 0x00, 0x20);
 
   /* load resources*/
@@ -60,6 +63,9 @@ int main(int argc, char *argv[]) {
   TLN_SetLayerTilemap(WATER_LAYER, drawbridge_water);
   TLN_SetLayerTilemap(MAIN_LAYER, drawbridge_main);
   TLN_SetLayerTilemap(ROCKS_LAYER, drawbridge_rocks);
+
+  DrawbridgeInit(MAIN_LAYER, 221, 183);
+
   TLN_SetLayerTilemap(HUD_LAYER, hud);
 
   SimonInit();
@@ -98,10 +104,28 @@ int main(int argc, char *argv[]) {
 
     /* scroll */
     xpos = SimonGetPosition();
+
+    /* drawbridge animation: triggered at xpos 768, lasts 1200 frames */
+    static int db_frame = 0;
+    if (xpos >= 768 && db_frame <= 1200) {
+      db_frame++;
+      drawbridge_drawbridge =
+          TLN_LoadTilemap("drawbridge_drawbridge.tmx", NULL);
+      TLN_SetLayerTilemap(MAIN_LAYER, drawbridge_drawbridge);
+      TLN_SetLayerWindow(MAIN_LAYER, 0, 32, 256, 192, false);
+    }
+    DrawbridgeSetProgress((float)db_frame / 1200.0f);
+
+    /* Lock the camera once the drawbridge animation begins. */
+    if (db_frame > 0)
+      xpos = 768;
+
     SandblockTasks(xpos);
     PropTasks(xpos);
+    DrawbridgeTasks();
     TLN_SetLayerPosition(ROCKS_LAYER, xpos, 0);
-    TLN_SetLayerPosition(MAIN_LAYER, xpos, 0);
+    TLN_SetLayerPosition(MAIN_LAYER, xpos + (db_frame > 0 ? 80 : 0),
+                         (db_frame > 0 ? 8 : 0));
     TLN_SetLayerPosition(WATER_LAYER, xpos, 0);
     TLN_SetLayerPosition(BACKGROUND_LAYER, xpos * 2 / 5, 0);
     TLN_SetLayerPosition(COLLISION_LAYER, xpos, 0);
@@ -118,6 +142,7 @@ int main(int argc, char *argv[]) {
   TLN_DeleteTilemap(drawbridge_rocks);
   TLN_DeleteTilemap(drawbridge_water);
   TLN_DeleteTilemap(drawbridge_main);
+  TLN_DeleteTilemap(drawbridge_drawbridge);
   TLN_DeleteTilemap(hud);
   TLN_Deinit();
   return 0;
