@@ -3,13 +3,12 @@
 
 #include "Tilengine.h"
 
-
 #define WIDTH 400
 #define HEIGHT 240
 
 static uint8_t framebuffer[WIDTH * HEIGHT * 4];
 
-int main(int argc, char *argv[]) {
+int main(void) {
   int c;
   TLN_Tilemap tilemap = NULL;
   TLN_Spriteset spriteset = NULL;

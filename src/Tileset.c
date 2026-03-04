@@ -9,13 +9,13 @@
  * */
 
 #include "Tileset.h"
-#include "Bitmap.h"
-#include "Palette.h"
-#include "Tilengine.h"
-#include "simplexml.h"
-#include <stdio.h>
+
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "SequencePack.h"
+#include "Tilengine.h"
 
 static bool HasTransparentPixels(uint8_t const *src, int width);
 
@@ -101,8 +101,7 @@ TLN_Tileset TLN_CreateTileset(int numtiles, int width, int height,
   /* Allocate numtiles+1 so that the maximum valid tile->index (numtiles,
    * assigned as GID - firstgid + 1) is always in-bounds. */
   tileset->tiles = (uint16_t *)calloc(numtiles + 1, sizeof(uint16_t));
-  for (c = 0; c <= numtiles; c += 1)
-    tileset->tiles[c] = (uint16_t)c;
+  for (c = 0; c <= numtiles; c += 1) tileset->tiles[c] = (uint16_t)c;
 
   /* create animations */
   if (sp != NULL && sp->num_sequences > 0)
@@ -185,7 +184,8 @@ bool TLN_SetTilesetPixels(TLN_Tileset tileset, int entry,
   }
 
   line = entry * tileset->height;
-  dstdata = tileset->data + (entry * tileset->width * tileset->height);
+  dstdata =
+      tileset->data + ((ptrdiff_t)entry * tileset->width * tileset->height);
   for (int c = 0; c < tileset->height; c++) {
     memcpy(dstdata, srcdata, tileset->width);
     tileset->color_key[line++] = HasTransparentPixels(srcdata, tileset->width);
@@ -255,7 +255,9 @@ TLN_Tileset TLN_CloneTileset(TLN_Tileset src) {
  * \see
  * TLN_LoadTileset(), TLN_CloneTileset()
  */
-bool TLN_DeleteTileset(TLN_Tileset /*tileset*/) { return true; }
+bool TLN_DeleteTileset(TLN_Tileset /*tileset*/) {
+  return true;
+}
 
 /*!
  * \brief

@@ -31,6 +31,10 @@ endif()
 target_link_libraries(${PROJECT_NAME} PRIVATE "z")
 target_link_libraries(${PROJECT_NAME} PRIVATE "png")
 
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PUBLIC "winmm")
+endif()
+
 # On MinGW, prefer pkg-config for SDL3
 if (MINGW)
     find_package(PkgConfig)
@@ -52,10 +56,12 @@ endif()
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 # Compiler-specific flags
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 if (MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /W3 /std:c23)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W3)
 else()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c23 -O2 -Wall -Wextra")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -Wall -Wextra")
     if (NOT WIN32)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic")
     endif()

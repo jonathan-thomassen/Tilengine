@@ -12,7 +12,6 @@
 #define _TILESET_H
 
 #include "Animation.h"
-#include "Bitmap.h"
 #include "Object.h"
 #include "Palette.h"
 #include "SequencePack.h"
@@ -49,10 +48,10 @@ struct Tileset {
 #define GetTilesetHMask(tileset) ((tileset)->width - 1)
 #define GetTilesetVMask(tileset) ((tileset)->height - 1)
 
-#define GetTilesetLine(tileset, index, y) ((index << tileset->vshift) + y)
+#define GetTilesetLine(tileset, index, y) (((index) << (tileset)->vshift) + (y))
 
 #define GetTilesetPixel(tileset, index, x, y)                                  \
-  tileset->data[(((index << tileset->vshift) + y) << tileset->hshift) + x]
+  tileset->data[((((index) << (tileset)->vshift) + (y)) << (tileset)->hshift) + (x)]
 
 TLN_Bitmap GetTilesetBitmap(TLN_Tileset tileset, int tileid);
 

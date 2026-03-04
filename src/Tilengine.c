@@ -19,6 +19,7 @@
 #include "Layer.h"
 #include "LoadTMX.h"
 #include "Palette.h"
+#include "SequencePack.h"
 #include "Sprite.h"
 #include "Tables.h"
 #include "Tilemap.h"

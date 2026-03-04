@@ -13,14 +13,17 @@
 #endif
 
 #include "Animation.h"
+
+#include <string.h>
+
 #include "Debug.h"
 #include "Engine.h"
 #include "Palette.h"
 #include "Sequence.h"
+#include "SequencePack.h"
 #include "Tables.h"
 #include "Tilemap.h"
 #include "Tilengine.h"
-#include <string.h>
 
 /* linear interploation */
 static int lerp(int x, int x0, int x1, int fx0, int fx1) {
@@ -65,20 +68,20 @@ void UpdateAnimation(Animation *animation, int time) {
   frames = (TLN_SequenceFrame *)&sequence->data;
   animation->timer = time + frames[animation->pos].delay;
   switch (animation->type) {
-  case TYPE_SPRITE:
-    TLN_SetSpritePicture(animation->nsprite, frames[animation->pos].index);
-    break;
+    case TYPE_SPRITE:
+      TLN_SetSpritePicture(animation->nsprite, frames[animation->pos].index);
+      break;
 
-  case TYPE_TILESET:
-    animation->tileset->tiles[sequence->target] =
-        (uint16_t)frames[animation->pos].index;
-    break;
+    case TYPE_TILESET:
+      animation->tileset->tiles[sequence->target] =
+          (uint16_t)frames[animation->pos].index;
+      break;
 
-  /* Fall through */
-  /* Stop warning GNU C compiler	*/
-  case TYPE_NONE:
-  case TYPE_PALETTE:
-    break;
+    /* Fall through */
+    /* Stop warning GNU C compiler	*/
+    case TYPE_NONE:
+    case TYPE_PALETTE:
+      break;
   }
 
   /* next frame */
@@ -317,7 +320,6 @@ bool TLN_SetAnimationDelay(int index, int frame, int delay) {
  * Index of the first unused animation (starting from 0) or -1 if none found
  */
 int TLN_GetAvailableAnimation(void) {
-
   TLN_SetLastError(TLN_ERR_OK);
   for (int c = 0; c < engine->anim.num; c++) {
     if (!engine->anim.items[c].enabled)
@@ -466,11 +468,9 @@ static void ColorCycle(struct Palette const *srcpalette, TLN_Palette dstpalette,
   int steps = strip->pos;
 
   if (strip->dir) {
-    for (c = 0; c < count; c++)
-      dstptr[c] = srcptr[(c - steps + count) % count];
+    for (c = 0; c < count; c++) dstptr[c] = srcptr[(c - steps + count) % count];
   } else {
-    for (c = 0; c < count; c++)
-      dstptr[c] = srcptr[(c + steps) % count];
+    for (c = 0; c < count; c++) dstptr[c] = srcptr[(c + steps) % count];
   }
 }
 

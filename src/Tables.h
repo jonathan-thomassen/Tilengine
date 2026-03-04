@@ -27,6 +27,6 @@ uint8_t *SelectBlendTable(TLN_Blend mode);
 }
 #endif
 
-#define blendfunc(t, a, b) *(t + ((a) << 8) + (b))
+#define blendfunc(t, a, b) *((t) + ((a) << 8) + (b))
 
 #endif

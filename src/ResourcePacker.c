@@ -9,13 +9,16 @@
  * */
 
 #include "ResourcePacker.h"
-#include "aes.h"
-#include "crc32.h"
-#include "md5.h"
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "aes.h"
+#include "crc32.h"
+#include "md5.h"
+
 
 #define KEY_SIZE 128
 #define FILE_ID "ResPack"
@@ -101,8 +104,7 @@ static void aes_decrypt_cbc(const uint8_t *in, size_t in_len, uint8_t *out,
   memcpy(prev, init_vec, AES_BLOCK_SIZE);
   for (size_t i = 0; i + AES_BLOCK_SIZE <= in_len; i += AES_BLOCK_SIZE) {
     aes_decrypt(in + i, temp, key, keysize);
-    for (int j = 0; j < AES_BLOCK_SIZE; j++)
-      out[i + j] = temp[j] ^ prev[j];
+    for (int j = 0; j < AES_BLOCK_SIZE; j++) out[i + j] = temp[j] ^ prev[j];
     memcpy(prev, in + i, AES_BLOCK_SIZE);
   }
 }
@@ -134,7 +136,7 @@ static void *load_asset(ResPack rp, ResEntry const *entry) {
   /* validate integrity */
   crc = _crc32(0, buffer, entry->data_size);
   if (crc == entry->crc)
-    buffer[entry->data_size] = 0; // NULL-terminated string
+    buffer[entry->data_size] = 0;  // NULL-terminated string
   else {
     free(buffer);
     buffer = NULL;
@@ -335,8 +337,7 @@ int ResPack_Build(const char *filelist, const char *passphrase) {
   }
 
   /* count number of lines */
-  while (fgets(line, sizeof(line), pf_list) != NULL)
-    res_header.num_regs += 1;
+  while (fgets(line, sizeof(line), pf_list) != NULL) res_header.num_regs += 1;
   fseek(pf_list, 0, SEEK_SET);
 
   /* open output file */

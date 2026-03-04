@@ -13,9 +13,11 @@
 #endif
 
 #include "Tilemap.h"
-#include "Tilengine.h"
-#include <stdio.h>
+
+#include <stddef.h>
 #include <string.h>
+
+#include "Tilengine.h"
 
 typedef struct {
   int x;
@@ -56,7 +58,7 @@ typedef struct {
 TLN_Tilemap TLN_CreateTilemap(int rows, int cols, Tile const *tiles,
                               uint32_t bgcolor, TLN_Tileset tileset) {
   TLN_Tilemap tilemap = NULL;
-  int size = sizeof(struct Tilemap) + (rows * cols * sizeof(Tile));
+  int size = sizeof(struct Tilemap) + ((long long)rows * cols * sizeof(Tile));
 
   tilemap = (TLN_Tilemap)CreateBaseObject(OT_TILEMAP, size);
   if (!tilemap)

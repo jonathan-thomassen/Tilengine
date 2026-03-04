@@ -9,15 +9,15 @@
  * */
 
 #include "Sprite.h"
+
+#include <math.h>
+#include <stddef.h>
+
 #include "Blitters.h"
 #include "Debug.h"
 #include "Engine.h"
-#include "Palette.h"
 #include "Spriteset.h"
-#include "Tables.h"
 #include "Tilengine.h"
-#include <math.h>
-#include <string.h>
 
 #ifdef _MSC_VER
 #define inline __inline
@@ -318,163 +318,154 @@ bool TLN_ResetSpriteScaling(int nsprite) {
   return true;
 }
 
-#if 0
-
-typedef struct
-{
-	fix_t x, y;
-	fix_t dx, dy;
-}
-Vector2D;
+typedef struct {
+  fix_t x;
+  fix_t y;
+  fix_t dx;
+  fix_t dy;
+} Vector2D;
 
 /* establece vector2D de punto fijo */
-static void Vector2DSet(Vector2D* vector, Point2D* src, Point2D* dst, int len)
-{
-	int dstw = (int)(dst->x - src->x);
-	int dsth = (int)(dst->y - src->y);
-	vector->x = float2fix(src->x);
-	vector->y = float2fix(src->y);
-	vector->dx = int2fix(dstw) / len;
-	vector->dy = int2fix(dsth) / len;
+static void Vector2DSet(Vector2D *vector, Point2D const *src,
+                        Point2D const *dst, int len) {
+  int dstw = (int)(dst->x - src->x);
+  int dsth = (int)(dst->y - src->y);
+  vector->x = float2fix(src->x);
+  vector->y = float2fix(src->y);
+  vector->dx = int2fix(dstw) / len;
+  vector->dy = int2fix(dsth) / len;
 }
 
-static inline void Vector2DAdvance(Vector2D* vector)
-{
-	vector->x += vector->dx;
-	vector->y += vector->dy;
+static inline void Vector2DAdvance(Vector2D *vector) {
+  vector->x += vector->dx;
+  vector->y += vector->dy;
 }
 
-bool TLN_SetSpriteRotation(int nsprite, float angle)
-{
-	Sprite* sprite;
-	Matrix3 transform, matrix;
-	fix_t dx, dy;
-	Point2D corners[4];
-	rect_t* rect;
-	Vector2D xvect, yvect;
-	TLN_Bitmap rotated;
-	int spr_w, spr_h;
-	int c, x, y;
-	uint8_t* srcptr;
-	uint8_t* dstptr;
+bool TLN_SetSpriteRotation(int nsprite, float angle) {
+  Sprite *sprite;
+  Matrix3 transform;
+  Matrix3 matrix;
+  fix_t dx;
+  fix_t dy;
+  Point2D corners[4];
+  rect_t *rect;
+  Vector2D xvect;
+  Vector2D yvect;
+  TLN_Bitmap rotated;
+  int spr_w;
+  int spr_h;
+  int c;
+  uint8_t const *srcptr;
+  uint8_t *dstptr;
 
-	if (nsprite >= engine->numsprites)
-	{
-		TLN_SetLastError(TLN_ERR_IDX_SPRITE);
-		return false;
-	}
+  if (nsprite >= engine->numsprites) {
+    TLN_SetLastError(TLN_ERR_IDX_SPRITE);
+    return false;
+  }
 
-	sprite = &engine->sprites[nsprite];
+  sprite = &engine->sprites[nsprite];
 
-	/* borra anterior */
-	if (sprite->rotation_bitmap != NULL)
-		TLN_DeleteBitmap(sprite->rotation_bitmap);
+  /* borra anterior */
+  if (sprite->rotation_bitmap != NULL)
+    TLN_DeleteBitmap(sprite->rotation_bitmap);
 
-	/* calcula 4 esquinas */
-	spr_w = sprite->info->w;
-	spr_h = sprite->info->h;
-	Point2DSet(&corners[0], (math2d_t)sprite->pos.x, (math2d_t)sprite->pos.y);
-	Point2DSet(&corners[1], (math2d_t)sprite->pos.x + spr_w - 1, (math2d_t)sprite->pos.y);
-	Point2DSet(&corners[2], (math2d_t)sprite->pos.x + spr_w - 1, (math2d_t)sprite->pos.y + spr_h - 1);
-	Point2DSet(&corners[3], (math2d_t)sprite->pos.x, (math2d_t)sprite->pos.y + spr_h - 1);
+  /* calcula 4 esquinas */
+  spr_w = sprite->info->w;
+  spr_h = sprite->info->h;
+  Point2DSet(&corners[0], (math2d_t)sprite->pos.x, (math2d_t)sprite->pos.y);
+  Point2DSet(&corners[1], (math2d_t)sprite->pos.x + (math2d_t)spr_w - 1,
+             (math2d_t)sprite->pos.y);
+  Point2DSet(&corners[2], (math2d_t)sprite->pos.x + (math2d_t)spr_w - 1,
+             (math2d_t)sprite->pos.y + (math2d_t)spr_h - 1);
+  Point2DSet(&corners[3], (math2d_t)sprite->pos.x,
+             (math2d_t)sprite->pos.y + (math2d_t)spr_h - 1);
 
-	/* calcula matriz para rotar desde el centro */
-	dx = sprite->pos.x - (spr_w >> 1);
-	dy = sprite->pos.y - (spr_h >> 1);
-	Matrix3SetIdentity(&matrix);
-	Matrix3SetTranslation(&transform, (math2d_t)-dx, (math2d_t)-dy);
-	Matrix3Multiply(&matrix, &transform);
-	Matrix3SetRotation(&transform, (math2d_t)fmod(angle, 360.0f));
-	Matrix3Multiply(&matrix, &transform);
-	Matrix3SetTranslation(&transform, (math2d_t)dx, (math2d_t)dy);
-	Matrix3Multiply(&matrix, &transform);
+  /* calcula matriz para rotar desde el centro */
+  dx = sprite->pos.x - (spr_w >> 1);
+  dy = sprite->pos.y - (spr_h >> 1);
+  Matrix3SetIdentity(&matrix);
+  Matrix3SetTranslation(&transform, (math2d_t)-dx, (math2d_t)-dy);
+  Matrix3Multiply(&matrix, &transform);
+  Matrix3SetRotation(&transform, fmodf(angle, 360.0f));
+  Matrix3Multiply(&matrix, &transform);
+  Matrix3SetTranslation(&transform, (math2d_t)dx, (math2d_t)dy);
+  Matrix3Multiply(&matrix, &transform);
 
-	/* multiplica los puntos por la matriz */
-	for (c = 0; c < 4; c++)
-	{
-		Point2DMultiply(&corners[c], &matrix);
-		corners[c].x = (math2d_t)roundf(corners[c].x);
-		corners[c].y = (math2d_t)roundf(corners[c].y);
-	}
+  /* multiplica los puntos por la matriz */
+  for (c = 0; c < 4; c++) {
+    Point2DMultiply(&corners[c], &matrix);
+    corners[c].x = roundf(corners[c].x);
+    corners[c].y = roundf(corners[c].y);
+  }
 
-	/* obtiene rectángulo contenedor en pantalla */
-	rect = &sprite->dstrect;
-	rect->x1 = rect->x2 = (int)corners[0].x;
-	rect->y1 = rect->y2 = (int)corners[0].y;
-	for (c = 1; c < 4; c++)
-	{
-		Point2D* point = &corners[c];
-		if (rect->x1 > point->x) rect->x1 = (int)point->x;
-		if (rect->x2 < point->x) rect->x2 = (int)point->x;
-		if (rect->y1 > point->y) rect->y1 = (int)point->y;
-		if (rect->y2 < point->y) rect->y2 = (int)point->y;
-	}
+  /* obtiene rectángulo contenedor en pantalla */
+  rect = &sprite->dstrect;
+  rect->x1 = rect->x2 = (int)corners[0].x;
+  rect->y1 = rect->y2 = (int)corners[0].y;
+  for (c = 1; c < 4; c++) {
+    Point2D const *point = &corners[c];
+    if ((math2d_t)rect->x1 > point->x)
+      rect->x1 = (int)point->x;
+    if ((math2d_t)rect->x2 < point->x)
+      rect->x2 = (int)point->x;
+    if ((math2d_t)rect->y1 > point->y)
+      rect->y1 = (int)point->y;
+    if ((math2d_t)rect->y2 < point->y)
+      rect->y2 = (int)point->y;
+  }
 
-	/* ajusta array de puntos a origen (0,0) para obtener tamaño */
-	for (c = 0; c < 4; c++)
-	{
-		corners[c].x -= rect->x1;
-		corners[c].y -= rect->y1;
-	}
+  /* ajusta array de puntos a origen (0,0) para obtener tamaño */
+  for (c = 0; c < 4; c++) {
+    corners[c].x -= (math2d_t)rect->x1;
+    corners[c].y -= (math2d_t)rect->y1;
+  }
 
-	rotated = TLN_CreateBitmap(rect->x2 - rect->x1 + 1, rect->y2 - rect->y1 + 1, 8);
+  rotated =
+      TLN_CreateBitmap(rect->x2 - rect->x1 + 1, rect->y2 - rect->y1 + 1, 8);
 
-	/* inicia vectores de barrido */
-	Vector2DSet(&xvect, &corners[0], &corners[1], spr_w);
-	Vector2DSet(&yvect, &corners[0], &corners[3], spr_h);
+  /* inicia vectores de barrido */
+  Vector2DSet(&xvect, &corners[0], &corners[1], spr_w);
+  Vector2DSet(&yvect, &corners[0], &corners[3], spr_h);
 
-	/* dibuja bitmap de destino girado */
-	for (y = 0; y < spr_h; y++)
-	{
-		xvect.x = yvect.x;
-		xvect.y = yvect.y;
-		srcptr = sprite->pixel_data.pixels + y*sprite->pixel_data.pitch;
-		for (x = 0; x < spr_w; x++)
-		{
-			int tmpx = fix2int(xvect.x);
-			int tmpy = fix2int(xvect.y);
-			dstptr = get_bitmap_ptr(rotated, tmpx, tmpy);
-			*dstptr = *srcptr++;
-			Vector2DAdvance(&xvect);
-		}
-		Vector2DAdvance(&yvect);
-	}
+  /* dibuja bitmap de destino girado */
+  for (int y = 0; y < spr_h; y++) {
+    xvect.x = yvect.x;
+    xvect.y = yvect.y;
+    srcptr =
+        sprite->pixel_data.pixels + (ptrdiff_t)y * sprite->pixel_data.pitch;
+    for (int x = 0; x < spr_w; x++) {
+      int tmpx = fix2int(xvect.x);
+      int tmpy = fix2int(xvect.y);
+      dstptr = get_bitmap_ptr(rotated, tmpx, tmpy);
+      *dstptr = *srcptr++;
+      Vector2DAdvance(&xvect);
+    }
+    Vector2DAdvance(&yvect);
+  }
 
-	sprite->rotation_bitmap = rotated;
-	sprite->mode = MODE_TRANSFORM;
-	sprite->funcs.draw = GetSpriteDraw(sprite->mode);
+  sprite->rotation_bitmap = rotated;
+  sprite->mode = MODE_TRANSFORM;
+  sprite->funcs.draw = GetSpriteDraw(sprite->mode);
 
-	/* */
-	/*
-	for (y = 0; y < rotated->height; y++)
-	{
-		for (x = 0; x < rotated->width; x++)
-			debugmsg("%2d ", *get_bitmap_ptr(rotated, x, y));
-	}
-	*/
-	return true;
+  return true;
 }
 
-bool TLN_ResetSpriteRotation(int nsprite)
-{
-	Sprite *sprite;
+bool TLN_ResetSpriteRotation(int nsprite) {
+  Sprite *sprite;
 
-	if (nsprite >= engine->numsprites)
-	{
-		TLN_SetLastError(TLN_ERR_IDX_SPRITE);
-		return false;
-	}
+  if (nsprite >= engine->numsprites) {
+    TLN_SetLastError(TLN_ERR_IDX_SPRITE);
+    return false;
+  }
 
-	sprite = &engine->sprites[nsprite]; 
-	if (sprite->rotation_bitmap != NULL)
-		TLN_DeleteBitmap(sprite->rotation_bitmap);
+  sprite = &engine->sprites[nsprite];
+  if (sprite->rotation_bitmap != NULL)
+    TLN_DeleteBitmap(sprite->rotation_bitmap);
 
-	sprite->mode = MODE_NORMAL;
-	sprite->funcs.draw = GetSpriteDraw(sprite->mode);
-	return true;
+  sprite->mode = MODE_NORMAL;
+  sprite->funcs.draw = GetSpriteDraw(sprite->mode);
+  return true;
 }
-
-#endif
 
 /*!
  * \brief
@@ -504,7 +495,6 @@ int TLN_GetSpritePicture(int nsprite) {
  * Index of the first unused sprite (starting from 0) or -1 if none found
  */
 int TLN_GetAvailableSprite(void) {
-
   TLN_SetLastError(TLN_ERR_OK);
   for (int c = 0; c < engine->numsprites; c++) {
     if (!GetSpriteFlag(&engine->sprites[c], SPRITE_FLAG_OK))

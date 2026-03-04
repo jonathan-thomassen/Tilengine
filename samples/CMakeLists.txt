@@ -24,10 +24,12 @@ find_package(SDL3 REQUIRED CONFIG)
 link_libraries(SDL3::SDL3)
 
 # Compiler-specific flags
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 if (MSVC)
     add_compile_options(/W3)
 else()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c23 -O2 -Wall -Wextra")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -Wall -Wextra")
     if (NOT WIN32)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic")
     endif()
