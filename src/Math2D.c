@@ -9,6 +9,7 @@
  * */
 
 #include "Math2D.h"
+
 #include <math.h>
 
 // identity matrix
@@ -28,20 +29,15 @@ void Matrix3Set(Matrix3 *matrix, const math2d_t *data) {
 }
 
 // load identity matrix
-void Matrix3SetIdentity(Matrix3 *matrix) { Matrix3Set(matrix, identity3); }
+void Matrix3SetIdentity(Matrix3 *matrix) {
+  Matrix3Set(matrix, identity3);
+}
 
 // load rotation matrix
 void Matrix3SetRotation(Matrix3 *matrix, math2d_t ang) {
   float angle = ang * 3.1415926f / 180;
-  math2d_t data[] = {(math2d_t)cos(angle),
-                     (math2d_t)sin(angle),
-                     0,
-                     (math2d_t)-sin(angle),
-                     (math2d_t)cos(angle),
-                     0,
-                     0,
-                     0,
-                     1};
+  math2d_t data[] = {cosf(angle), sinf(angle), 0, -sinf(angle), cosf(angle), 0,
+                     0,           0,           1};
   Matrix3Set(matrix, data);
 }
 

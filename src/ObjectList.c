@@ -9,22 +9,23 @@
  * */
 
 #include "ObjectList.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "Engine.h"
 #include "LoadFile.h"
 #include "LoadTMX.h"
 #include "Sprite.h"
 #include "Tilengine.h"
 #include "simplexml.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-
-#define ODB(msg, ...)                                                          \
-  do {                                                                         \
-    char _odb_buf[256];                                                        \
-    snprintf(_odb_buf, sizeof(_odb_buf), "[OBJ] " msg, ##__VA_ARGS__);         \
-    tln_trace(TLN_LOG_VERBOSE, _odb_buf);                                      \
+#define ODB(msg, ...)                                                  \
+  do {                                                                 \
+    char _odb_buf[256];                                                \
+    snprintf(_odb_buf, sizeof(_odb_buf), "[OBJ] " msg, ##__VA_ARGS__); \
+    tln_trace(TLN_LOG_VERBOSE, _odb_buf);                              \
   } while (0)
 
 /* properties */
@@ -131,23 +132,23 @@ static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
       szName ? szName : "(null)", szAttribute ? szAttribute : "(null)",
       szValue ? szValue : "(null)");
   switch (evt) {
-  case ADD_SUBTAG:
-    if (!strcasecmp(szName, "object")) {
-      memset(&loader.object, 0, sizeof(struct _Object));
-      loader.object.visible = true;
-    }
-    break;
-  case ADD_ATTRIBUTE:
-    handle_add_attribute(szName, szAttribute, szValue);
-    break;
-  case FINISH_ATTRIBUTES:
-    handle_finish_attributes(szName);
-    break;
-  case FINISH_TAG:
-    handle_finish_tag(szName);
-    break;
-  default:
-    break;
+    case ADD_SUBTAG:
+      if (!strcasecmp(szName, "object")) {
+        memset(&loader.object, 0, sizeof(struct _Object));
+        loader.object.visible = true;
+      }
+      break;
+    case ADD_ATTRIBUTE:
+      handle_add_attribute(szName, szAttribute, szValue);
+      break;
+    case FINISH_ATTRIBUTES:
+      handle_finish_attributes(szName);
+      break;
+    case FINISH_TAG:
+      handle_finish_tag(szName);
+      break;
+    default:
+      break;
   }
   return &handler;
 }
@@ -328,8 +329,7 @@ static void resolve_object_tilesets(TMXInfo *info) {
   ODB("suitable=%d", suitable);
   if (suitable < 0 || suitable >= info->num_tilesets) {
     ODB("ERROR: suitable out of range! num_tilesets=%d", info->num_tilesets);
-    for (c = 0; c < info->num_tilesets; c += 1)
-      TLN_DeleteTileset(tilesets[c]);
+    for (c = 0; c < info->num_tilesets; c += 1) TLN_DeleteTileset(tilesets[c]);
     return;
   }
 

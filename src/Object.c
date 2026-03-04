@@ -9,10 +9,12 @@
  * */
 
 #include "Object.h"
-#include "Engine.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "Engine.h"
 
 static uint32_t numobjects = 0;
 static uint32_t numbytes = 0;
@@ -88,9 +90,13 @@ bool CheckBaseObject(void *object, ObjectType type) {
   return false;
 }
 
-unsigned int GetNumObjects(void) { return numobjects; }
+unsigned int GetNumObjects(void) {
+  return numobjects;
+}
 
-unsigned int GetNumBytes(void) { return numbytes; }
+unsigned int GetNumBytes(void) {
+  return numbytes;
+}
 
 void CopyBaseObject(void *dstobject, void *srcobject) {
   if (srcobject && dstobject)

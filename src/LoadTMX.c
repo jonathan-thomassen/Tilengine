@@ -1,10 +1,11 @@
 #include "LoadTMX.h"
-#include "Layer.h"
+
+#include <stdlib.h>
+#include <string.h>
+
 #include "LoadFile.h"
 #include "Tilengine.h"
 #include "simplexml.h"
-#include <stdlib.h>
-#include <string.h>
 
 static TMXInfo tmxinfo;
 
@@ -113,27 +114,27 @@ static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
                      const char *szName, const char *szAttribute,
                      const char *szValue) {
   switch (evt) {
-  case ADD_SUBTAG:
-    if (!strcasecmp(szName, "layer"))
-      init_current_layer(LAYER_TILE);
-    else if (!strcasecmp(szName, "objectgroup"))
-      init_current_layer(LAYER_OBJECT);
-    else if (!strcasecmp(szName, "imagelayer"))
-      init_current_layer(LAYER_BITMAP);
-    else if (!strcasecmp(szName, "tileset")) {
-      TMXTileset *tileset = &tmxinfo.tilesets[tmxinfo.num_tilesets];
-      memset(tileset, 0, sizeof(TMXTileset));
-    }
-    break;
-  case ADD_ATTRIBUTE:
-    handle_add_attribute(szName, szAttribute, atoi(szValue),
-                         (float)atof(szValue), szValue);
-    break;
-  case FINISH_TAG:
-    handle_finish_tag(szName);
-    break;
-  default:
-    break;
+    case ADD_SUBTAG:
+      if (!strcasecmp(szName, "layer"))
+        init_current_layer(LAYER_TILE);
+      else if (!strcasecmp(szName, "objectgroup"))
+        init_current_layer(LAYER_OBJECT);
+      else if (!strcasecmp(szName, "imagelayer"))
+        init_current_layer(LAYER_BITMAP);
+      else if (!strcasecmp(szName, "tileset")) {
+        TMXTileset *tileset = &tmxinfo.tilesets[tmxinfo.num_tilesets];
+        memset(tileset, 0, sizeof(TMXTileset));
+      }
+      break;
+    case ADD_ATTRIBUTE:
+      handle_add_attribute(szName, szAttribute, atoi(szValue),
+                           (float)atof(szValue), szValue);
+      break;
+    case FINISH_TAG:
+      handle_finish_tag(szName);
+      break;
+    default:
+      break;
   }
   return &handler;
 }

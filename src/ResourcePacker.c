@@ -19,7 +19,6 @@
 #include "crc32.h"
 #include "md5.h"
 
-
 #define KEY_SIZE 128
 #define FILE_ID "ResPack"
 
@@ -169,7 +168,7 @@ ResPack ResPack_Open(const char *filename, const char *passphrase) {
 
   /* check header */
   fread(&res_header, sizeof(res_header), 1, pf);
-  if (strcmp(res_header.id, FILE_ID)) {
+  if (strcmp(res_header.id, FILE_ID) != 0) {
     fclose(pf);
     return NULL;
   }

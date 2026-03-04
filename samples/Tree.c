@@ -1,5 +1,9 @@
 #include "Tree.h"
+
+#include <stddef.h>
+
 #include "Racer.h"
+
 
 typedef struct {
   int depth;
