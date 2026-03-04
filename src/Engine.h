@@ -15,7 +15,6 @@
 #define INTERNAL_FPS 60
 
 #include "Animation.h"
-#include "Bitmap.h"
 #include "Blitters.h"
 #include "Layer.h"
 #include "List.h"
@@ -100,6 +99,6 @@ extern Engine *engine;
 extern void tln_trace(TLN_LogLevel log_level, const char *message);
 
 #define GetFramebufferLine(line)                                               \
-  (uint32_t *)(engine->framebuffer.data + (line * engine->framebuffer.pitch))
+  (uint32_t *)(engine->framebuffer.data + ((line) * engine->framebuffer.pitch))
 
 #endif

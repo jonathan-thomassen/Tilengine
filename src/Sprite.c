@@ -13,6 +13,7 @@
 #include <math.h>
 #include <stddef.h>
 
+#include "Bitmap.h"
 #include "Blitters.h"
 #include "Debug.h"
 #include "Engine.h"

@@ -9,14 +9,17 @@
  * */
 
 #include "Draw.h"
+
+#include <stdlib.h>
+#include <string.h>
+
+#include "Bitmap.h"
 #include "Engine.h"
 #include "ObjectList.h"
 #include "Sprite.h"
 #include "Tilemap.h"
 #include "Tilengine.h"
 #include "Tileset.h"
-#include <stdlib.h>
-#include <string.h>
 
 /* private prototypes */
 static void DrawSpriteCollision(int nsprite, uint8_t const *srcpixel,

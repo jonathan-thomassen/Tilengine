@@ -9,10 +9,14 @@
  * */
 
 #include "Blitters.h"
-#include "Engine.h"
+
+#include <stddef.h>
+
+#include "Math2D.h"
 #include "Palette.h"
 #include "Tables.h"
 #include "Tilengine.h"
+
 
 /* indexes for blitter array table */
 #define BLIT_BLEND 0
@@ -38,12 +42,11 @@ static void blitFast_8_32(const uint8_t *srcpixel, TLN_Palette palette,
 static void blitFastBlend_8_32(const uint8_t *srcpixel, TLN_Palette palette,
                                void *dstptr, int width, int dx, int /*offset*/,
                                const uint8_t *blend) {
-  uint8_t const *src;
   uint8_t *dst;
   uint32_t *color = (uint32_t *)palette->data;
   dst = (uint8_t *)dstptr;
   while (width) {
-    src = (uint8_t *)&color[*srcpixel];
+    uint8_t const *src = (uint8_t *)&color[*srcpixel];
     dst[0] = blendfunc(blend, src[0], dst[0]);
     dst[1] = blendfunc(blend, src[1], dst[1]);
     dst[2] = blendfunc(blend, src[2], dst[2]);
@@ -73,13 +76,12 @@ static void blitFastBlendScaling_8_32(const uint8_t *srcpixel,
                                       TLN_Palette palette, void *dstptr,
                                       int width, int dx, int offset,
                                       const uint8_t *blend) {
-  uint8_t const *src;
   uint8_t *dst;
   uint32_t *color = (uint32_t *)palette->data;
   dst = (uint8_t *)dstptr;
   while (width) {
     uint32_t item = *(srcpixel + offset / (1 << FIXED_BITS));
-    src = (uint8_t *)&color[item];
+    uint8_t const *src = (uint8_t *)&color[item];
     dst[0] = blendfunc(blend, src[0], dst[0]);
     dst[1] = blendfunc(blend, src[1], dst[1]);
     dst[2] = blendfunc(blend, src[2], dst[2]);

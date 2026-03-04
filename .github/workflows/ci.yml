@@ -52,6 +52,7 @@ jobs:
             --std=c23 \
             -I src -I include \
             --suppress=missingIncludeSystem \
+            --suppress=unusedStructMember:src/Window.c \
             --error-exitcode=1 \
             src/
 

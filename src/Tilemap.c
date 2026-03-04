@@ -351,13 +351,12 @@ static void ClipRect(Rect *src, Rect const *dst) {
  */
 bool TLN_CopyTiles(TLN_Tilemap src, TLN_Rect const *src_rect, TLN_Tilemap dst,
                    int dstrow, int dstcol) {
-  int size;
-
   if (!CheckBaseObject(src, OT_TILEMAP) || !CheckBaseObject(dst, OT_TILEMAP))
     return false;
 
   /* setup rects */
   {
+    int size;
     Rect tgtrect = {src_rect->col, src_rect->row, src_rect->cols,
                     src_rect->rows};             /* area a copiar */
     Rect srcrect = {0, 0, src->rows, src->cols}; /* tilemap de origen */

@@ -21,7 +21,6 @@
 #include "Tilemap.h"
 #include "Tileset.h"
 
-
 static void SetBlitter(Layer *layer);
 static void apply_priority_attributes(struct Tileset const *tileset,
                                       TLN_Tilemap tilemap);
@@ -711,7 +710,7 @@ bool TLN_SetLayerAffineTransform(int nlayer, TLN_Affine const *affine) {
     Matrix3SetIdentity(&layer->transform);
     Matrix3SetTranslation(&transform, -dx, -dy);
     Matrix3Multiply(&layer->transform, &transform);
-    Matrix3SetRotation(&transform, (math2d_t)fmod(-affine->angle, 360.0f));
+    Matrix3SetRotation(&transform, fmodf(-affine->angle, 360.0f));
     Matrix3Multiply(&layer->transform, &transform);
     Matrix3SetScale(&transform, 1 / affine->sx, 1 / affine->sy);
     Matrix3Multiply(&layer->transform, &transform);

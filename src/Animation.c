@@ -479,9 +479,6 @@ static void ColorCycleBlend(TLN_Palette srcpalette, TLN_Palette dstpalette,
                             struct Strip const *strip, int t) {
   int idx0;
   int idx1;
-  uint8_t const *srcptr0;
-  uint8_t const *srcptr1;
-  uint8_t *dstptr;
 
   int t0 = strip->t0;
   int t1 = strip->timer;
@@ -501,9 +498,11 @@ static void ColorCycleBlend(TLN_Palette srcpalette, TLN_Palette dstpalette,
       idx1 = (c + steps + 1) % count;
     }
 
-    srcptr0 = (uint8_t *)GetPaletteData(srcpalette, strip->first + idx0);
-    srcptr1 = (uint8_t *)GetPaletteData(srcpalette, strip->first + idx1);
-    dstptr = (uint8_t *)GetPaletteData(dstpalette, strip->first + c);
+    uint8_t const *srcptr0 =
+        (uint8_t *)GetPaletteData(srcpalette, strip->first + idx0);
+    uint8_t const *srcptr1 =
+        (uint8_t *)GetPaletteData(srcpalette, strip->first + idx1);
+    uint8_t *dstptr = (uint8_t *)GetPaletteData(dstpalette, strip->first + c);
     blendColors(srcptr0, srcptr1, dstptr, (uint8_t)f0, (uint8_t)f1);
   }
 }

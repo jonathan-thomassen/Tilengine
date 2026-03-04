@@ -390,7 +390,7 @@ typedef struct {
 } RefList;
 
 /* finds reference in list */
-bool ref_find(const RefList *refs, void *item) {
+bool ref_find(const RefList *refs, const void *item) {
   for (int c = 0; c < refs->index; c += 1) {
     if (refs->refs[c] == item)
       return true;

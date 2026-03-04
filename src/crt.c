@@ -1,5 +1,6 @@
 #include "crt.h"
-#include <stdio.h>
+
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -157,11 +158,9 @@ void CRTDelete(CRTHandler crt) {
 
 /* basic horizontal blur emulating RF blurring */
 static void hblur(uint8_t *scan, int width, int height, int pitch) {
-  uint8_t *pixel;
-
   width -= 1;
   for (int y = 0; y < height; y++) {
-    pixel = scan;
+    uint8_t *pixel = scan;
     for (int x = 0; x < width; x++) {
       pixel[0] = (pixel[0] + pixel[4]) >> 1;
       pixel[1] = (pixel[1] + pixel[5]) >> 1;
@@ -192,7 +191,8 @@ static SDL_Texture *create_tiled_texture(SDL_Renderer *renderer, int width,
   SDL_Rect dstrect = {0, 0, tile_width, tile_height};
   for (dstrect.y = 0; dstrect.y <= height - tile_height;
        dstrect.y += tile_height) {
-    uint8_t *dstptr = (uint8_t *)surface->pixels + dstrect.y * surface->pitch;
+    uint8_t *dstptr =
+        (uint8_t *)surface->pixels + (ptrdiff_t)dstrect.y * surface->pitch;
     for (dstrect.x = 0; dstrect.x <= width - tile_width;
          dstrect.x += tile_width) {
       blit(tile_data, dstptr, tile_pitch, tile_height, surface->pitch);
