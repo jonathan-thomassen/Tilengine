@@ -8,6 +8,9 @@
 *
 ******************************************************************************/
 
+#include <stddef.h>
+#include <stdio.h>
+
 #include "Tilengine.h"
 
 #define HRES 424
@@ -36,31 +39,32 @@ static void show_layer_info(int nlayer) {
 
   /* specific info */
   switch (type) {
-  case LAYER_TILE:
-    tilemap = TLN_GetLayerTilemap(nlayer);
-    printf("  Tilemap: %p\n", tilemap);
-    printf("  Tilemap dimensions: %d rows, %d columns\n",
-           TLN_GetTilemapRows(tilemap), TLN_GetTilemapCols(tilemap));
-    break;
-  case LAYER_OBJECT:
-    object_list = TLN_GetLayerObjects(nlayer);
-    printf("  Objects: %p\n", object_list);
+    case LAYER_TILE:
+      tilemap = TLN_GetLayerTilemap(nlayer);
+      printf("  Tilemap: %p\n", tilemap);
+      printf("  Tilemap dimensions: %d rows, %d columns\n",
+             TLN_GetTilemapRows(tilemap), TLN_GetTilemapCols(tilemap));
+      break;
+    case LAYER_OBJECT:
+      object_list = TLN_GetLayerObjects(nlayer);
+      printf("  Objects: %p\n", object_list);
 
-    /* iterate objects and get info on each with TLN_GetListObject() */
-    printf("  num_objects = %d\n", TLN_GetListNumObjects(object_list));
-    has_object = TLN_GetListObject(object_list, &object);
-    while (has_object) {
-      printf("    id:%d gid:%d name:\"%s\" pos:(%d,%d) size:(%dx%d) type:%d\n",
-             object.id, object.gid, object.name, object.x, object.y,
-             object.width, object.height, object.type);
-      has_object = TLN_GetListObject(object_list, NULL);
-    }
-    break;
-  case LAYER_BITMAP:
-    printf("  Bitmap: %p\n", TLN_GetLayerBitmap(nlayer));
-    break;
-  default:
-    break;
+      /* iterate objects and get info on each with TLN_GetListObject() */
+      printf("  num_objects = %d\n", TLN_GetListNumObjects(object_list));
+      has_object = TLN_GetListObject(object_list, &object);
+      while (has_object) {
+        printf(
+            "    id:%d gid:%d name:\"%s\" pos:(%d,%d) size:(%dx%d) type:%d\n",
+            object.id, object.gid, object.name, object.x, object.y,
+            object.width, object.height, object.type);
+        has_object = TLN_GetListObject(object_list, NULL);
+      }
+      break;
+    case LAYER_BITMAP:
+      printf("  Bitmap: %p\n", TLN_GetLayerBitmap(nlayer));
+      break;
+    default:
+      break;
   }
 }
 
@@ -72,8 +76,7 @@ int main(int argc, char *argv[]) {
   TLN_LoadWorld("map.tmx", 0);
 
   /* retrieve info about layers */
-  for (int c = 0; c < NUM_LAYERS; c += 1)
-    show_layer_info(c);
+  for (int c = 0; c < NUM_LAYERS; c += 1) show_layer_info(c);
 
   /* retrieve tile at layer 1, row 13 column 3, flip horizontally and update to
    * the same position */

@@ -21,7 +21,6 @@
 #include "simplexml.h"
 #include "zlib.h"
 
-
 static int csvdecode(char *in, int numtiles, uint32_t *data);
 static int decompress(uint8_t *in, int in_size, uint8_t *out, int out_size);
 static void handle_add_attribute(const char *szName, const char *szAttribute,
@@ -230,7 +229,7 @@ TLN_Tilemap TLN_LoadTilemap(const char *filename, const char *layername) {
     tilemap->num_tilesets = tmxinfo.num_tilesets < MAX_TILESETS
                                 ? tmxinfo.num_tilesets
                                 : MAX_TILESETS;
-    memcpy(tilemap->tilesets, tilesets,
+    memcpy((void *)tilemap->tilesets, (const void *)tilesets,
            sizeof(TLN_Tileset) * tilemap->num_tilesets);
   }
 
