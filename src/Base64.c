@@ -42,28 +42,28 @@ int base64decode(const unsigned char *in, int inLen, unsigned char *out,
   int buf = 1;
   int len = 0;
 
-  while (*in < 'A')
-    in++;
+  while (*in < 'A') in++;
 
   while (in < end) {
     unsigned char c = d[*in++];
 
     switch (c) {
-    case WHITESPACE:
-      continue; /* skip whitespace */
-    case INVALID:
-      return 1;  /* invalid input, return error */
-    case EQUALS: /* pad character, end of data */
-      in = end;
-      continue;
-    default:
-      if (accumulate(c, &buf, &out, &len, *outLen))
-        return 1;
+      case WHITESPACE:
+        continue; /* skip whitespace */
+      case INVALID:
+        return 1;  /* invalid input, return error */
+      case EQUALS: /* pad character, end of data */
+        in = end;
+        continue;
+      default:
+        if (accumulate(c, &buf, &out, &len, *outLen))
+          return 1;
     }
   }
 
   if (buf & 0x40000) {
-    if ((len += 2) > *outLen)
+    len = len + 2;
+    if (len > *outLen)
       return 1; /* buffer overflow */
     *out++ = (unsigned char)(buf >> 10);
     *out++ = (unsigned char)(buf >> 2);

@@ -17,7 +17,6 @@
 #include "Tables.h"
 #include "Tilengine.h"
 
-
 /* indexes for blitter array table */
 #define BLIT_BLEND 0
 #define BLIT_SCALING 1

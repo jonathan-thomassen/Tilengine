@@ -82,7 +82,7 @@ void ListPrint([[maybe_unused]] List *list) {
   debugmsg("list: ");
   index = list->first;
   while (index != -1) {
-    ListNode *node = get_node(list, index);
+    ListNode const *node = get_node(list, index);
     debugmsg("%d ", index);
     index = node->next;
     c += 1;

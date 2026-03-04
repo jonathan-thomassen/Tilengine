@@ -6,7 +6,7 @@
 #define HEIGHT 240
 
 /* entry point */
-int main(int argc, char *argv[]) {
+int main(void) {
   TLN_Tilemap tilemap;
   int frame = 0;
 

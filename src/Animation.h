@@ -12,7 +12,6 @@
 #define _ANIMATION_H
 
 #include "List.h"
-#include "Sequence.h"
 #include "Tilengine.h"
 
 #define MAX_COLOR_STRIPS 64

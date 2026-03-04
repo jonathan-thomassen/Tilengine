@@ -526,7 +526,6 @@ bool TLN_GetLayerTile(int nlayer, int x, int y, TLN_TileInfo *info) {
   int ytile;
   int srcx;
   int srcy;
-  int column = 0;
   int column_offset = 0;
 
   if (nlayer >= engine->numlayers) {
@@ -553,7 +552,7 @@ bool TLN_GetLayerTile(int nlayer, int x, int y, TLN_TileInfo *info) {
   srcx = xpos & GetTilesetHMask(tileset);
 
   if (layer->column) {
-    column = x / tileset->width;
+    int column = x / tileset->width;
     if (xpos != 0 && x > xpos)
       column++;
     column_offset = layer->column[column];
