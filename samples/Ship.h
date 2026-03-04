@@ -1,7 +1,7 @@
 #ifndef _SHIP_H
 #define _SHIP_H
 
-#include "Shooter.h"
+#include "Actor.h"
 
 Actor *CreateShip(void);
 Actor *CreateClaw(int id);

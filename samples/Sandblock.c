@@ -1,7 +1,9 @@
 #include "Sandblock.h"
-#include "Tilengine.h"
+
 #include <stdbool.h>
 #include <stddef.h>
+
+#include "Tilengine.h"
 
 /* Tilengine sprite slots reserved for sandblocks start right after Simon (0) */
 #define SPRITE_BASE 1
@@ -24,8 +26,7 @@ static const int STATE_THRESHOLDS[MAX_PICTURE] = {30, 45, 60};
 
 static int picture_for_frames(int frames) {
   int p = 0;
-  while (p < MAX_PICTURE && frames >= STATE_THRESHOLDS[p])
-    p++;
+  while (p < MAX_PICTURE && frames >= STATE_THRESHOLDS[p]) p++;
   return p;
 }
 
@@ -51,8 +52,7 @@ void SandblockInit(void) {
 }
 
 void SandblockDeinit(void) {
-  for (int i = 0; i < MAX_SANDBLOCKS; i++)
-    TLN_DisableSprite(SPRITE_BASE + i);
+  for (int i = 0; i < MAX_SANDBLOCKS; i++) TLN_DisableSprite(SPRITE_BASE + i);
   if (spriteset != NULL)
     TLN_DeleteSpriteset(spriteset);
   spriteset = NULL;

@@ -16,7 +16,6 @@
 
 #include "ResourcePacker.h"
 
-
 #define SLASH '/'
 #define BACKSLASH '\\'
 #define MAX_PATH 300
@@ -89,7 +88,7 @@ FILE *FileOpen(const char *filename) {
   char oldchar;
   char newchar;
   char *p;
-  ResAsset asset;
+  ResAsset new_asset;
 
 #if (_MSC_VER) && (_MSC_VER < 1900)
   sprintf(path, "%s/%s", localpath, filename);
@@ -124,10 +123,10 @@ FILE *FileOpen(const char *filename) {
       return NULL;
 
     /* open */
-    asset = ResPack_OpenAsset(respack, path);
-    fp = ResPack_GetAssetFile(asset);
+    new_asset = ResPack_OpenAsset(respack, path);
+    fp = ResPack_GetAssetFile(new_asset);
     if (fp != NULL) {
-      assets[c].asset = asset;
+      assets[c].asset = new_asset;
       assets[c].pf = fp;
     }
   } else

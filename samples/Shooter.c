@@ -11,22 +11,22 @@
  ******************************************************************************/
 
 #include "Shooter.h"
-#include "Boss.h"
-#include "Enemy.h"
-#include "Explosion.h"
-#include "Ship.h"
-#include "Tilengine.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+
+#include "Boss.h"
+#include "Enemy.h"
+#include "Ship.h"
+#include "Tilengine.h"
 
 /* fixed point helper */
 typedef int fix_t;
 #define FIXED_BITS 16
-#define float2fix(f) (fix_t)(f * (1 << FIXED_BITS))
+#define float2fix(f) (fix_t)((f) * (1 << FIXED_BITS))
 #define int2fix(i) ((int)(i) << FIXED_BITS)
 #define fix2int(f) ((int)(f) >> FIXED_BITS)
-#define fix2float(f) (float)(f) / (1 << FIXED_BITS)
+#define fix2float(f) ((float)(f) / (1 << FIXED_BITS))
 
 #define PAL_T0 120
 #define PAL_T1 1000
@@ -102,7 +102,7 @@ static void FreeLayer(int index) {
 }
 
 /* entry point */
-int main(int argc, char *argv[]) {
+int main(void) {
   int c;
 
   /* setup engine */
@@ -160,8 +160,7 @@ int main(int argc, char *argv[]) {
       update_sky_colors(time);
 
     /* scroll */
-    for (c = 0; c < 3; c++)
-      pos_background[c] += inc_background[c];
+    for (c = 0; c < 3; c++) pos_background[c] += inc_background[c];
 
     /* layers */
     TLN_SetLayerTilemap(LAYER_BACKGROUND, layers[LAYER_FOREGROUND].tilemap);

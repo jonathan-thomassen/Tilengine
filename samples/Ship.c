@@ -1,8 +1,10 @@
 #include "Ship.h"
+
+#include <stdlib.h>
+
 #include "Enemy.h"
 #include "Explosion.h"
 #include "Shooter.h"
-#include <stdlib.h>
 
 /* ship extra data */
 typedef struct {

@@ -1,5 +1,6 @@
-#include "Tilengine.h"
 #include <stdio.h>
+
+#include "Tilengine.h"
 
 #define WIDTH 400
 #define HEIGHT 240
@@ -8,7 +9,7 @@
 #define MAX_SCALE 200
 
 /* linear interploation */
-#define lerp(x, x0, x1, fx0, fx1)                                              \
+#define lerp(x, x0, x1, fx0, fx1) \
   (fx0) + ((fx1) - (fx0)) * ((x) - (x0)) / ((x1) - (x0))
 
 typedef struct {
@@ -33,7 +34,7 @@ static int scale;
 static void raster_callback(int line);
 
 /* entry point */
-int main(int argc, char *argv[]) {
+int main(void) {
   TLN_Tilemap foreground;
   TLN_Tilemap background;
 
