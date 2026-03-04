@@ -9,10 +9,13 @@
  * */
 
 #include "LoadFile.h"
-#include "ResourcePacker.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "ResourcePacker.h"
+
 
 #define SLASH '/'
 #define BACKSLASH '\\'
@@ -81,7 +84,7 @@ void TLN_CloseResourcePack(void) {
 
 /* open file/packed asset */
 FILE *FileOpen(const char *filename) {
-  FILE *pf;
+  FILE *fp;
   char path[MAX_PATH + 1];
   char oldchar;
   char newchar;
@@ -122,15 +125,15 @@ FILE *FileOpen(const char *filename) {
 
     /* open */
     asset = ResPack_OpenAsset(respack, path);
-    pf = ResPack_GetAssetFile(asset);
-    if (pf != NULL) {
+    fp = ResPack_GetAssetFile(asset);
+    if (fp != NULL) {
       assets[c].asset = asset;
-      assets[c].pf = pf;
+      assets[c].pf = fp;
     }
   } else
-    pf = fopen(path, "rb");
+    fp = fopen(path, "rb");
 
-  return pf;
+  return fp;
 }
 
 /* closes file/packed asset */

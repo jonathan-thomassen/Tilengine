@@ -267,7 +267,7 @@ bool TLN_SetTilemapTile(TLN_Tilemap tilemap, int row, int col,
   if (CheckBaseObject(tilemap, OT_TILEMAP) && tile) {
     TLN_Tile dsttile = GetTilemapPtr(tilemap, row, col);
     if (dsttile != NULL) {
-      dsttile->value = tile != NULL ? tile->value : 0;
+      dsttile->value = tile->value;
       TLN_SetLastError(TLN_ERR_OK);
       return true;
     } else {

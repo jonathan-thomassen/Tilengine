@@ -11,16 +11,17 @@
  ******************************************************************************/
 
 #include "Racer.h"
+
+#include <stdio.h>
+
 #include "Tilengine.h"
 #include "Tree.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 #define MAX_SPEED 6
 #define MAX_STEER 58
 
 /* linear interploation */
-#define lerp(x, x0, x1, fx0, fx1)                                              \
+#define lerp(x, x0, x1, fx0, fx1) \
   (fx0) + ((fx1) - (fx0)) * ((x) - (x0)) / ((x1) - (x0))
 
 typedef struct {
@@ -49,7 +50,7 @@ int pan = 0;
 static void raster_callback(int line);
 
 /* entry point */
-int main(int argc, char *argv[]) {
+int main(void) {
   TLN_Tilemap tilemap;
 
   /* init engine and load resources */

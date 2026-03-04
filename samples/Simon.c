@@ -1,4 +1,5 @@
 #include "Simon.h"
+
 #include "Sandblock.h"
 #include "Tilengine.h"
 
@@ -51,25 +52,25 @@ void SimonDeinit(void) {
 }
 
 void SimonSetState(int s) {
-  if (state == s)
+  if ((int)state == s)
     return;
 
   state = s;
   switch (state) {
-  case SIMON_IDLE:
-    TLN_DisableSpriteAnimation(0);
-    TLN_SetSpritePicture(0, 0);
-    break;
+    case SIMON_IDLE:
+      TLN_DisableSpriteAnimation(0);
+      TLN_SetSpritePicture(0, 0);
+      break;
 
-  case SIMON_WALKING:
-    TLN_SetSpriteAnimation(0, walk, 0);
-    break;
+    case SIMON_WALKING:
+      TLN_SetSpriteAnimation(0, walk, 0);
+      break;
 
-  case SIMON_JUMPING:
-    TLN_DisableSpriteAnimation(0);
-    TLN_SetSpritePicture(0, 7);
-    sy = -18;
-    break;
+    case SIMON_JUMPING:
+      TLN_DisableSpriteAnimation(0);
+      TLN_SetSpritePicture(0, 7);
+      sy = -18;
+      break;
   }
 }
 
@@ -293,19 +294,19 @@ static void apply_movement(Direction input, int width) {
   prev_input = input;
 
   switch (state) {
-  case SIMON_IDLE:
-    if (input)
-      SimonSetState(SIMON_WALKING);
-    break;
-  case SIMON_WALKING:
-  case SIMON_JUMPING:
-    if (!first_frame && (!changing_dir || dir_change_timer > AIR_TURN_DELAY))
-      execute_move(input, width, changing_dir);
-    else
-      move_frame = 0;
-    if (state == SIMON_WALKING && !input)
-      SimonSetState(SIMON_IDLE);
-    break;
+    case SIMON_IDLE:
+      if (input)
+        SimonSetState(SIMON_WALKING);
+      break;
+    case SIMON_WALKING:
+    case SIMON_JUMPING:
+      if (!first_frame && (!changing_dir || dir_change_timer > AIR_TURN_DELAY))
+        execute_move(input, width, changing_dir);
+      else
+        move_frame = 0;
+      if (state == SIMON_WALKING && !input)
+        SimonSetState(SIMON_IDLE);
+      break;
   }
 }
 
@@ -372,7 +373,9 @@ void SimonTasks(void) {
   TLN_SetSpritePosition(0, x, y);
 }
 
-int SimonGetPosition(void) { return xworld; }
+int SimonGetPosition(void) {
+  return xworld;
+}
 
 void SimonSetPosition(int px, int py) {
   x = px;

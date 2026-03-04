@@ -80,7 +80,7 @@ static void sdl_callback(SDL_Event *evt) {
   }
 }
 
-int main(int argc, char *argv[]) {
+int main(void) {
   TLN_Spriteset spriteset;
   TLN_SpriteInfo sprite_info;
   int frame = 0;
