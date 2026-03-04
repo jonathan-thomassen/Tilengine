@@ -5,6 +5,8 @@
 
 #include "Drawbridge.h"
 
+#include "Tilengine.h"
+
 /* ------------------------------------------------------------------ */
 
 typedef struct {
@@ -33,7 +35,9 @@ void DrawbridgeSetProgress(float progress) {
   db.progress = progress;
 }
 
-float DrawbridgeGetProgress(void) { return db.progress; }
+float DrawbridgeGetProgress(void) {
+  return db.progress;
+}
 
 void DrawbridgeSetHinge(int hinge_x, int hinge_y) {
   db.hinge_x = hinge_x;

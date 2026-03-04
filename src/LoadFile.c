@@ -208,7 +208,7 @@ void SplitFilename(const char *filename, FileInfo *fileinfo) {
   if (filename == NULL || fileinfo == NULL)
     return;
 
-  int len = 0;
+  int len;
   char const *block1 = strrchr(filename, SLASH);
   char const *block2 = strrchr(filename, '.');
   if (block1 == NULL)

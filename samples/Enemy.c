@@ -1,6 +1,7 @@
+#include <stdlib.h>
+
 #include "Explosion.h"
 #include "Shooter.h"
-#include <stdlib.h>
 
 #define MAX_HEIGHT 200
 

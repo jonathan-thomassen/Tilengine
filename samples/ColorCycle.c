@@ -1,8 +1,6 @@
 #include "Tilengine.h"
-#include <stdio.h>
-#include <string.h>
 
-int main(int argc, char *argv[]) {
+int main(void) {
   TLN_Bitmap background;
   TLN_SequencePack sp;
   TLN_Sequence sequence;
@@ -24,8 +22,7 @@ int main(int argc, char *argv[]) {
 
   /* main loop */
   TLN_CreateWindow(CWF_NEAREST);
-  while (TLN_ProcessWindow())
-    TLN_DrawFrame(0);
+  while (TLN_ProcessWindow()) TLN_DrawFrame(0);
 
   TLN_DeleteBitmap(background);
   TLN_DeleteSequencePack(sp);

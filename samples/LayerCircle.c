@@ -39,7 +39,7 @@ void raster_callback(int line);
 void setup_circle(Edge *edges, int r);
 
 /* entry point */
-int main(int arg, char *argv[]) {
+int main(void) {
   /* init & load assets */
   TLN_Init(HRES, VRES, NUM_LAYERS, 0, 0);
   TLN_SetLoadPath("assets/shots");
@@ -107,7 +107,9 @@ void setup_circle(Edge *edge_buf, int r) {
 }
 
 /* linear scaling */
-int scale(int x, int fx0, int fx1) { return (x * fx1) / fx0; }
+int scale(int x, int fx0, int fx1) {
+  return (x * fx1) / fx0;
+}
 
 /* called for every scanline. Updates layer window with scaled circle edges */
 void raster_callback(int line) {

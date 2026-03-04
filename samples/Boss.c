@@ -1,7 +1,9 @@
 #include "Boss.h"
+
+#include <stdlib.h>
+
 #include "Explosion.h"
 #include "Shooter.h"
-#include <stdlib.h>
 
 /* partes del jefe */
 enum {
@@ -113,8 +115,7 @@ void BossTasks(Actor *actor) {
 
     /* eliminar */
     if (actor->y > 300) {
-      for (int c = 0; c < MAX_PART; c++)
-        boss->parts[c]->state = 0;
+      for (int c = 0; c < MAX_PART; c++) boss->parts[c]->state = 0;
     }
   }
 }

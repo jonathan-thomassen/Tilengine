@@ -7,8 +7,9 @@
 *
 ******************************************************************************/
 
-#include "Tilengine.h"
 #include <stdio.h>
+
+#include "Tilengine.h"
 
 #define HRES 424
 #define VRES 240

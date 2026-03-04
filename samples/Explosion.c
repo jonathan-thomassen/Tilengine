@@ -1,4 +1,5 @@
 #include "Explosion.h"
+
 #include "Shooter.h"
 
 void ExplosionTasks(Actor *actor) {

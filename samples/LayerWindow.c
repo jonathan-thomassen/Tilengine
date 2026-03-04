@@ -38,7 +38,7 @@ TLN_Input get_press(void);
 void update_window(void);
 
 /* entry point */
-int main(int arg, char *argv[]) {
+int main(void) {
   /* init & load assets */
   TLN_Init(HRES, VRES, NUM_LAYERS, 0, 0);
   TLN_SetLoadPath("assets/shots");

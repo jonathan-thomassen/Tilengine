@@ -1,12 +1,13 @@
+#include <SDL3/SDL_events.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "Drawbridge.h"
 #include "Hud.h"
 #include "Prop.h"
 #include "Sandblock.h"
 #include "Simon.h"
 #include "Tilengine.h"
-#include <SDL3/SDL_events.h>
-#include <stdio.h>
-#include <string.h>
 
 #define WIDTH 256
 #define HEIGHT 224
@@ -37,7 +38,7 @@ static void spawn_object(TLN_ObjectInfo const *info) {
 }
 
 /* entry point */
-int main(int argc, char *argv[]) {
+int main(void) {
   TLN_Tilemap collision;
   TLN_Tilemap drawbridge_bg;
   TLN_Tilemap drawbridge_water;
@@ -84,9 +85,10 @@ int main(int argc, char *argv[]) {
     }
     TLN_DeleteObjectList(objects);
   } else {
-    printf("[objects] warning: could not load object layer '%s' from "
-           "drawbridge_main.tmx\n",
-           "Objects");
+    printf(
+        "[objects] warning: could not load object layer '%s' from "
+        "drawbridge_main.tmx\n",
+        "Objects");
   }
 
   TLN_SetLayerBlendMode(ROCKS_LAYER, BLEND_MIX50);

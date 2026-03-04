@@ -1,6 +1,7 @@
-#include "Tilengine.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "Tilengine.h"
 
 #define HRES 400
 #define VRES 240
@@ -11,7 +12,7 @@ static int pixels;
 
 static uint32_t Profile(void);
 
-int main(int argc, char *argv[]) {
+int main(void) {
   int c;
   uint8_t *framebuffer;
   uint32_t version;
@@ -82,8 +83,7 @@ int main(int argc, char *argv[]) {
   Profile();
 
   printf("Colliding sprites.....");
-  for (c = 0; c < NUM_SPRITES; c++)
-    TLN_EnableSpriteCollision(c, true);
+  for (c = 0; c < NUM_SPRITES; c++) TLN_EnableSpriteCollision(c, true);
   Profile();
 
   free(framebuffer);
