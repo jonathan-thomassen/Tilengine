@@ -8,13 +8,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "LoadFile.h"
 #include "Tilengine.h"
 #include "Tileset.h"
 #include "simplexml.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 /* properties */
 typedef enum {
@@ -187,20 +188,20 @@ static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
                      const char *szName, const char *szAttribute,
                      const char *szValue) {
   switch (evt) {
-  case ADD_SUBTAG:
-    handle_subtag(szName);
-    break;
-  case ADD_ATTRIBUTE:
-    handle_add_attribute(szName, szAttribute, szValue);
-    break;
-  case FINISH_ATTRIBUTES:
-    handle_finish_attributes(szName);
-    break;
-  case FINISH_TAG:
-    handle_finish_tag(szName);
-    break;
-  default:
-    break;
+    case ADD_SUBTAG:
+      handle_subtag(szName);
+      break;
+    case ADD_ATTRIBUTE:
+      handle_add_attribute(szName, szAttribute, szValue);
+      break;
+    case FINISH_ATTRIBUTES:
+      handle_finish_attributes(szName);
+      break;
+    case FINISH_TAG:
+      handle_finish_tag(szName);
+      break;
+    default:
+      break;
   }
   return &handler;
 }

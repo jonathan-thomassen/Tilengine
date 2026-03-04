@@ -8,6 +8,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "Base64.h"
 #include "LoadFile.h"
 #include "LoadTMX.h"
@@ -15,10 +20,7 @@
 #include "Tilengine.h"
 #include "simplexml.h"
 #include "zlib.h"
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
 
 static int csvdecode(char *in, int numtiles, uint32_t *data);
 static int decompress(uint8_t *in, int in_size, uint8_t *out, int out_size);
@@ -119,14 +121,14 @@ static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
                      const char *szName, const char *szAttribute,
                      const char *szValue) {
   switch (evt) {
-  case ADD_ATTRIBUTE:
-    handle_add_attribute(szName, szAttribute, szValue);
-    break;
-  case ADD_CONTENT:
-    handle_add_content(szName, szValue);
-    break;
-  default:
-    break;
+    case ADD_ATTRIBUTE:
+      handle_add_attribute(szName, szAttribute, szValue);
+      break;
+    case ADD_CONTENT:
+      handle_add_content(szName, szValue);
+      break;
+    default:
+      break;
   }
   return &handler;
 }
@@ -289,15 +291,15 @@ static int decompress(uint8_t *in, int in_size, uint8_t *out, int out_size) {
       ret = inflate(&strm, Z_NO_FLUSH);
       assert(ret != Z_STREAM_ERROR); /* state not clobbered */
       switch (ret) {
-      case Z_NEED_DICT:
-        ret = Z_DATA_ERROR;
-        [[fallthrough]];
-      case Z_DATA_ERROR:
-      case Z_MEM_ERROR:
-        (void)inflateEnd(&strm);
-        return ret;
-      default:
-        break;
+        case Z_NEED_DICT:
+          ret = Z_DATA_ERROR;
+          [[fallthrough]];
+        case Z_DATA_ERROR:
+        case Z_MEM_ERROR:
+          (void)inflateEnd(&strm);
+          return ret;
+        default:
+          break;
       }
     } while (strm.avail_out == 0);
 
