@@ -1,7 +1,9 @@
 #include "Actor.h"
-#include "Tilengine.h"
+
 #include <stdlib.h>
 #include <string.h>
+
+#include "Tilengine.h"
 
 /* local variables */
 static Actor *actors;
@@ -81,7 +83,9 @@ Actor *SetActor(int index, int type, int x, int y, int w, int h,
 }
 
 /* releases actor */
-void ReleaseActor(Actor *actor) { actor->state = 0; }
+void ReleaseActor(Actor *actor) {
+  actor->state = 0;
+}
 
 /* sets collision box */
 void UpdateActorHitbox(Actor *actor) {

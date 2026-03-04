@@ -10,12 +10,11 @@
  ******************************************************************************/
 
 #define _USE_MATH_DEFINES
-#include "Simon.h"
-#include "Tilengine.h"
 #include <math.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
+#include "Simon.h"
+#include "Tilengine.h"
 
 #define WIDTH 480
 #define HEIGHT 270
@@ -28,7 +27,7 @@
 #define DEG2RAD(n) ((n) * M_PI / 180)
 
 /* linear interploation */
-#define lerp(x, x0, x1, fx0, fx1)                                              \
+#define lerp(x, x0, x1, fx0, fx1) \
   (fx0) + ((fx1) - (fx0)) * ((x) - (x0)) / ((x1) - (x0))
 
 /* layers */
@@ -43,7 +42,7 @@ int ypos;
 static void raster_callback(int line);
 
 /* entry point */
-int main(int argc, char *argv[]) {
+int main(void) {
   TLN_Tilemap tilemaps[MAX_LAYER];
 
   /* setup engine */
@@ -106,7 +105,7 @@ static void raster_callback(int line) {
   int index;
 
   angle = (float)(lerp((float)line, 0, HEIGHT - 1, 0, M_PI));
-  factor = (float)((1 - sin(angle)) * 0.4 + 1);
+  factor = (float)((1 - sinf(angle)) * 0.4 + 1);
   transform.sx = factor;
 
   TLN_SetLayerAffineTransform(LAYER_BACKGROUND, &transform);

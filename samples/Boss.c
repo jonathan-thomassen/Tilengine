@@ -4,6 +4,7 @@
 
 #include "Explosion.h"
 #include "Shooter.h"
+#include "Tilengine.h"
 
 /* partes del jefe */
 enum {

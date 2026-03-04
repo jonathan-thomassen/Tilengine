@@ -356,8 +356,6 @@ bool TLN_SetSpriteRotation(int nsprite, float angle) {
   int spr_w;
   int spr_h;
   int c;
-  uint8_t const *srcptr;
-  uint8_t *dstptr;
 
   if (nsprite >= engine->numsprites) {
     TLN_SetLastError(TLN_ERR_IDX_SPRITE);
@@ -432,12 +430,12 @@ bool TLN_SetSpriteRotation(int nsprite, float angle) {
   for (int y = 0; y < spr_h; y++) {
     xvect.x = yvect.x;
     xvect.y = yvect.y;
-    srcptr =
+    uint8_t const *srcptr =
         sprite->pixel_data.pixels + (ptrdiff_t)y * sprite->pixel_data.pitch;
     for (int x = 0; x < spr_w; x++) {
       int tmpx = fix2int(xvect.x);
       int tmpy = fix2int(xvect.y);
-      dstptr = get_bitmap_ptr(rotated, tmpx, tmpy);
+      uint8_t *dstptr = get_bitmap_ptr(rotated, tmpx, tmpy);
       *dstptr = *srcptr++;
       Vector2DAdvance(&xvect);
     }

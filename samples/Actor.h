@@ -1,8 +1,6 @@
 #ifndef _ACTOR_H
 #define _ACTOR_H
 
-#include "Tilengine.h"
-
 typedef struct {
   int x1;
   int y1;
