@@ -10,10 +10,9 @@
  *
  ******************************************************************************/
 
-#include "Tilengine.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
+#include "Tilengine.h"
 
 #define WIDTH 400
 #define HEIGHT 240
@@ -49,7 +48,7 @@ int ypos;
 static void raster_callback(int line);
 
 /* entry point */
-int main(int argc, char *argv[]) {
+int main(void) {
   TLN_Tilemap foreground;
   TLN_Tilemap background;
   TLN_SequencePack sp;

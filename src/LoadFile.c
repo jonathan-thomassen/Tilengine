@@ -157,49 +157,49 @@ void FileClose(FILE *pf) {
 /* generic load file into RAM buffer */
 void *LoadFile(const char *filename, ssize_t *out_size) {
   long file_size;
-  FILE *pf;
+  FILE *fp;
   uint8_t *data;
 
   /* abre */
-  pf = FileOpen(filename);
-  if (!pf) {
+  fp = FileOpen(filename);
+  if (!fp) {
     *out_size = 0;
     return NULL;
   }
 
   /* carga */
-  fseek(pf, 0, SEEK_END);
-  file_size = ftell(pf);
+  fseek(fp, 0, SEEK_END);
+  file_size = ftell(fp);
 
   /* check for ftell error or empty file */
   if (file_size <= 0) {
-    FileClose(pf);
+    FileClose(fp);
     *out_size = 0;
     return NULL;
   }
 
-  fseek(pf, 0, SEEK_SET);
+  fseek(fp, 0, SEEK_SET);
   data = (uint8_t *)malloc((size_t)file_size + 1);
   if (data) {
-    fread(data, (size_t)file_size, 1, pf);
+    fread(data, (size_t)file_size, 1, fp);
     data[file_size] = 0;
     *out_size = file_size;
   } else
     *out_size = -1;
 
-  FileClose(pf);
+  FileClose(fp);
   return (void *)data;
 }
 
 /* check if file exists */
 bool CheckFile(const char *filename) {
-  FILE *pf;
+  FILE *fp;
 
-  pf = FileOpen(filename);
-  if (!pf)
+  fp = FileOpen(filename);
+  if (!fp)
     return false;
 
-  FileClose(pf);
+  FileClose(fp);
   return true;
 }
 

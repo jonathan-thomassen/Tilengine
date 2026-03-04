@@ -1,4 +1,6 @@
 #include "PaletteLayer.h"
+
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,11 +19,9 @@ static void apply_palette_from_csv(TLN_Tilemap tilemap, const char *csv,
   const char *p = csv;
   for (int row = 0; row < rows; row++) {
     for (int col = 0; col < cols; col++) {
-      while (*p == ' ' || *p == '\t' || *p == '\r' || *p == '\n')
-        p++;
+      while (*p == ' ' || *p == '\t' || *p == '\r' || *p == '\n') p++;
       int val = (int)strtol(p, (char **)&p, 10);
-      while (*p == ',')
-        p++;
+      while (*p == ',') p++;
       TLN_Tile tile = TLN_GetTilemapTiles(tilemap, row, col);
       if (tile)
         tile->palette = (uint8_t)(val & 0x07);
@@ -44,14 +44,13 @@ void load_and_split_palette(const char *path, int stride, TLN_Palette out[8]) {
   }
   uint8_t *r = buf;
   uint8_t *g = buf + total;
-  uint8_t *b = buf + total * 2;
+  uint8_t *b = buf + (ptrdiff_t)total * 2;
 
   char line[32];
   int index = 0;
   while (index < total && fgets(line, sizeof(line), f)) {
     char const *p = line;
-    while (*p == ' ' || *p == '\t')
-      p++;
+    while (*p == ' ' || *p == '\t') p++;
     if (*p == '#' && p[1] && p[2] && p[3] && p[4] && p[5] && p[6]) {
       unsigned int rgb = 0;
       if (sscanf(p + 1, "%6x", &rgb) == 1) {

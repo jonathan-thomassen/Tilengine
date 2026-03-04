@@ -1,9 +1,11 @@
 #include "Prop.h"
-#include "Sandblock.h" /* for MAX_SANDBLOCKS — defines where our slots begin */
-#include "Tilengine.h"
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "Sandblock.h" /* for MAX_SANDBLOCKS — defines where our slots begin */
+#include "Tilengine.h"
 
 /* Prop sprite slots follow Simon (0) and the sandblocks (1..MAX_SANDBLOCKS). */
 #define SPRITE_BASE (1 + MAX_SANDBLOCKS)

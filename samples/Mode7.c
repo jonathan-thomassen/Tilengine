@@ -10,26 +10,25 @@
  *
  ******************************************************************************/
 
+#include <stdio.h>
+
 #include "Sin.h"
 #include "Tilengine.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #define WIDTH 400
 #define HEIGHT 240
 
 /* linear interploation */
-#define lerp(x, x0, x1, fx0, fx1)                                              \
+#define lerp(x, x0, x1, fx0, fx1) \
   (fx0) + ((fx1) - (fx0)) * ((x) - (x0)) / ((x1) - (x0))
 
 /* fixed point helper */
 typedef int fix_t;
 #define FIXED_BITS 16
-#define float2fix(f) (fix_t)(f * (1 << FIXED_BITS))
+#define float2fix(f) (fix_t)((f) * (1 << FIXED_BITS))
 #define int2fix(i) ((int)(i) << FIXED_BITS)
 #define fix2int(f) ((int)(f) >> FIXED_BITS)
-#define fix2float(f) (float)(f) / (1 << FIXED_BITS)
+#define fix2float(f) ((float)(f) / (1 << FIXED_BITS))
 
 /* layers */
 enum { LAYER_FOREGROUND, LAYER_BACKGROUND, MAX_LAYER };
@@ -52,7 +51,7 @@ static int angle;
 static void raster_callback(int line);
 
 /* entry point */
-int main(int argc, char *argv[]) {
+int main(void) {
   /* setup engine */
   TLN_Init(WIDTH, HEIGHT, MAX_LAYER, 0, 0);
   TLN_SetRasterCallback(raster_callback);

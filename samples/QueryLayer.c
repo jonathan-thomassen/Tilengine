@@ -68,7 +68,7 @@ static void show_layer_info(int nlayer) {
   }
 }
 
-int main(int argc, char *argv[]) {
+int main(void) {
   TLN_Init(HRES, VRES, NUM_LAYERS, 0, 0);
 
   /* load world starting at layer 0 */
