@@ -12,7 +12,6 @@
 #define _SEQUENCE_PACK_H
 
 #include "Object.h"
-#include "Sequence.h"
 
 struct SequencePack {
   DEFINE_OBJECT;

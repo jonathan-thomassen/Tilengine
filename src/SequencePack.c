@@ -9,10 +9,12 @@
  * */
 
 #include "SequencePack.h"
-#include "Object.h"
-#include "crc32.h"
-#include <stdlib.h>
+
 #include <string.h>
+
+#include "Object.h"
+#include "Sequence.h"
+#include "crc32.h"
 
 /*!
  * \brief
@@ -55,7 +57,7 @@ bool TLN_AddSequenceToPack(TLN_SequencePack sp, TLN_Sequence sequence) {
       !CheckBaseObject(sequence, OT_SEQUENCE))
     return false;
 
-  /* a�ade a lista enlazada */
+  /* add to linked list */
   if (sp->sequences == NULL)
     sp->sequences = sequence;
   else
@@ -108,8 +110,7 @@ TLN_Sequence TLN_GetSequence(TLN_SequencePack sp, int index) {
   }
 
   sequence = sp->sequences;
-  for (int c = 0; c < index; c++)
-    sequence = sequence->next;
+  for (int c = 0; c < index; c++) sequence = sequence->next;
 
   TLN_SetLastError(TLN_ERR_OK);
   return sequence;
@@ -143,7 +144,7 @@ TLN_Sequence TLN_FindSequence(TLN_SequencePack sp, const char *name) {
     return NULL;
   }
 
-  /* recorre lista */
+  /* traverse list */
   find = _crc32(0, name, strlen(name));
   sequence = sp->sequences;
   while (sequence != NULL) {

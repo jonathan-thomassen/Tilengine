@@ -14,7 +14,7 @@
 #define INPUT_MASK (MAX_INPUTS - 1)
 
 #ifdef WIN32
-#include <Windows.h>
+#include <windows.h>
 #endif
 #include <SDL3/SDL.h>
 #include <stdio.h>
@@ -345,7 +345,7 @@ void TLN_SetWindowTitle(const char *title) {
     window_title = strdup(title);
 }
 
-static int WindowThread(void *data) {
+static int WindowThread(void *data [[maybe_unused]]) {
   bool ok;
 
   ok = create_window();
@@ -722,7 +722,7 @@ bool TLN_ProcessWindow(void) {
         break;
     }
 
-    /* procesa eventos de usuario */
+    /* process user events */
     if (sdl_callback != NULL)
       sdl_callback(&evt);
   }
@@ -979,8 +979,8 @@ static void EndWindowFrame(void) {
       last_fps = fps;
     }
     remainder += 1000;
-    uint32_t delay_ms = remainder / (uint32_t)fps;
-    remainder %= (uint32_t)fps;
+    uint32_t delay_ms = fps > 0 ? remainder / (uint32_t)fps : 0;
+    remainder = fps > 0 ? remainder % (uint32_t)fps : 0;
     uint32_t due_time = wnd_params.t0 + delay_ms;
     uint32_t now = (uint32_t)SDL_GetTicks();
     while (now < due_time) {

@@ -326,7 +326,7 @@ typedef struct {
   fix_t dy;
 } Vector2D;
 
-/* establece vector2D de punto fijo */
+/* sets fixed-point 2D vector */
 static void Vector2DSet(Vector2D *vector, Point2D const *src,
                         Point2D const *dst, int len) {
   int dstw = (int)(dst->x - src->x);
@@ -364,11 +364,11 @@ bool TLN_SetSpriteRotation(int nsprite, float angle) {
 
   sprite = &engine->sprites[nsprite];
 
-  /* borra anterior */
+  /* delete previous rotation bitmap */
   if (sprite->rotation_bitmap != NULL)
     TLN_DeleteBitmap(sprite->rotation_bitmap);
 
-  /* calcula 4 esquinas */
+  /* calculate 4 corners */
   spr_w = sprite->info->w;
   spr_h = sprite->info->h;
   Point2DSet(&corners[0], (math2d_t)sprite->pos.x, (math2d_t)sprite->pos.y);
@@ -379,7 +379,7 @@ bool TLN_SetSpriteRotation(int nsprite, float angle) {
   Point2DSet(&corners[3], (math2d_t)sprite->pos.x,
              (math2d_t)sprite->pos.y + (math2d_t)spr_h - 1);
 
-  /* calcula matriz para rotar desde el centro */
+  /* calculate rotation matrix from the center */
   dx = sprite->pos.x - (spr_w >> 1);
   dy = sprite->pos.y - (spr_h >> 1);
   Matrix3SetIdentity(&matrix);
@@ -390,14 +390,14 @@ bool TLN_SetSpriteRotation(int nsprite, float angle) {
   Matrix3SetTranslation(&transform, (math2d_t)dx, (math2d_t)dy);
   Matrix3Multiply(&matrix, &transform);
 
-  /* multiplica los puntos por la matriz */
+  /* multiply points by the matrix */
   for (c = 0; c < 4; c++) {
     Point2DMultiply(&corners[c], &matrix);
     corners[c].x = roundf(corners[c].x);
     corners[c].y = roundf(corners[c].y);
   }
 
-  /* obtiene rectángulo contenedor en pantalla */
+  /* get bounding rectangle on screen */
   rect = &sprite->dstrect;
   rect->x1 = rect->x2 = (int)corners[0].x;
   rect->y1 = rect->y2 = (int)corners[0].y;
@@ -413,7 +413,7 @@ bool TLN_SetSpriteRotation(int nsprite, float angle) {
       rect->y2 = (int)point->y;
   }
 
-  /* ajusta array de puntos a origen (0,0) para obtener tamaño */
+  /* adjust point array to origin (0,0) to obtain size */
   for (c = 0; c < 4; c++) {
     corners[c].x -= (math2d_t)rect->x1;
     corners[c].y -= (math2d_t)rect->y1;
@@ -422,11 +422,11 @@ bool TLN_SetSpriteRotation(int nsprite, float angle) {
   rotated =
       TLN_CreateBitmap(rect->x2 - rect->x1 + 1, rect->y2 - rect->y1 + 1, 8);
 
-  /* inicia vectores de barrido */
+  /* initialize scan vectors */
   Vector2DSet(&xvect, &corners[0], &corners[1], spr_w);
   Vector2DSet(&yvect, &corners[0], &corners[3], spr_h);
 
-  /* dibuja bitmap de destino girado */
+  /* draw rotated destination bitmap */
   for (int y = 0; y < spr_h; y++) {
     xvect.x = yvect.x;
     xvect.y = yvect.y;

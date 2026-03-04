@@ -13,7 +13,6 @@
 
 #include "Object.h"
 #include "Tilengine.h"
-#include "crc32.h"
 
 /* registro de sprite */
 typedef struct {

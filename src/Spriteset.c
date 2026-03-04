@@ -9,12 +9,12 @@
  * */
 
 #include "Spriteset.h"
+
+#include <string.h>
+
 #include "Bitmap.h"
-#include "Palette.h"
 #include "Tilengine.h"
 #include "crc32.h"
-#include <stdio.h>
-#include <string.h>
 
 static void set_sprite_entry(TLN_Spriteset spriteset, int entry,
                              TLN_SpriteData const *data) {
@@ -53,12 +53,12 @@ TLN_Spriteset TLN_CreateSpriteset(TLN_Bitmap bitmap, TLN_SpriteData const *data,
   const int size =
       sizeof(struct Spriteset) + (sizeof(SpriteEntry) * num_entries);
 
-  /* crea */
+  /* create */
   spriteset = (TLN_Spriteset)CreateBaseObject(OT_SPRITESET, size);
   if (!spriteset)
     return NULL;
 
-  /* copia datos */
+  /* copy data */
   spriteset->bitmap = bitmap;
   spriteset->palette = TLN_GetBitmapPalette(bitmap);
   spriteset->entries = num_entries;

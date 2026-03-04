@@ -256,6 +256,15 @@ TLN_Tileset TLN_CloneTileset(TLN_Tileset src) {
  * TLN_LoadTileset(), TLN_CloneTileset()
  */
 bool TLN_DeleteTileset(TLN_Tileset tileset) {
+  if (!CheckBaseObject(tileset, OT_TILESET))
+    return false;
+
+  free(tileset->tiles);
+  free(tileset->color_key);
+  free(tileset->attributes);
+  free(tileset->animations);
+  DeleteBaseObject(tileset);
+  TLN_SetLastError(TLN_ERR_OK);
   return true;
 }
 
@@ -366,7 +375,7 @@ TLN_Bitmap GetTilesetBitmap(TLN_Tileset tileset, int tileid) {
   return NULL;
 }
 
-/* devuelve si la l�nea usa color key */
+/* returns whether the scanline uses a color key */
 static bool HasTransparentPixels(uint8_t const *src, int width) {
   register uint8_t const *end = src + width;
   do {

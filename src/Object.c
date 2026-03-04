@@ -54,7 +54,7 @@ void *CreateBaseObject(ObjectType type, int size) {
   return object;
 }
 
-/* crea copia de objecto */
+/* creates a copy of the object */
 void *CloneBaseObject(void *object) {
   object_t const *src = (object_t *)object;
   object_t *dst = (object_t *)CreateBaseObject(src->type, src->size);
@@ -65,7 +65,7 @@ void *CloneBaseObject(void *object) {
   return dst;
 }
 
-/* elimina objeto */
+/* deletes object */
 void DeleteBaseObject(void *object) {
   if (object) {
     char trace_msg[255];
@@ -78,7 +78,7 @@ void DeleteBaseObject(void *object) {
   }
 }
 
-/* comprueba tipo de objeto */
+/* checks object type */
 bool CheckBaseObject(void *object, ObjectType type) {
   char trace_msg[255];
   if (object != NULL && ObjectType(object) == type)

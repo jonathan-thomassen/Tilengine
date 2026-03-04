@@ -12,7 +12,6 @@
 #define _SEQUENCE_H
 
 #include "Object.h"
-#include "crc32.h"
 
 /* ciclo de color */
 struct Strip {

@@ -9,8 +9,11 @@
  * */
 
 #include "Tables.h"
-#include "Tilengine.h"
+
 #include <stdlib.h>
+
+#include "Tilengine.h"
+
 
 #define BLEND_SIZE (1 << 16)
 
@@ -60,4 +63,6 @@ void DeleteBlendTables(void) {
 }
 
 /* returns blend table according to selected blend mode */
-uint8_t *SelectBlendTable(TLN_Blend mode) { return _blend_tables[mode]; }
+uint8_t *SelectBlendTable(TLN_Blend mode) {
+  return _blend_tables[mode];
+}

@@ -18,6 +18,7 @@
 #include "Engine.h"
 #include "ObjectList.h"
 #include "Palette.h"
+#include "Sequence.h"
 #include "SequencePack.h"
 #include "Tables.h"
 #include "Tilemap.h"

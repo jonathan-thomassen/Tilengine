@@ -167,7 +167,7 @@ void *LoadFile(const char *filename, ssize_t *out_size) {
     return NULL;
   }
 
-  /* carga */
+  /* load */
   fseek(fp, 0, SEEK_END);
   file_size = ftell(fp);
 

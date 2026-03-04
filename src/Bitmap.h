@@ -12,8 +12,9 @@
 #define _BITMAP_H
 
 #include "Object.h"
+#include <stddef.h>
 
-/* bitmap para sprite */
+/* bitmap for sprite */
 struct Bitmap {
   DEFINE_OBJECT;
   int width;
@@ -24,6 +25,6 @@ struct Bitmap {
   uint8_t data[];
 };
 
-#define get_bitmap_ptr(bitmap, x, y) (bitmap->data + (y) * bitmap->pitch + (x))
+#define get_bitmap_ptr(bitmap, x, y) ((bitmap)->data + (ptrdiff_t)(y) * (bitmap)->pitch + (x))
 
 #endif

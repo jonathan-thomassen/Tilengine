@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 #include "Engine.h"
 #include "Layer.h"
 #include "LoadTMX.h"

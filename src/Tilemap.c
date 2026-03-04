@@ -58,7 +58,8 @@ typedef struct {
 TLN_Tilemap TLN_CreateTilemap(int rows, int cols, Tile const *tiles,
                               uint32_t bgcolor, TLN_Tileset tileset) {
   TLN_Tilemap tilemap = NULL;
-  int size = sizeof(struct Tilemap) + ((long long)rows * cols * sizeof(Tile));
+  int size =
+      (int)(sizeof(struct Tilemap) + ((long long)rows * cols * sizeof(Tile)));
 
   tilemap = (TLN_Tilemap)CreateBaseObject(OT_TILEMAP, size);
   if (!tilemap)
@@ -66,7 +67,7 @@ TLN_Tilemap TLN_CreateTilemap(int rows, int cols, Tile const *tiles,
 
   tilemap->rows = rows;
   tilemap->cols = cols;
-  tilemap->bgcolor = bgcolor;
+  tilemap->bgcolor = (int)bgcolor;
   tilemap->tilesets[0] = tileset;
   tilemap->visible = true;
 
@@ -358,15 +359,15 @@ bool TLN_CopyTiles(TLN_Tilemap src, TLN_Rect const *src_rect, TLN_Tilemap dst,
   {
     int size;
     Rect tgtrect = {src_rect->col, src_rect->row, src_rect->cols,
-                    src_rect->rows};             /* area a copiar */
-    Rect srcrect = {0, 0, src->rows, src->cols}; /* tilemap de origen */
-    Rect dstrect = {0, 0, dst->rows, dst->cols}; /* tilemap de destino */
+                    src_rect->rows};             /* area to copy */
+    Rect srcrect = {0, 0, src->rows, src->cols}; /* source tilemap */
+    Rect dstrect = {0, 0, dst->rows, dst->cols}; /* destination tilemap */
 
     /* clipping */
     ClipRect(&tgtrect, &srcrect);
     ClipRect(&tgtrect, &dstrect);
 
-    size = tgtrect.w * sizeof(Tile);
+    size = tgtrect.w * (int)sizeof(Tile);
     for (int y = 0; y < tgtrect.h; y++) {
       Tile const *srctile =
           GetTilemapPtr(src, y + src_rect->row, src_rect->col);

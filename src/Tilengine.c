@@ -710,7 +710,7 @@ void TLN_SetCustomBlendFunction(uint8_t (*blend_function)(uint8_t src,
   if (blend_function == NULL)
     return;
 
-  /* rellena tabla */
+  /* fill table */
   for (int a = 0; a < 256; a++) {
     for (int b = 0; b < 256; b++)
       table[(a << 8) + b] = blend_function((uint8_t)a, (uint8_t)b);

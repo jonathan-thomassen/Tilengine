@@ -32,8 +32,8 @@ struct Palette {
 };
 
 /* returns pointer to specified index color definition */
-#define GetPaletteData(palette, index) &palette->data[index]
+#define GetPaletteData(palette, index) &(palette)->data[index]
 
-#define PackRGB32(r, g, b) (uint32_t)(0xFF000000 | (r << 16) | (g << 8) | b)
+#define PackRGB32(r, g, b) (uint32_t)(0xFF000000 | ((r) << 16) | ((g) << 8) | (b))
 
 #endif

@@ -17,7 +17,6 @@
 #include "Tables.h"
 #include "Tilengine.h"
 
-
 /*!
  * \brief
  * Creates a new color table
@@ -206,7 +205,7 @@ bool TLN_MixPalettes(TLN_Palette src1, TLN_Palette src2, TLN_Palette dst,
   return true;
 }
 
-/* edita rango de colores seg�n tabla de mezcla */
+/* edits color range according to blend table */
 static bool EditPaletteColor(TLN_Palette palette, uint8_t const *blend_table,
                              uint8_t r, uint8_t g, uint8_t b, uint8_t start,
                              uint8_t num) {

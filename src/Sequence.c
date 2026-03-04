@@ -13,12 +13,13 @@
 #endif
 
 #include "Sequence.h"
+
+#include <stdio.h>
+#include <string.h>
+
 #include "Object.h"
 #include "Tilengine.h"
 #include "crc32.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 /*!
  * \brief
