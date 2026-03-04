@@ -255,7 +255,7 @@ TLN_Tileset TLN_CloneTileset(TLN_Tileset src) {
  * \see
  * TLN_LoadTileset(), TLN_CloneTileset()
  */
-bool TLN_DeleteTileset(TLN_Tileset ´/*tileset*/) { return true; }
+bool TLN_DeleteTileset(TLN_Tileset /*tileset*/) { return true; }
 
 /*!
  * \brief

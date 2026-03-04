@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake ninja-build \
+            libpng-dev zlib1g-dev \
+            cppcheck clang-tidy
+
+      - name: Install SDL3
+        run: |
+          SDL_VERSION=3.2.8
+          curl -L "https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL3-${SDL_VERSION}.tar.gz" \
+            | tar xz
+          cmake -S SDL3-${SDL_VERSION} -B sdl3-build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DSDL_SHARED=ON -DSDL_STATIC=OFF \
+            -DCMAKE_INSTALL_PREFIX=/usr/local
+          cmake --build sdl3-build
+          sudo cmake --install sdl3-build
+
+      - name: Configure (with sanitizers)
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DSANITIZE=ON
+
+      - name: Build
+        run: cmake --build build
+
+      - name: cppcheck
+        run: |
+          cppcheck \
+            --enable=warning,style,performance \
+            --std=c23 \
+            -I src -I include \
+            --suppress=missingIncludeSystem \
+            --error-exitcode=1 \
+            src/
+
+      - name: clang-tidy
+        run: |
+          clang-tidy src/Tilengine.c src/Layer.c src/Sprite.c \
+            samples/Intro.c samples/Drawbridge.c \
+            -p build

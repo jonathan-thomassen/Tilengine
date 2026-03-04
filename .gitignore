@@ -16,6 +16,7 @@ x64_Debug/
 x64_Release/
 *.pyc
 *.exe
+*.cache
 
 docs/screens/
 samples/assets/mslug/

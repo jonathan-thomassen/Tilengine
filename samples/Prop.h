@@ -1,8 +1,6 @@
 #ifndef _PROP_H
 #define _PROP_H
 
-#include "Tilengine.h"
-
 /** Maximum number of prop instances that can exist simultaneously. */
 #define MAX_PROPS 16
 

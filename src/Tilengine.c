@@ -9,21 +9,20 @@
  * */
 
 #include "Tilengine.h"
+
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "Bitmap.h"
 #include "Engine.h"
 #include "Layer.h"
 #include "LoadTMX.h"
-#include "Math2D.h"
 #include "Palette.h"
 #include "Sprite.h"
-#include "Spriteset.h"
 #include "Tables.h"
 #include "Tilemap.h"
 #include "Tileset.h"
-#include <math.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
 
 /* magic number to recognize context object */
 #define ID_CONTEXT 0x7E5D0AB1
@@ -84,7 +83,7 @@ static TLN_Engine create_context(int hres, int vres, int numlayers,
   TLN_SetLastError(TLN_ERR_OK);
 
   /* create framebuffer */
-  context = (TLN_Engine)calloc(sizeof(Engine), 1);
+  context = (TLN_Engine)calloc(1, sizeof(Engine));
   context->header = ID_CONTEXT;
   context->framebuffer.width = hres;
   context->framebuffer.height = vres;
@@ -157,8 +156,7 @@ static TLN_Engine create_context(int hres, int vres, int numlayers,
   if (engine == NULL)
     engine = context;
 
-  for (c = 0; c < context->numlayers; c++)
-    TLN_DisableLayerWindow(c);
+  for (c = 0; c < context->numlayers; c++) TLN_DisableLayerWindow(c);
 
 #ifdef _DEBUG
   TLN_SetLogLevel(TLN_LOG_ERRORS);
@@ -199,7 +197,9 @@ bool TLN_SetContext(TLN_Engine context) {
  * \brief
  * Returns the current engine context
  */
-TLN_Engine TLN_GetContext(void) { return engine; }
+TLN_Engine TLN_GetContext(void) {
+  return engine;
+}
 
 /*!
  * \brief
@@ -220,7 +220,6 @@ void TLN_Deinit(void) {
  * context reference to delete
  */
 bool TLN_DeleteContext(TLN_Engine context) {
-
   if (!check_context(context)) {
     TLN_SetLastError(TLN_ERR_NULL_POINTER);
     return false;
@@ -292,7 +291,9 @@ uint32_t TLN_GetVersion(void) {
  * constant animation pacing at other frequencies
  * \see TLN_GetTargetFps
  */
-void TLN_SetTargetFps(int fps) { engine->timing.target_fps = fps; }
+void TLN_SetTargetFps(int fps) {
+  engine->timing.target_fps = fps;
+}
 
 /*!
  * \brief Returns target fps
@@ -301,7 +302,9 @@ void TLN_SetTargetFps(int fps) { engine->timing.target_fps = fps; }
  * TLN_SetTargetFps
  * \see TLN_GetTargetFps, TLN_CreateWindow
  */
-int TLN_GetTargetFps(void) { return engine->timing.target_fps; }
+int TLN_GetTargetFps(void) {
+  return engine->timing.target_fps;
+}
 
 /*!
  * \brief
@@ -600,7 +603,9 @@ bool TLN_SetBGColorFromTilemap(TLN_Tilemap tilemap) {
  * \see
  * TLN_SetBGColor()
  */
-void TLN_DisableBGColor(void) { engine->bg.color = 0; }
+void TLN_DisableBGColor(void) {
+  engine->bg.color = 0;
+}
 
 /*!
  * \brief
@@ -666,7 +671,7 @@ bool TLN_SetGlobalPalette(int index, TLN_Palette palette) {
   return true;
 }
 
-/*
+/*!
  * \brief Returns one of the eight global palettes
  * \param index Index of global palette to query [0 - 7]
  * \returns TLN_Palette reference or NULL if not set
@@ -675,7 +680,7 @@ bool TLN_SetGlobalPalette(int index, TLN_Palette palette) {
 TLN_Palette TLN_GetGlobalPalette(int index) {
   if (index < 0 || index > NUM_PALETTES - 1) {
     TLN_SetLastError(TLN_ERR_IDX_PALETTE);
-    return false;
+    return NULL;
   }
 
   TLN_SetLastError(TLN_ERR_OK);

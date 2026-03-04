@@ -1,8 +1,6 @@
 #ifndef _SANDBLOCK_H
 #define _SANDBLOCK_H
 
-#include "Tilengine.h"
-
 /** Maximum number of sandblocks that can exist simultaneously. */
 #define MAX_SANDBLOCKS 4
 

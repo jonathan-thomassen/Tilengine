@@ -1,8 +1,6 @@
 #ifndef _SIMON_H
 #define _SIMON_H
 
-#include "Tilengine.h"
-
 #define COLLISION_LAYER 5
 
 void SimonInit(void);

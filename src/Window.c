@@ -16,12 +16,15 @@
 #ifdef WIN32
 #include <Windows.h>
 #endif
+#include <SDL3/SDL.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "Engine.h"
 #include "Tilengine.h"
 #include "crt.h"
-#include <SDL3/SDL.h>
-#include <stdlib.h>
-#include <string.h>
+
 
 static SDL_Window *window;
 static SDL_Renderer *renderer;
@@ -205,8 +208,7 @@ static void calibrate_timing(WindowFlags flags) {
     int target_fps = 0;
     SDL_RenderPresent(temp_renderer);
     t0 = (uint32_t)SDL_GetTicks();
-    for (c = 0; c < 20; c += 1)
-      SDL_RenderPresent(temp_renderer);
+    for (c = 0; c < 20; c += 1) SDL_RenderPresent(temp_renderer);
     target_fps = (c * 1000) / ((uint32_t)SDL_GetTicks() - t0);
     SDL_DestroyRenderer(temp_renderer);
 
@@ -464,8 +466,7 @@ bool TLN_CreateWindowThread(int flags) {
 
   /* init thread & wait window creation result */
   thread = SDL_CreateThread(WindowThread, "WindowThread", &wnd_params);
-  while (wnd_params.retval == 0)
-    SDL_Delay(10);
+  while (wnd_params.retval == 0) SDL_Delay(10);
 
   if (wnd_params.retval == 1)
     return true;
@@ -687,39 +688,39 @@ bool TLN_ProcessWindow(void) {
   /* dispatch message queue */
   while (SDL_PollEvent(&evt)) {
     switch (evt.type) {
-    case SDL_EVENT_QUIT:
-      done = true;
-      break;
+      case SDL_EVENT_QUIT:
+        done = true;
+        break;
 
-    case SDL_EVENT_KEY_DOWN:
-      keybevt = (SDL_KeyboardEvent *)&evt;
-      if (keybevt->repeat == 0) {
-        process_special_keys(keybevt->key, keybevt->mod);
-        process_window_scale(keybevt->key, keybevt->mod);
+      case SDL_EVENT_KEY_DOWN:
+        keybevt = (SDL_KeyboardEvent *)&evt;
+        if (keybevt->repeat == 0) {
+          process_special_keys(keybevt->key, keybevt->mod);
+          process_window_scale(keybevt->key, keybevt->mod);
+          process_all_players_keyinput(keybevt->key, keybevt->down);
+        }
+        break;
+
+      case SDL_EVENT_KEY_UP:
+        keybevt = (SDL_KeyboardEvent *)&evt;
         process_all_players_keyinput(keybevt->key, keybevt->down);
-      }
-      break;
+        break;
 
-    case SDL_EVENT_KEY_UP:
-      keybevt = (SDL_KeyboardEvent *)&evt;
-      process_all_players_keyinput(keybevt->key, keybevt->down);
-      break;
+      case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+      case SDL_EVENT_JOYSTICK_BUTTON_UP:
+        joybuttonevt = (SDL_JoyButtonEvent *)&evt;
+        process_all_players_joybutton(joybuttonevt->which, joybuttonevt->button,
+                                      joybuttonevt->down);
+        break;
 
-    case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
-    case SDL_EVENT_JOYSTICK_BUTTON_UP:
-      joybuttonevt = (SDL_JoyButtonEvent *)&evt;
-      process_all_players_joybutton(joybuttonevt->which, joybuttonevt->button,
-                                    joybuttonevt->down);
-      break;
+      case SDL_EVENT_JOYSTICK_AXIS_MOTION:
+        joyaxisevt = (SDL_JoyAxisEvent *)&evt;
+        process_all_players_joyaxis(joyaxisevt->which, joyaxisevt->axis,
+                                    joyaxisevt->value);
+        break;
 
-    case SDL_EVENT_JOYSTICK_AXIS_MOTION:
-      joyaxisevt = (SDL_JoyAxisEvent *)&evt;
-      process_all_players_joyaxis(joyaxisevt->which, joyaxisevt->axis,
-                                  joyaxisevt->value);
-      break;
-
-    default:
-      break;
+      default:
+        break;
     }
 
     /* procesa eventos de usuario */
@@ -745,7 +746,9 @@ bool TLN_ProcessWindow(void) {
  * \see
  * TLN_CreateWindow(), TLN_CreateWindowThread()
  */
-bool TLN_IsWindowActive(void) { return !done; }
+bool TLN_IsWindowActive(void) {
+  return !done;
+}
 
 /*!
  * \brief
@@ -770,7 +773,9 @@ void TLN_WaitRedraw(void) {
  * \param mode
  * Enables or disables RF emulation on CRT effect
  */
-void TLN_EnableRFBlur(bool mode) { CRTSetBlur(crt, mode); }
+void TLN_EnableRFBlur(bool mode) {
+  CRTSetBlur(crt, mode);
+}
 
 /*!
  * \brief
@@ -1030,39 +1035,51 @@ void TLN_DrawFrame(int frame) {
  * \brief
  * Returns the number of milliseconds since application start
  */
-uint32_t TLN_GetTicks(void) { return (uint32_t)SDL_GetTicks(); }
+uint32_t TLN_GetTicks(void) {
+  return (uint32_t)SDL_GetTicks();
+}
 
 /*!
  * \brief
  * Suspends execition for a fixed time
  * \param time Number of milliseconds to wait
  */
-void TLN_Delay(uint32_t time) { SDL_Delay(time); }
+void TLN_Delay(uint32_t time) {
+  SDL_Delay(time);
+}
 
 /*!
  * \brief
  * Returns horizontal dimension of window after scaling
  */
-int TLN_GetWindowWidth(void) { return wnd_width; }
+int TLN_GetWindowWidth(void) {
+  return wnd_width;
+}
 
 /*!
  * \brief
  * Returns vertical dimension of window after scaling
  */
-int TLN_GetWindowHeight(void) { return wnd_height; }
+int TLN_GetWindowHeight(void) {
+  return wnd_height;
+}
 
 /*!
  * \brief
  * Registers a user-defined callback to capture internal SDL3 events
  * \param callback pointer to user funcion with signature void (SDL_Event*)
  */
-void TLN_SetSDLCallback(TLN_SDLCallback callback) { sdl_callback = callback; }
+void TLN_SetSDLCallback(TLN_SDLCallback callback) {
+  sdl_callback = callback;
+}
 
 /*!
  * \brief Returns averaged fps being rendered on the built-in window, updated
  * each 500 ms
  */
-uint32_t TLN_GetAverageFps(void) { return wnd_params.fps_average; }
+uint32_t TLN_GetAverageFps(void) {
+  return wnd_params.fps_average;
+}
 
 /*!
  * \brief Returns current window scaling factor.

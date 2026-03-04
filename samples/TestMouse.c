@@ -13,9 +13,11 @@
  *
  ******************************************************************************/
 
-#include "Tilengine.h"
 #include <SDL3/SDL.h>
+#include <stdio.h>
 #include <stdlib.h>
+
+#include "Tilengine.h"
 
 #define WIDTH 400
 #define HEIGHT 240

@@ -55,11 +55,19 @@ target_include_directories(${PROJECT_NAME} PRIVATE include)
 if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /W3 /std:c23)
 else()
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c23 -O2")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c23 -O2 -Wall -Wextra")
     if (NOT WIN32)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpic")
     endif()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-result -Wno-format-truncation")
+endif()
+
+# Sanitizers: cmake -DSANITIZE=ON ..
+option(SANITIZE "Enable AddressSanitizer + UBSan" OFF)
+if (SANITIZE AND NOT MSVC)
+    message(STATUS "Sanitizers enabled")
+    add_compile_options(-fsanitize=address,undefined -fno-omit-frame-pointer -g -O1)
+    add_link_options(-fsanitize=address,undefined)
 endif()
 
 # test executable

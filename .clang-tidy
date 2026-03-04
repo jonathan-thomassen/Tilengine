@@ -1,0 +1,23 @@
+Checks: >
+  bugprone-*,
+  cert-*,
+  misc-*,
+  performance-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-suspicious-include,
+  -cert-dcl37-c,
+  -cert-dcl51-cpp,
+  -cert-int09-c,
+  -cert-err33-c,
+  -bugprone-reserved-identifier,
+  -misc-include-cleaner,
+  -misc-no-recursion
+
+# Treat these as errors (empty = none forced to error)
+WarningsAsErrors: ''
+
+# Only emit diagnostics for files directly in samples/ — suppress noise from
+# engine headers (src/Tilengine.h etc.) when they're only included by targets.
+HeaderFilterRegex: '.*/samples/.*'
+
+FormatStyle: none

@@ -1,5 +1,8 @@
 /* Compile test without windowing component, not for real execution */
+#include <stdio.h>
+
 #include "Tilengine.h"
+
 
 #define WIDTH 400
 #define HEIGHT 240

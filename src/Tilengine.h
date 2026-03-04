@@ -54,8 +54,6 @@ typedef unsigned int uint32_t;   /*!< unsigned 32-bit wide data */
 
 #endif
 
-#include <stdio.h>
-
 /* version */
 #define TILENGINE_VER_MAJ 2
 #define TILENGINE_VER_MIN 15
