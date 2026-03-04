@@ -13,8 +13,6 @@
 
 #include "Animation.h"
 #include "Object.h"
-#include "Palette.h"
-#include "SequencePack.h"
 
 /* types of tilesets */
 typedef enum {

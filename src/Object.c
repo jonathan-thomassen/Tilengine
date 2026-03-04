@@ -98,7 +98,7 @@ unsigned int GetNumBytes(void) {
   return numbytes;
 }
 
-void CopyBaseObject(void *dstobject, void *srcobject) {
+void CopyBaseObject(void *dstobject, const void *srcobject) {
   if (srcobject && dstobject)
     memcpy(dstobject, srcobject, ObjectSize(srcobject));
 }

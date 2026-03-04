@@ -16,10 +16,12 @@
 #include "Bitmap.h"
 #include "Engine.h"
 #include "ObjectList.h"
+#include "Palette.h"
 #include "Sprite.h"
 #include "Tilemap.h"
 #include "Tilengine.h"
 #include "Tileset.h"
+
 
 /* private prototypes */
 static void DrawSpriteCollision(int nsprite, uint8_t const *srcpixel,

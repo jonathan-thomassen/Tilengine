@@ -9,11 +9,14 @@
  * */
 
 #include "Palette.h"
+
+#include <stdio.h>
+#include <string.h>
+
 #include "Engine.h"
 #include "Tables.h"
 #include "Tilengine.h"
-#include <stdio.h>
-#include <string.h>
+
 
 /*!
  * \brief
@@ -28,8 +31,8 @@
 TLN_Palette TLN_CreatePalette(int entries) {
   TLN_Palette palette;
   int size = sizeof(struct Palette) +
-             1024; // always alloc 256 colors, to avoid crash when tileset uses
-                   // more colors than the palette
+             1024;  // always alloc 256 colors, to avoid crash when tileset uses
+                    // more colors than the palette
 
   palette = (TLN_Palette)CreateBaseObject(OT_PALETTE, size);
   if (palette) {
@@ -141,7 +144,7 @@ uint8_t *TLN_GetPaletteData(TLN_Palette palette, int index) {
     return NULL;
   else if (index >= palette->entries) {
     TLN_SetLastError(TLN_ERR_IDX_PICTURE);
-    return false;
+    return NULL;
   } else {
     TLN_SetLastError(TLN_ERR_OK);
     return (uint8_t *)GetPaletteData(palette, index);

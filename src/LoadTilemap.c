@@ -99,20 +99,20 @@ static void handle_add_content(const char *szName, const char *szValue) {
     return;
 
   int size = (int)(loader.numtiles * sizeof(uint32_t));
-  uint32_t *data = (uint32_t *)malloc(size);
-  if (data == NULL)
+  uint32_t *map_data = (uint32_t *)malloc(size);
+  if (map_data == NULL)
     return;
 
-  memset(data, 0, size);
+  memset(map_data, 0, size);
   if (loader.encoding == ENCODING_CSV) {
     char *mutable_value = strdup(szValue);
     if (mutable_value) {
-      csvdecode(mutable_value, loader.numtiles, data);
+      csvdecode(mutable_value, loader.numtiles, map_data);
       free(mutable_value);
     }
   } else if (loader.encoding == ENCODING_BASE64)
-    decode_base64_content(szValue, data, size);
-  loader.data = data;
+    decode_base64_content(szValue, map_data, size);
+  loader.data = map_data;
 }
 
 /* XML parser callback */
@@ -138,7 +138,7 @@ static TLN_Tileset load_tileset(TMXInfo *info, const char *filename,
   char tsxpath[200];
 
   /* composite tsx filename with relative path of parent tmx */
-  TMXTileset *tmxtileset = &info->tilesets[index];
+  TMXTileset const *tmxtileset = &info->tilesets[index];
   SplitFilename(filename, &fi);
   if (fi.path[0] != 0)
     snprintf(tsxpath, sizeof(tsxpath), "%s/%s", fi.path, tmxtileset->source);
@@ -170,7 +170,7 @@ static TLN_Tileset load_tileset(TMXInfo *info, const char *filename,
 TLN_Tilemap TLN_LoadTilemap(const char *filename, const char *layername) {
   SimpleXmlParser parser;
   ssize_t size;
-  uint8_t *data;
+  uint8_t *xml_data;
   TLN_Tilemap tilemap = NULL;
   TMXInfo tmxinfo = {0};
   uint32_t c;
@@ -194,8 +194,8 @@ TLN_Tilemap TLN_LoadTilemap(const char *filename, const char *layername) {
 
   /* parse */
   loader.numtiles = loader.layer->width * loader.layer->height;
-  data = (uint8_t *)LoadFile(filename, &size);
-  parser = simpleXmlCreateParser((char *)data, (long)size);
+  xml_data = (uint8_t *)LoadFile(filename, &size);
+  parser = simpleXmlCreateParser((char *)xml_data, (long)size);
   if (parser != NULL) {
     if (simpleXmlParse(parser, handler) != 0) {
       printf("parse error on line %li:\n%s\n", simpleXmlGetLineNumber(parser),
@@ -206,7 +206,7 @@ TLN_Tilemap TLN_LoadTilemap(const char *filename, const char *layername) {
     TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
 
   simpleXmlDestroyParser(parser);
-  free(data);
+  free(xml_data);
 
   /* load referenced tilesets */
   TLN_Tileset tilesets[TMX_MAX_TILESET] = {0};

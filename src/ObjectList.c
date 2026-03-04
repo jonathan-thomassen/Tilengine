@@ -193,17 +193,17 @@ static void add_to_list(TLN_ObjectList list, struct _Object *object) {
  * \return true if success or false if error
  */
 static bool CloneObjectToList(TLN_ObjectList list, TLN_Object const *data) {
-  struct _Object *object;
+  struct _Object *obj_node;
 
   if (!CheckBaseObject(list, OT_OBJECTLIST))
     return false;
 
-  object = (struct _Object *)calloc(1, sizeof(struct _Object));
-  if (object == NULL)
+  obj_node = (struct _Object *)calloc(1, sizeof(struct _Object));
+  if (obj_node == NULL)
     return false;
 
-  memcpy(object, data, sizeof(struct _Object));
-  add_to_list(list, object);
+  memcpy(obj_node, data, sizeof(struct _Object));
+  add_to_list(list, obj_node);
   return true;
 }
 /*!
@@ -219,19 +219,19 @@ static bool CloneObjectToList(TLN_ObjectList list, TLN_Object const *data) {
  */
 bool TLN_AddTileObjectToList(TLN_ObjectList list, uint16_t /*id*/, uint16_t gid,
                              uint16_t /*flags*/, int x, int y) {
-  struct _Object *object;
+  struct _Object *obj_node;
 
   if (!CheckBaseObject(list, OT_OBJECTLIST))
     return false;
 
-  object = (struct _Object *)calloc(1, sizeof(struct _Object));
-  if (object == NULL)
+  obj_node = (struct _Object *)calloc(1, sizeof(struct _Object));
+  if (obj_node == NULL)
     return false;
 
-  object->gid = gid;
-  object->x = x;
-  object->y = y;
-  add_to_list(list, object);
+  obj_node->gid = gid;
+  obj_node->x = x;
+  obj_node->y = y;
+  add_to_list(list, obj_node);
   return true;
 }
 
@@ -361,16 +361,16 @@ static void resolve_object_tilesets(TMXInfo *info) {
  */
 TLN_ObjectList TLN_CloneObjectList(TLN_ObjectList src) {
   TLN_ObjectList list;
-  struct _Object *object;
+  struct _Object *obj_node;
 
   if (!CheckBaseObject(src, OT_OBJECTLIST))
     return NULL;
 
   list = (TLN_ObjectList)CloneBaseObject(src);
-  object = src->list;
-  while (object != NULL) {
-    CloneObjectToList(list, object);
-    object = object->next;
+  obj_node = src->list;
+  while (obj_node != NULL) {
+    CloneObjectToList(list, obj_node);
+    obj_node = obj_node->next;
   }
   list->iterator = NULL;
   return list;
@@ -452,17 +452,17 @@ bool IsObjectInLine(const struct _Object *object, int x1, int x2, int y) {
  * \return true if success or false if error
  */
 bool TLN_DeleteObjectList(TLN_ObjectList list) {
-  struct _Object *object;
+  struct _Object *obj_node;
   if (!CheckBaseObject(list, OT_OBJECTLIST))
     return false;
 
   /* delete nodes */
-  object = list->list;
-  while (object != NULL) {
+  obj_node = list->list;
+  while (obj_node != NULL) {
     struct _Object *next;
-    next = object->next;
-    free(object);
-    object = next;
+    next = obj_node->next;
+    free(obj_node);
+    obj_node = next;
   }
 
   DeleteBaseObject(list);

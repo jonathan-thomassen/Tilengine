@@ -165,9 +165,9 @@ static void handle_finish_tile(void) {
 }
 
 static void handle_finish_animation(void) {
-  char name[16];
-  sprintf(name, "%d", loader.tile.id);
-  TLN_Sequence sequence = TLN_CreateSequence(name, loader.tile.id + 1,
+  char seq_name[16];
+  sprintf(seq_name, "%d", loader.tile.id);
+  TLN_Sequence sequence = TLN_CreateSequence(seq_name, loader.tile.id + 1,
                                              loader.frame_count, loader.frames);
   if (loader.sp == NULL)
     loader.sp = TLN_CreateSequencePack();
@@ -253,13 +253,13 @@ static TLN_Tileset load_tile_based_tileset(const char *filename) {
       (TLN_GetBitmapWidth(bitmap) - loader.margin * 2 + loader.spacing) / dx;
   int vtiles =
       (TLN_GetBitmapHeight(bitmap) - loader.margin * 2 + loader.spacing) / dy;
-  int tilecount = loader.tilecount != 0 ? loader.tilecount : htiles * vtiles;
+  int num_tiles = loader.tilecount != 0 ? loader.tilecount : htiles * vtiles;
 
-  TLN_Tileset tileset =
-      TLN_CreateTileset(tilecount, loader.tilewidth, loader.tileheight,
+  TLN_Tileset ts =
+      TLN_CreateTileset(num_tiles, loader.tilewidth, loader.tileheight,
                         TLN_ClonePalette(TLN_GetBitmapPalette(bitmap)),
                         loader.sp, loader.attributes);
-  if (tileset == NULL) {
+  if (ts == NULL) {
     TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
     TLN_DeleteBitmap(bitmap);
     return NULL;
@@ -270,20 +270,20 @@ static TLN_Tileset load_tile_based_tileset(const char *filename) {
     for (int x = 0; x < htiles; x++, id++) {
       uint8_t const *srcptr = TLN_GetBitmapPtr(bitmap, loader.margin + x * dx,
                                                loader.margin + y * dy);
-      if (id < tilecount)
-        TLN_SetTilesetPixels(tileset, id, srcptr, pitch);
+      if (id < num_tiles)
+        TLN_SetTilesetPixels(ts, id, srcptr, pitch);
     }
   }
-  tileset->tiles_per_row = htiles;
+  ts->tiles_per_row = htiles;
   TLN_DeleteBitmap(bitmap);
-  return tileset;
+  return ts;
 }
 
 static TLN_Tileset load_image_based_tileset(void) {
-  TLN_Tileset tileset = TLN_CreateImageTileset(loader.tilecount, loader.images);
-  if (tileset == NULL)
+  TLN_Tileset ts = TLN_CreateImageTileset(loader.tilecount, loader.images);
+  if (ts == NULL)
     TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
-  return tileset;
+  return ts;
 }
 
 /*!
@@ -301,9 +301,9 @@ static TLN_Tileset load_image_based_tileset(void) {
  * TLN_GetTilesetPalette()
  */
 TLN_Tileset TLN_LoadTileset(const char *filename) {
-  TLN_Tileset tileset = search_cache(filename);
-  if (tileset)
-    return tileset;
+  TLN_Tileset ts = search_cache(filename);
+  if (ts)
+    return ts;
 
   ssize_t size = 0;
   uint8_t *data = (uint8_t *)LoadFile(filename, &size);
@@ -330,15 +330,15 @@ TLN_Tileset TLN_LoadTileset(const char *filename) {
   simpleXmlDestroyParser(parser);
   free(data);
 
-  tileset = loader.source[0] != 0 ? load_tile_based_tileset(filename)
-                                  : load_image_based_tileset();
+  ts = loader.source[0] != 0 ? load_tile_based_tileset(filename)
+                             : load_image_based_tileset();
 
   free(loader.attributes);
   free(loader.images);
 
-  if (tileset != NULL) {
-    add_to_cache(filename, tileset);
+  if (ts != NULL) {
+    add_to_cache(filename, ts);
     TLN_SetLastError(TLN_ERR_OK);
   }
-  return tileset;
+  return ts;
 }

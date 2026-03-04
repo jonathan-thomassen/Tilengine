@@ -16,7 +16,6 @@
 #include "Tilengine.h"
 #include "simplexml.h"
 
-
 #define MAX_COLOR_STRIP 32
 
 /* load manager */
@@ -84,7 +83,7 @@ static void handle_add_content(const char *szName, const char *szValue) {
   char const *ptr = szValue;
   loader.count = 0;
   while (*ptr) {
-    int value;
+    unsigned int value;
 
     /* find number */
     while (*ptr && !ishex(*ptr) && *ptr != '#') ptr++;

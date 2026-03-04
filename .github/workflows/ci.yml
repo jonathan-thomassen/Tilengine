@@ -53,6 +53,7 @@ jobs:
             -I src -I include \
             --suppress=missingIncludeSystem \
             --suppress=unusedStructMember:src/Window.c \
+            --suppress=unusedStructMember:src/ResourcePacker.c \
             --error-exitcode=1 \
             src/
 

@@ -16,12 +16,10 @@
 #include "Tilengine.h"
 #include "cJSON.h"
 
-
 /* loads txt format: name = x y w h */
 /* loads csv format: name,x,y,w,h */
 static TLN_SpriteData *load_txt_csv(const char *filename, int *num_entries) {
   TLN_SpriteData *data = NULL;
-  TLN_SpriteData *entry;
   char line[200];
   FILE *pf = FileOpen(filename);
   if (!pf)
@@ -40,10 +38,10 @@ static TLN_SpriteData *load_txt_csv(const char *filename, int *num_entries) {
   fseek(pf, 0, SEEK_SET);
 
   data = (TLN_SpriteData *)calloc(*num_entries, sizeof(TLN_SpriteData));
-  entry = data;
+  TLN_SpriteData *entry = data;
   while (fgets(line, sizeof(line), pf)) {
     if (strchr(line, '='))
-      sscanf(line, "%s = %d %d %d %d", entry->name, &entry->x, &entry->y,
+      sscanf(line, "%64s = %d %d %d %d", entry->name, &entry->x, &entry->y,
              &entry->w, &entry->h);
     else if (strchr(line, ','))
       sscanf(line, "%64[^,],%d,%d,%d,%d", entry->name, &entry->x, &entry->y,

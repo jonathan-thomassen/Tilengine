@@ -46,7 +46,7 @@ void *CreateBaseObject(ObjectType type, int size);
 void *CloneBaseObject(void *object);
 void DeleteBaseObject(void *object);
 bool CheckBaseObject(void *object, ObjectType type);
-void CopyBaseObject(void *dstobject, void *srcobject);
+void CopyBaseObject(void *dstobject, const void *srcobject);
 
 unsigned int GetNumObjects(void);
 unsigned int GetNumBytes(void);

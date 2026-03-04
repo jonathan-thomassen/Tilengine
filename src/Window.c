@@ -208,12 +208,12 @@ static void calibrate_timing(WindowFlags flags) {
     SDL_RenderPresent(temp_renderer);
     t0 = (uint32_t)SDL_GetTicks();
     for (c = 0; c < 20; c += 1) SDL_RenderPresent(temp_renderer);
-    target_fps = (c * 1000) / ((uint32_t)SDL_GetTicks() - t0);
+    target_fps = (c * 1000) / (int)((uint32_t)SDL_GetTicks() - t0);
     SDL_DestroyRenderer(temp_renderer);
 
     /* try "snapping" for common rates */
     uint8_t rates[] = {24, 30, 60, 75, 144, 200, 240};
-    for (c = 0; c < sizeof(rates); c += 1) {
+    for (c = 0; c < (int)sizeof(rates); c += 1) {
       if (abs(target_fps - (int)rates[c]) < 4) {
         target_fps = rates[c];
         break;
@@ -345,7 +345,7 @@ void TLN_SetWindowTitle(const char *title) {
     window_title = strdup(title);
 }
 
-static int WindowThread(void * /* data */) {
+static int WindowThread(void *data) {
   bool ok;
 
   ok = create_window();

@@ -77,7 +77,7 @@ TLN_Tileset TLN_CreateTileset(int numtiles, int width, int height,
   }
 
   size_tiles = width * height * numtiles;
-  size = sizeof(struct Tileset) + size_tiles;
+  size = (int)sizeof(struct Tileset) + size_tiles;
   tileset = (TLN_Tileset)CreateBaseObject(OT_TILESET, size);
   if (!tileset) {
     TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
@@ -128,8 +128,8 @@ TLN_Tileset TLN_CreateTileset(int numtiles, int width, int height,
 
 TLN_Tileset TLN_CreateImageTileset(int numtiles, TLN_TileImage const *images) {
   TLN_Tileset tileset;
-  const int images_size = numtiles * sizeof(TLN_TileImage);
-  const int size = sizeof(struct Tileset) + images_size;
+  const int images_size = numtiles * (int)sizeof(TLN_TileImage);
+  const int size = (int)sizeof(struct Tileset) + images_size;
 
   tileset = (TLN_Tileset)CreateBaseObject(OT_TILESET, size);
   if (tileset == NULL) {
@@ -220,9 +220,9 @@ TLN_Tileset TLN_CloneTileset(TLN_Tileset src) {
   if (tileset == NULL)
     return NULL;
 
-  const int size_tiles = (src->numtiles + 1) * sizeof(uint16_t);
+  const int size_tiles = (src->numtiles + 1) * (int)sizeof(uint16_t);
   const int size_color = src->numtiles * src->height;
-  const int size_attributes = src->numtiles * sizeof(TLN_TileAttributes);
+  const int size_attributes = src->numtiles * (int)sizeof(TLN_TileAttributes);
 
   tileset->tiles = (uint16_t *)malloc(size_tiles);
   tileset->color_key = (bool *)malloc(size_color);
@@ -255,7 +255,7 @@ TLN_Tileset TLN_CloneTileset(TLN_Tileset src) {
  * \see
  * TLN_LoadTileset(), TLN_CloneTileset()
  */
-bool TLN_DeleteTileset(TLN_Tileset /*tileset*/) {
+bool TLN_DeleteTileset(TLN_Tileset tileset) {
   return true;
 }
 

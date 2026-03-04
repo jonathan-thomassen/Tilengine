@@ -17,9 +17,11 @@
 #include "Engine.h"
 #include "Palette.h"
 #include "Sequence.h"
+#include "SequencePack.h"
 #include "Tables.h"
 #include "Tilengine.h"
 #include "Tileset.h"
+
 
 /* linear interploation */
 static int lerp(int x, int x0, int x1, int fx0, int fx1) {
