@@ -80,7 +80,7 @@ static void parse_json_frame(cJSON const *item, TLN_SpriteData *entry) {
 /* loads json array format: frames[{filename, frame: {x,y,w,h}}] */
 static TLN_SpriteData *load_json(const char *filename, int *num_entries) {
   TLN_SpriteData *data = NULL;
-  TLN_SpriteData *entry;
+
   ssize_t file_size = 0;
   cJSON *root;
   cJSON *frames;
@@ -103,6 +103,7 @@ static TLN_SpriteData *load_json(const char *filename, int *num_entries) {
     }
     data = (TLN_SpriteData *)calloc(array_size, sizeof(TLN_SpriteData));
 
+    TLN_SpriteData *entry;
     entry = data;
     cJSON_ArrayForEach(item, frames) {
       parse_json_frame(item, entry);

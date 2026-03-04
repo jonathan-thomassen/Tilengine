@@ -22,7 +22,6 @@
 #include "Tilengine.h"
 #include "Tileset.h"
 
-
 /* private prototypes */
 static void DrawSpriteCollision(int nsprite, uint8_t const *srcpixel,
                                 uint16_t *dstpixel, int width, int dx);
@@ -617,7 +616,7 @@ static bool DrawTiledScanlinePixelMapping(int nlayer, uint32_t *dstpixel,
   const int hstart = layer->hstart + layer->width;
   const int vstart = layer->vstart + layer->height;
   const TLN_PixelMap *pixel_map =
-      &layer->pixel_map[nscan * engine->framebuffer.width + x];
+      &layer->pixel_map[(ptrdiff_t)nscan * engine->framebuffer.width + x];
 
   scan.width = scan.height = scan.stride = tileset->width;
 
@@ -682,7 +681,8 @@ static bool DrawSpriteScanline(int nsprite, uint32_t *dstscan, int nscan,
 
   /* blit scanline */
   uint8_t const *srcpixel = sprite->pixel_data.pixels +
-                            (scan.srcy * sprite->pixel_data.pitch) + scan.srcx;
+                            ((ptrdiff_t)scan.srcy * sprite->pixel_data.pitch) +
+                            scan.srcx;
   uint32_t *dstpixel = dstscan + sprite->dstrect.x1;
   sprite->funcs.blitter(srcpixel, sprite->palette, dstpixel, w, scan.dx, 0,
                         sprite->blend);
@@ -716,7 +716,8 @@ static bool DrawScalingSpriteScanline(int nsprite, uint32_t *dstscan, int nscan,
 
   /* blit scanline */
   uint8_t const *srcpixel =
-      sprite->pixel_data.pixels + (fix2int(srcy) * sprite->pixel_data.pitch);
+      sprite->pixel_data.pixels +
+      ((ptrdiff_t)fix2int(srcy) * sprite->pixel_data.pitch);
   uint32_t *dstpixel = dstscan + sprite->dstrect.x1;
   sprite->funcs.blitter(srcpixel, sprite->palette, dstpixel, dstw, dx, srcx,
                         sprite->blend);
@@ -909,7 +910,7 @@ static bool DrawBitmapScanlinePixelMapping(int nlayer, uint32_t *dstpixel,
   const int vstart = layer->vstart + layer->height;
   const struct Bitmap *bitmap = layer->bitmap;
   const TLN_PixelMap *pixel_map =
-      &layer->pixel_map[nscan * engine->framebuffer.width + x];
+      &layer->pixel_map[(ptrdiff_t)nscan * engine->framebuffer.width + x];
   while (x < tx2) {
     int xpos = abs(hstart + pixel_map->dx) % layer->width;
     int ypos = abs(vstart + pixel_map->dy) % layer->height;
