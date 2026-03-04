@@ -25,7 +25,6 @@
 #include "Tilengine.h"
 #include "crt.h"
 
-
 static SDL_Window *window;
 static SDL_Renderer *renderer;
 static SDL_Texture *backbuffer;
@@ -627,7 +626,7 @@ static void process_window_scale(SDL_Keycode key, uint16_t mod) {
     return;
 
   for (int c = 1; c <= 5; c += 1) {
-    if (key == ('0' + c)) {
+    if ((int)key == ('0' + c)) {
       set_window_scale(c);
       break;
     }

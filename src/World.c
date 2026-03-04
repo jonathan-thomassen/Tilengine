@@ -4,7 +4,6 @@
 #include "Palette.h"
 #include "Sprite.h"
 #include "Tilengine.h"
-#include <stdio.h>
 
 #define MAX_TMX_ITEM 100
 
@@ -30,23 +29,24 @@ bool TLN_LoadWorld(const char *filename, int first_layer) {
     TMXLayer const *tmxlayer = &tmxinfo.layers[c];
     const int layerindex = tmxinfo.num_layers - c - 1 + first;
     switch (tmxlayer->type) {
-    case LAYER_NONE:
-      break;
+      case LAYER_NONE:
+        break;
 
-    case LAYER_TILE: {
-      TLN_Tilemap tilemap = TLN_LoadTilemap(filename, tmxlayer->name);
-      TLN_SetLayerTilemap(layerindex, tilemap);
-    } break;
+      case LAYER_TILE: {
+        TLN_Tilemap tilemap = TLN_LoadTilemap(filename, tmxlayer->name);
+        TLN_SetLayerTilemap(layerindex, tilemap);
+      } break;
 
-    case LAYER_OBJECT: {
-      TLN_ObjectList objectlist = TLN_LoadObjectList(filename, tmxlayer->name);
-      TLN_SetLayerObjects(layerindex, objectlist, NULL);
-    } break;
+      case LAYER_OBJECT: {
+        TLN_ObjectList objectlist =
+            TLN_LoadObjectList(filename, tmxlayer->name);
+        TLN_SetLayerObjects(layerindex, objectlist, NULL);
+      } break;
 
-    case LAYER_BITMAP: {
-      TLN_Bitmap bitmap = TLN_LoadBitmap(tmxlayer->image);
-      TLN_SetLayerBitmap(layerindex, bitmap);
-    } break;
+      case LAYER_BITMAP: {
+        TLN_Bitmap bitmap = TLN_LoadBitmap(tmxlayer->image);
+        TLN_SetLayerBitmap(layerindex, bitmap);
+      } break;
     }
 
     /* direct set of layer properties */
@@ -75,7 +75,6 @@ bool TLN_LoadWorld(const char *filename, int first_layer) {
  * \brief Releases world resources loaded with TLN_LoadWorld
  */
 void TLN_ReleaseWorld(void) {
-
   for (int c = 0; c < tmxinfo.num_layers; c += 1) {
     TMXLayer const *tmxlayer = &tmxinfo.layers[c];
     const int layerindex = tmxinfo.num_layers - c - 1 + first;
@@ -83,20 +82,20 @@ void TLN_ReleaseWorld(void) {
     Layer *layer = GetLayer(layerindex);
     layer->flags.ok = false;
     switch (tmxlayer->type) {
-    case LAYER_NONE:
-      break;
+      case LAYER_NONE:
+        break;
 
-    case LAYER_TILE:
-      TLN_DeleteTilemap(layer->tilemap);
-      break;
+      case LAYER_TILE:
+        TLN_DeleteTilemap(layer->tilemap);
+        break;
 
-    case LAYER_OBJECT:
-      TLN_DeleteObjectList(layer->objects);
-      break;
+      case LAYER_OBJECT:
+        TLN_DeleteObjectList(layer->objects);
+        break;
 
-    case LAYER_BITMAP:
-      TLN_DeleteBitmap(layer->bitmap);
-      break;
+      case LAYER_BITMAP:
+        TLN_DeleteBitmap(layer->bitmap);
+        break;
     }
   }
 }

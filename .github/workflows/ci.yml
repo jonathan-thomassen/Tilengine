@@ -19,7 +19,10 @@ jobs:
           sudo apt-get install -y \
             cmake ninja-build \
             libpng-dev zlib1g-dev \
-            cppcheck clang-tidy
+            cppcheck clang-tidy \
+            libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev \
+            libxinerama-dev libxss-dev libxfixes-dev \
+            libasound2-dev libpulse-dev libdbus-1-dev
 
       - name: Install SDL3
         run: |
