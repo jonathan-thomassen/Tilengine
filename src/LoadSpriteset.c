@@ -8,12 +8,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#include "LoadFile.h"
-#include "Tilengine.h"
-#include "cJSON.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "LoadFile.h"
+#include "Tilengine.h"
+#include "cJSON.h"
+
 
 /* loads txt format: name = x y w h */
 /* loads csv format: name,x,y,w,h */
@@ -27,8 +29,7 @@ static TLN_SpriteData *load_txt_csv(const char *filename, int *num_entries) {
 
   /* count lines */
   *num_entries = 0;
-  while (fgets(line, sizeof(line), pf))
-    *num_entries += 1;
+  while (fgets(line, sizeof(line), pf)) *num_entries += 1;
 
   /* validate non-empty file */
   if (*num_entries == 0) {

@@ -8,12 +8,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#include "LoadFile.h"
-#include "Tilengine.h"
-#include "simplexml.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "LoadFile.h"
+#include "Tilengine.h"
+#include "simplexml.h"
+
 
 #define MAX_COLOR_STRIP 32
 
@@ -85,8 +87,7 @@ static void handle_add_content(const char *szName, const char *szValue) {
     int value;
 
     /* find number */
-    while (*ptr && !ishex(*ptr) && *ptr != '#')
-      ptr++;
+    while (*ptr && !ishex(*ptr) && *ptr != '#') ptr++;
     if (!*ptr)
       continue;
 
@@ -100,8 +101,7 @@ static void handle_add_content(const char *szName, const char *szValue) {
     loader.frames[loader.count].index = value;
     loader.frames[loader.count].delay = loader.delay;
     loader.count++;
-    while (*ptr && ishex(*ptr))
-      ptr++;
+    while (*ptr && ishex(*ptr)) ptr++;
   }
 }
 
@@ -121,22 +121,23 @@ static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
                      const char *szName, const char *szAttribute,
                      const char *szValue) {
   switch (evt) {
-  case ADD_SUBTAG:
-    handle_add_subtag(szName);
-    break;
-  case ADD_ATTRIBUTE:
-    handle_add_attribute(szName, szAttribute, szValue);
-    break;
-  case FINISH_ATTRIBUTES:
-    if (!strcasecmp(szName, "strip") && loader.strips[loader.count].delay != 0)
-      loader.count++;
-    break;
-  case ADD_CONTENT:
-    handle_add_content(szName, szValue);
-    break;
-  case FINISH_TAG:
-    handle_finish_tag(szName);
-    break;
+    case ADD_SUBTAG:
+      handle_add_subtag(szName);
+      break;
+    case ADD_ATTRIBUTE:
+      handle_add_attribute(szName, szAttribute, szValue);
+      break;
+    case FINISH_ATTRIBUTES:
+      if (!strcasecmp(szName, "strip") &&
+          loader.strips[loader.count].delay != 0)
+        loader.count++;
+      break;
+    case ADD_CONTENT:
+      handle_add_content(szName, szValue);
+      break;
+    case FINISH_TAG:
+      handle_finish_tag(szName);
+      break;
   }
   return &handler;
 }

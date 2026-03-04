@@ -1,15 +1,14 @@
 /* generic, array-based double linked list */
 
 #include "List.h"
-#include "Debug.h"
+
 #include <stddef.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 static ListNode *get_node(List *list, int node) {
   if (node != -1) {
     uint8_t *addr = (uint8_t *)list->base;
-    return (ListNode *)(addr + node * (list->node_size));
+    return (ListNode *)(addr + (ptrdiff_t)node * (list->node_size));
   }
   return NULL;
 }

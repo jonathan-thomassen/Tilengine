@@ -8,14 +8,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
+#include <stdlib.h>
+#include <string.h>
+
 #include "Bitmap.h"
 #include "DIB.h"
 #include "LoadFile.h"
 #include "Palette.h"
 #include "Tilengine.h"
 #include "png.h"
-#include <stdlib.h>
-#include <string.h>
 
 static TLN_Bitmap LoadPNG(const char *filename);
 static TLN_Bitmap LoadBMP(const char *filename);
@@ -25,7 +26,9 @@ typedef struct {
   uint16_t count;
 } Set;
 
-static void set_init(Set *set) { set->count = 0; }
+static void set_init(Set *set) {
+  set->count = 0;
+}
 
 static int set_get_index(Set const *set, uint32_t value) {
   for (int c = 0; c < set->count; c += 1) {
@@ -287,7 +290,7 @@ static TLN_Bitmap LoadPNG(const char *filename) {
   for (int y = 0; y < height; y++)
     row_pointers[y] = TLN_GetBitmapPtr(bitmap, 0, y);
   png_read_image(png, row_pointers);
-  free(row_pointers);
+  free((void *)row_pointers);
 
   /* 8 bpp indexed palette */
   if (color_type == PNG_COLOR_TYPE_PALETTE) {

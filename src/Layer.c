@@ -9,6 +9,10 @@
  * */
 
 #include "Layer.h"
+
+#include <math.h>
+#include <string.h>
+
 #include "Bitmap.h"
 #include "Draw.h"
 #include "Engine.h"
@@ -16,8 +20,7 @@
 #include "Tables.h"
 #include "Tilemap.h"
 #include "Tileset.h"
-#include <math.h>
-#include <string.h>
+
 
 static void SetBlitter(Layer *layer);
 static void apply_priority_attributes(struct Tileset const *tileset,
@@ -224,10 +227,14 @@ bool TLN_SetLayerPriority(int nlayer, bool enable) {
 }
 
 /* removed, keep for ABI compatibility  */
-bool TLN_SetLayerParent(int /*nlayer*/, int /*parent*/) { return true; }
+bool TLN_SetLayerParent(int /*nlayer*/, int /*parent*/) {
+  return true;
+}
 
 /* removed, keep for ABI compatibility  */
-bool TLN_DisableLayerParent(int /*nlayer*/) { return true; }
+bool TLN_DisableLayerParent(int /*nlayer*/) {
+  return true;
+}
 
 /*!
  * \brief
@@ -1029,7 +1036,9 @@ bool TLN_DisableLayerMosaic(int nlayer) {
   return true;
 }
 
-Layer *GetLayer(int index) { return &engine->layers[index]; }
+Layer *GetLayer(int index) {
+  return &engine->layers[index];
+}
 
 static void apply_priority_attributes(struct Tileset const *tileset,
                                       TLN_Tilemap tilemap) {
