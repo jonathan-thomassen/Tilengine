@@ -66,7 +66,7 @@ int main(void) {
                         1, 255);
   }
 
-  transform.dx = WIDTH / 2;
+  transform.dx = WIDTH / 2.0f;
   transform.dy = 1;
   transform.sy = 1;
 

@@ -161,7 +161,7 @@ static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
  */
 TLN_ObjectList TLN_CreateObjectList(void) {
   TLN_ObjectList list = NULL;
-  const int size = sizeof(struct ObjectList);
+  const size_t size = sizeof(struct ObjectList);
 
   /* create */
   list = (TLN_ObjectList)CreateBaseObject(OT_OBJECTLIST, size);

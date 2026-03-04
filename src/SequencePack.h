@@ -12,6 +12,7 @@
 #define _SEQUENCE_PACK_H
 
 #include "Object.h"
+#include "Tilengine.h"
 
 struct SequencePack {
   DEFINE_OBJECT;

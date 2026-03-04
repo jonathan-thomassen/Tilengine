@@ -50,8 +50,8 @@ static void set_sprite_entry(TLN_Spriteset spriteset, int entry,
 TLN_Spriteset TLN_CreateSpriteset(TLN_Bitmap bitmap, TLN_SpriteData const *data,
                                   int num_entries) {
   TLN_Spriteset spriteset = NULL;
-  const int size =
-      sizeof(struct Spriteset) + (sizeof(SpriteEntry) * num_entries);
+  const size_t size =
+      sizeof(struct Spriteset) + sizeof(SpriteEntry) * (size_t)num_entries;
 
   /* create */
   spriteset = (TLN_Spriteset)CreateBaseObject(OT_SPRITESET, size);

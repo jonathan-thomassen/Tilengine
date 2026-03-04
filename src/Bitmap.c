@@ -13,10 +13,11 @@
 #endif
 
 #include "Bitmap.h"
-#include "Object.h"
-#include "Palette.h"
-#include "Tilengine.h"
+
 #include <string.h>
+
+#include "Object.h"
+#include "Tilengine.h"
 
 /*!
  * \brief
@@ -40,10 +41,10 @@
 TLN_Bitmap TLN_CreateBitmap(int width, int height, int bpp) {
   TLN_Bitmap bitmap;
   int pitch;
-  int size;
+  size_t size;
 
   pitch = (((width * bpp) >> 3) + 3) & ~0x03;
-  size = sizeof(struct Bitmap) + (pitch * height);
+  size = sizeof(struct Bitmap) + (size_t)pitch * height;
   bitmap = (TLN_Bitmap)CreateBaseObject(OT_BITMAP, size);
   if (bitmap) {
     bitmap->width = width;

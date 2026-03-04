@@ -31,18 +31,18 @@ static const TLN_Error object_errors[] = {
 };
 
 /* crea objecto */
-void *CreateBaseObject(ObjectType type, int size) {
+void *CreateBaseObject(ObjectType type, size_t size) {
   object_t *object = (object_t *)malloc(size);
   if (object) {
     char trace_msg[255];
     numobjects++;
-    numbytes += size;
+    numbytes += (uint32_t)size;
     memset(object, 0, size);
     object->type = type;
     object->guid = numobjects;
     object->size = size;
     object->owner = true;
-    sprintf(trace_msg, "%s created at %p, %d size", object_types[type], object,
+    sprintf(trace_msg, "%s created at %p, %zu size", object_types[type], object,
             size);
     tln_trace(TLN_LOG_VERBOSE, trace_msg);
   } else {

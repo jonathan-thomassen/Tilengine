@@ -8,11 +8,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#include "LoadFile.h"
-#include "Palette.h"
-#include "Tilengine.h"
 #include <stdio.h>
-#include <string.h>
+
+#include "LoadFile.h"
+#include "Tilengine.h"
 
 #define SWAP(w) ((w) & 0xFF) << 8 | ((w) >> 8)
 

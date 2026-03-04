@@ -48,7 +48,7 @@
  */
 TLN_Sequence TLN_CreateSequence(const char *name, int target, int count,
                                 TLN_SequenceFrame const *frames) {
-  int size;
+  size_t size;
   TLN_Sequence sequence;
   TLN_SequenceFrame *frame;
 
@@ -97,7 +97,7 @@ TLN_Sequence TLN_CreateSequence(const char *name, int target, int count,
  */
 TLN_Sequence TLN_CreateCycle(const char *name, int count,
                              TLN_ColorStrip const *strips) {
-  int size;
+  size_t size;
   TLN_Sequence sequence;
   TLN_ColorStrip const *srcstrip;
   struct Strip *dststrip;
@@ -144,7 +144,7 @@ TLN_Sequence TLN_CreateCycle(const char *name, int count,
  */
 TLN_Sequence TLN_CreateSpriteSequence(const char *name, TLN_Spriteset spriteset,
                                       const char *basename, int delay) {
-  int size;
+  size_t size;
   TLN_Sequence sequence;
   TLN_SequenceFrame *frame;
   int count = 0;

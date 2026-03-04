@@ -12,6 +12,7 @@
 #define _BITMAP_H
 
 #include "Object.h"
+#include "Tilengine.h"
 #include <stddef.h>
 
 /* bitmap for sprite */

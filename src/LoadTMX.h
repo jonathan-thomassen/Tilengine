@@ -1,9 +1,9 @@
 #ifndef _LOAD_TMX_H
 #define _LOAD_TMX_H
 
-#include "Tileset.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include "Tilengine.h"
 
 #define TMX_MAX_LAYER 32
 #define TMX_MAX_TILESET 32

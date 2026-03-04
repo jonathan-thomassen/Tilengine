@@ -115,7 +115,7 @@ static void *load_asset(ResPack rp, ResEntry const *entry) {
   if (buffer == NULL)
     return NULL;
 
-  fseek(rp->pf, entry->offset, SEEK_SET);
+  fseek(rp->pf, (long)entry->offset, SEEK_SET);
   if (rp->encrypted == true) {
     void *cyphertext = malloc(entry->pack_size);
     void *plaintext = malloc(entry->pack_size);
@@ -412,7 +412,7 @@ int ResPack_Build(const char *filelist, const char *passphrase) {
     // entry->id, entry->data_size, entry->pack_size, entry->crc);
 
     /* write to file */
-    fseek(pf_output, offset, SEEK_SET);
+    fseek(pf_output, (long)offset, SEEK_SET);
     fwrite(content, entry->pack_size, 1, pf_output);
     free(content);
     offset += entry->pack_size;

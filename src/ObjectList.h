@@ -12,9 +12,7 @@
 #define _OBJECT_LIST_H
 
 #include "Object.h"
-#include "Spriteset.h"
 #include "Tilengine.h"
-#include "crc32.h"
 
 typedef struct _Object {
   uint16_t id;

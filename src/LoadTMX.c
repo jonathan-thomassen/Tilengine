@@ -4,8 +4,9 @@
 #include <string.h>
 
 #include "LoadFile.h"
-#include "Tilengine.h"
+#include "Tileset.h"
 #include "simplexml.h"
+
 
 static TMXInfo tmxinfo;
 

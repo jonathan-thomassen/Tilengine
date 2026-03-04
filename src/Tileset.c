@@ -55,8 +55,8 @@ TLN_Tileset TLN_CreateTileset(int numtiles, int width, int height,
   int hshift = 0;
   int vshift = 0;
   int c;
-  int size;
-  int size_tiles;
+  size_t size;
+  size_t size_tiles;
 
   /* validate parameters */
   if (numtiles <= 0) {
@@ -76,8 +76,8 @@ TLN_Tileset TLN_CreateTileset(int numtiles, int width, int height,
     return NULL;
   }
 
-  size_tiles = width * height * numtiles;
-  size = (int)sizeof(struct Tileset) + size_tiles;
+  size_tiles = (size_t)width * (size_t)height * (size_t)numtiles;
+  size = sizeof(struct Tileset) + size_tiles;
   tileset = (TLN_Tileset)CreateBaseObject(OT_TILESET, size);
   if (!tileset) {
     TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
@@ -128,8 +128,8 @@ TLN_Tileset TLN_CreateTileset(int numtiles, int width, int height,
 
 TLN_Tileset TLN_CreateImageTileset(int numtiles, TLN_TileImage const *images) {
   TLN_Tileset tileset;
-  const int images_size = numtiles * (int)sizeof(TLN_TileImage);
-  const int size = (int)sizeof(struct Tileset) + images_size;
+  const size_t images_size = (size_t)numtiles * sizeof(TLN_TileImage);
+  const size_t size = sizeof(struct Tileset) + images_size;
 
   tileset = (TLN_Tileset)CreateBaseObject(OT_TILESET, size);
   if (tileset == NULL) {

@@ -11,7 +11,9 @@
 #ifndef _OBJECT_H
 #define _OBJECT_H
 
-#include "Tilengine.h"
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 /* tipos de objeto */
 typedef enum {
@@ -29,7 +31,7 @@ typedef enum {
 #define DEFINE_OBJECT                                                          \
   ObjectType type;                                                             \
   int guid;                                                                    \
-  int size;                                                                    \
+  size_t size;                                                                 \
   int owner
 
 typedef struct {
@@ -42,7 +44,7 @@ typedef struct {
 #define ObjectOwner(ptr) ((object_t *)ptr)->owner
 
 /* prototipos */
-void *CreateBaseObject(ObjectType type, int size);
+void *CreateBaseObject(ObjectType type, size_t size);
 void *CloneBaseObject(void *object);
 void DeleteBaseObject(void *object);
 bool CheckBaseObject(void *object, ObjectType type);

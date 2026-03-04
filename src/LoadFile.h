@@ -8,7 +8,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#include "Tilengine.h"
+#include <stdbool.h>
 #include <stdio.h>
 
 #ifndef _LOAD_FILE_H

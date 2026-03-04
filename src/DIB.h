@@ -11,6 +11,7 @@
 #ifndef _DIB_H
 #define _DIB_H
 
+#include <stdint.h>
 #pragma pack(push)
 #pragma pack(2)
 
