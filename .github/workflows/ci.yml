@@ -43,9 +43,13 @@ jobs:
             -DSANITIZE=ON
 
       - name: Build
+        id: build
+        continue-on-error: true
         run: cmake --build build
 
       - name: cppcheck
+        id: cppcheck
+        continue-on-error: true
         run: |
           cppcheck \
             --enable=warning,style,performance \
@@ -58,6 +62,8 @@ jobs:
             src/
 
       - name: clang-tidy
+        id: clang_tidy
+        continue-on-error: true
         run: |
           clang-tidy src/Tilengine.c src/Layer.c src/Sprite.c \
             samples/Intro.c samples/Drawbridge.c \
@@ -69,9 +75,13 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug
 
       - name: Build (Valgrind)
+        id: build_valgrind
+        continue-on-error: true
         run: cmake --build build-valgrind --target Test
 
       - name: Valgrind
+        id: valgrind
+        continue-on-error: true
         run: |
           SUPP=""
           [ -f /usr/lib/valgrind/default.supp ] && SUPP="--suppressions=/usr/lib/valgrind/default.supp"
@@ -81,3 +91,27 @@ jobs:
             --track-origins=yes \
             $SUPP \
             build-valgrind/Test
+
+      - name: Summary
+        if: always()
+        run: |
+          pass="✅ Pass"
+          fail="❌ Fail"
+          echo "## CI Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Result |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ steps.build.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| cppcheck | ${{ steps.cppcheck.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| clang-tidy | ${{ steps.clang_tidy.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build (Valgrind) | ${{ steps.build_valgrind.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Valgrind | ${{ steps.valgrind.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Fail if any check failed
+        if: >
+          steps.build.outcome != 'success' ||
+          steps.cppcheck.outcome != 'success' ||
+          steps.clang_tidy.outcome != 'success' ||
+          steps.build_valgrind.outcome != 'success' ||
+          steps.valgrind.outcome != 'success'
+        run: exit 1
