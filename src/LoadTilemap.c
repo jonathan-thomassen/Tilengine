@@ -21,7 +21,7 @@
 #include "simplexml.h"
 #include "zlib.h"
 
-static int csvdecode(char *in, int numtiles, uint32_t *data);
+static int csvdecode(char *in, uint32_t numtiles, uint32_t *data);
 static int decompress(uint8_t *in, int in_size, uint8_t *out, int out_size);
 static void handle_add_attribute(const char *szName, const char *szAttribute,
                                  const char *szValue);
@@ -116,9 +116,9 @@ static void handle_add_content(const char *szName, const char *szValue) {
 }
 
 /* XML parser callback */
-static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
-                     const char *szName, const char *szAttribute,
-                     const char *szValue) {
+static void *handler(SimpleXmlParser parser [[maybe_unused]],
+                     SimpleXmlEvent evt, const char *szName,
+                     const char *szAttribute, const char *szValue) {
   switch (evt) {
     case ADD_ATTRIBUTE:
       handle_add_attribute(szName, szAttribute, szValue);
@@ -132,7 +132,7 @@ static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
   return &handler;
 }
 
-static TLN_Tileset load_tileset(TMXInfo *info, const char *filename,
+static TLN_Tileset load_tileset(TMXInfo const *info, const char *filename,
                                 int index) {
   FileInfo fi = {0};
   char tsxpath[200];
@@ -173,7 +173,6 @@ TLN_Tilemap TLN_LoadTilemap(const char *filename, const char *layername) {
   uint8_t *xml_data;
   TLN_Tilemap tilemap = NULL;
   TMXInfo tmxinfo = {0};
-  uint32_t c;
 
   /* load map info */
   if (!TMXLoad(filename, &tmxinfo)) {
@@ -210,13 +209,13 @@ TLN_Tilemap TLN_LoadTilemap(const char *filename, const char *layername) {
 
   /* load referenced tilesets */
   TLN_Tileset tilesets[TMX_MAX_TILESET] = {0};
-  for (c = 0; c < tmxinfo.num_tilesets; c += 1)
+  for (int c = 0; c < tmxinfo.num_tilesets; c += 1)
     tilesets[c] = load_tileset(&tmxinfo, filename, c);
 
   if (loader.data != NULL) {
     /* correct with firstgid */
     Tile *tile = (Tile *)loader.data;
-    for (c = 0; c < loader.numtiles; c += 1, tile += 1) {
+    for (uint32_t c = 0; c < loader.numtiles; c += 1, tile += 1) {
       if (tile->index > 0)
         correct_tile_firstgid(tile, &tmxinfo, tilesets);
     }
@@ -248,15 +247,15 @@ static void correct_tile_firstgid(Tile *tile, TMXInfo const *info,
 }
 
 /* read CSV string */
-static int csvdecode(char *in, int numtiles, uint32_t *data) {
-  int c;
+static int csvdecode(char *in, uint32_t numtiles, uint32_t *data) {
+  uint32_t c;
   char *saveptr;
   char const *token = strtok_r(in, ",\n", &saveptr);
 
   c = 0;
   do {
     if (token && token[0] != 0x0D)
-      sscanf(token, "%u", &data[c++]);
+      data[c++] = (uint32_t)strtoul(token, NULL, 10);
     token = strtok_r(NULL, ",\n", &saveptr);
   } while (c < numtiles && token != NULL);
 

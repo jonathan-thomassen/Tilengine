@@ -30,7 +30,7 @@ typedef enum {
 
 #define DEFINE_OBJECT                                                          \
   ObjectType type;                                                             \
-  int guid;                                                                    \
+  uint32_t guid;                                                               \
   size_t size;                                                                 \
   int owner
 

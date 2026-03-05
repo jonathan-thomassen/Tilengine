@@ -69,15 +69,15 @@ static void handle_subtag(const char *szName) {
 static void handle_tileset_attribute(const char *szAttribute,
                                      const char *szValue) {
   if (!strcasecmp(szAttribute, "tilewidth"))
-    loader.tilewidth = atoi(szValue);
+    loader.tilewidth = (int)strtol(szValue, NULL, 10);
   else if (!strcasecmp(szAttribute, "tileheight"))
-    loader.tileheight = atoi(szValue);
+    loader.tileheight = (int)strtol(szValue, NULL, 10);
   else if (!strcasecmp(szAttribute, "margin"))
-    loader.margin = atoi(szValue);
+    loader.margin = (int)strtol(szValue, NULL, 10);
   else if (!strcasecmp(szAttribute, "spacing"))
-    loader.spacing = atoi(szValue);
+    loader.spacing = (int)strtol(szValue, NULL, 10);
   else if (!strcasecmp(szAttribute, "tilecount"))
-    loader.tilecount = atoi(szValue);
+    loader.tilecount = (int)strtol(szValue, NULL, 10);
 }
 
 static void handle_image_attribute(const char *szAttribute,
@@ -105,7 +105,7 @@ static void handle_property_value(const char *szValue) {
   if (loader.tilecount == 0)
     return;
   if (loader.tile.property == PROPERTY_TYPE)
-    loader.attributes[loader.tile.id].type = (uint8_t)atoi(szValue);
+    loader.attributes[loader.tile.id].type = (uint8_t)strtol(szValue, NULL, 10);
   else if (loader.tile.property == PROPERTY_PRIORITY)
     loader.attributes[loader.tile.id].priority = !strcasecmp(szValue, "true");
 }
@@ -126,16 +126,18 @@ static void handle_add_attribute(const char *szName, const char *szAttribute,
     handle_image_attribute(szAttribute, szValue);
   else if (!strcasecmp(szName, "tile")) {
     if (!strcasecmp(szAttribute, "id"))
-      loader.tile.id = atoi(szValue);
+      loader.tile.id = (int)strtol(szValue, NULL, 10);
     else if (!strcasecmp(szAttribute, "type"))
-      loader.tile.type = atoi(szValue);
+      loader.tile.type = (int)strtol(szValue, NULL, 10);
   } else if (!strcasecmp(szName, "property"))
     handle_property_attribute(szAttribute, szValue);
   else if (!strcasecmp(szName, "frame")) {
     if (!strcasecmp(szAttribute, "tileid"))
-      loader.frames[loader.frame_count].index = atoi(szValue) + 1;
+      loader.frames[loader.frame_count].index =
+          (int)strtol(szValue, NULL, 10) + 1;
     else if (!strcasecmp(szAttribute, "duration"))
-      loader.frames[loader.frame_count].delay = atoi(szValue) * 60 / 1000;
+      loader.frames[loader.frame_count].delay =
+          (int)strtol(szValue, NULL, 10) * 60 / 1000;
   }
 }
 
@@ -184,9 +186,9 @@ static void handle_finish_tag(const char *szName) {
 }
 
 /* XML parser callback */
-static void *handler(SimpleXmlParser parser, SimpleXmlEvent evt,
-                     const char *szName, const char *szAttribute,
-                     const char *szValue) {
+static void *handler(SimpleXmlParser parser [[maybe_unused]],
+                     SimpleXmlEvent evt, const char *szName,
+                     const char *szAttribute, const char *szValue) {
   switch (evt) {
     case ADD_SUBTAG:
       handle_subtag(szName);

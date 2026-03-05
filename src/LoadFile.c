@@ -23,10 +23,10 @@
 
 static char localpath[MAX_PATH] = ".";
 static ResPack respack = NULL;
-struct {
+static struct {
   ResAsset asset;
   FILE *pf;
-} static assets[MAX_ASSETS] = {0};
+} assets[MAX_ASSETS] = {0};
 
 /*!
  * \brief

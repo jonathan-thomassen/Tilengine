@@ -16,7 +16,7 @@
 #define SWAP(w) ((w) & 0xFF) << 8 | ((w) >> 8)
 
 #define ACT_ENTRIES 256
-#define ACT_SIZE (ACT_ENTRIES * 3 + sizeof(trailing))
+#define ACT_SIZE ((size_t)ACT_ENTRIES * 3 + sizeof(trailing))
 
 /* optional trailing bytes in an ACT file */
 struct {
@@ -45,7 +45,7 @@ struct {
 TLN_Palette TLN_LoadPalette(const char *filename) {
   FILE *pf;
   TLN_Palette palette = NULL;
-  int size;
+  long size;
 
   /* open file */
   pf = FileOpen(filename);
@@ -59,7 +59,7 @@ TLN_Palette TLN_LoadPalette(const char *filename) {
   size = ftell(pf);
 
   /* load trailing and get number of entries */
-  if (size == ACT_SIZE) {
+  if (size > 0 && (size_t)size == ACT_SIZE) {
     fseek(pf, -(int)sizeof(trailing), SEEK_END);
     fread(&trailing, sizeof(trailing), 1, pf);
     trailing.entries = (short)(SWAP(trailing.entries));

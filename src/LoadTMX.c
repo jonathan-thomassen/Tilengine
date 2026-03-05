@@ -28,7 +28,7 @@ static void handle_map_attribute(const char *szAttribute, int intvalue,
   else if (!strcasecmp(szAttribute, "tileheight"))
     tmxinfo.tileheight = intvalue;
   else if (!strcasecmp(szAttribute, "backgroundcolor")) {
-    sscanf(&szValue[1], "%x", &tmxinfo.bgcolor);
+    tmxinfo.bgcolor = (uint32_t)strtoul(&szValue[1], NULL, 16);
     tmxinfo.bgcolor += 0xFF000000;
   }
 }
@@ -66,7 +66,7 @@ static void handle_layer_attribute(const char *szAttribute, int intvalue,
   else if (!strcasecmp(szAttribute, "opacity"))
     layer->opacity = floatvalue;
   else if (!strcasecmp(szAttribute, "tintcolor"))
-    sscanf(&szValue[1], "%x", &layer->tintcolor);
+    layer->tintcolor = (uint32_t)strtoul(&szValue[1], NULL, 16);
 }
 
 static void handle_image_attribute(const char *szAttribute, int intvalue,
@@ -110,9 +110,9 @@ static void handle_finish_tag(const char *szName) {
 }
 
 /* XML parser callback */
-static void *handler(SimpleXmlParser parser, SimpleXmlEvent evt,
-                     const char *szName, const char *szAttribute,
-                     const char *szValue) {
+static void *handler(SimpleXmlParser parser [[maybe_unused]],
+                     SimpleXmlEvent evt, const char *szName,
+                     const char *szAttribute, const char *szValue) {
   switch (evt) {
     case ADD_SUBTAG:
       if (!strcasecmp(szName, "layer"))
@@ -127,8 +127,8 @@ static void *handler(SimpleXmlParser parser, SimpleXmlEvent evt,
       }
       break;
     case ADD_ATTRIBUTE:
-      handle_add_attribute(szName, szAttribute, atoi(szValue),
-                           (float)atof(szValue), szValue);
+      handle_add_attribute(szName, szAttribute, (int)strtol(szValue, NULL, 10),
+                           (float)strtod(szValue, NULL), szValue);
       break;
     case FINISH_TAG:
       handle_finish_tag(szName);

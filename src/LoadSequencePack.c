@@ -19,7 +19,7 @@
 #define MAX_COLOR_STRIP 32
 
 /* load manager */
-struct {
+static struct {
   TLN_SequencePack sp;
   char name[16];
   int target;
@@ -27,7 +27,7 @@ struct {
   int delay;
   TLN_SequenceFrame frames[100];
   TLN_ColorStrip strips[MAX_COLOR_STRIP];
-} static loader;
+} loader;
 
 static bool ishex(char dat);
 

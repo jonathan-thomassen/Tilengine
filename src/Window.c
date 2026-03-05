@@ -58,11 +58,11 @@ typedef struct {
 
 static PlayerInput player_inputs[MAX_PLAYERS];
 
-struct {
+static struct {
   CRTType type;
   bool blur;
   bool enable;
-} static crt_params = {CRT_SLOT, true, false};
+} crt_params = {CRT_SLOT, true, false};
 
 #define MAX_PATH 260
 
