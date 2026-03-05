@@ -1,5 +1,6 @@
-#include "Tilengine.h"
 #include <stdio.h>
+
+#include "Tilengine.h"
 
 #define WIDTH 400
 #define HEIGHT 240
@@ -7,7 +8,7 @@
 /* layers */
 enum { LAYER_FOREGROUND, LAYER_BACKGROUND, MAX_LAYER };
 
-int main(int argc, char *argv[]) {
+int main(void) {
   TLN_Sequence seq_walking;
   TLN_Spriteset spriteset;
   TLN_Tilemap foreground;

@@ -5,6 +5,7 @@
 #include "Enemy.h"
 #include "Explosion.h"
 #include "Shooter.h"
+#include "Sin.h"
 
 /* ship extra data */
 typedef struct {

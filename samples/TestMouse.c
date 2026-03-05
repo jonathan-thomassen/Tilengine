@@ -14,8 +14,9 @@
  ******************************************************************************/
 
 #include <SDL3/SDL.h>
+#include <Windows.h>
+#include <bcrypt.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "Tilengine.h"
 
@@ -81,9 +82,13 @@ static void sdl_callback(SDL_Event *evt) {
 }
 
 int main(void) {
+  BCRYPT_ALG_HANDLE prov;
   TLN_Spriteset spriteset;
   TLN_SpriteInfo sprite_info;
   int frame = 0;
+  int buffer;
+
+  BCryptOpenAlgorithmProvider(&prov, BCRYPT_RNG_ALGORITHM, NULL, 0);
 
   TLN_Init(WIDTH, HEIGHT, 0, MAX_ENTITIES, 0);
   spriteset = TLN_LoadSpriteset("assets/smw/smw_sprite.png");
@@ -97,8 +102,10 @@ int main(void) {
     Entity *entity = &entities[c];
     entity->guid = c; /* whatever you want */
     entity->enabled = true;
-    entity->x = rand() % WIDTH;
-    entity->y = rand() % HEIGHT;
+    entity->x =
+        BCryptGenRandom(prov, (PUCHAR)(&buffer), sizeof(buffer), 0) % WIDTH;
+    entity->y =
+        BCryptGenRandom(prov, (PUCHAR)(&buffer), sizeof(buffer), 0) % HEIGHT;
     entity->w = sprite_info.w;
     entity->h = sprite_info.h;
     entity->sprite_index = c;
@@ -108,6 +115,8 @@ int main(void) {
     TLN_SetSpritePosition(entity->sprite_index, entity->x, entity->y);
     TLN_SetSpritePicture(entity->sprite_index, 0);
   }
+
+  BCryptCloseAlgorithmProvider(prov, 0);
 
   /* windows and main loop */
   TLN_CreateWindow(CWF_NEAREST);

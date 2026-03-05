@@ -99,7 +99,7 @@ int main(void) {
     TasksActors(time);
 
     /* render to window */
-    TLN_DrawFrame(time);
+    TLN_DrawFrame((int)time);
 
     frame++;
   }

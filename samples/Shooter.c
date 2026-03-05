@@ -18,6 +18,7 @@
 #include "Boss.h"
 #include "Enemy.h"
 #include "Ship.h"
+#include "Sin.h"
 #include "Tilengine.h"
 
 /* fixed point helper */
@@ -66,8 +67,8 @@ static void raster_callback(int line);
 static void update_sky_colors(unsigned int t) {
   int c;
   for (c = 0; c < 3; c++) {
-    sky_hi[c] = lerp(t, PAL_T0, PAL_T1, sky1[c], sky3[c]);
-    sky_lo[c] = lerp(t, PAL_T0, PAL_T1, sky2[c], sky4[c]);
+    sky_hi[c] = lerp((int)t, PAL_T0, PAL_T1, sky1[c], sky3[c]);
+    sky_lo[c] = lerp((int)t, PAL_T0, PAL_T1, sky2[c], sky4[c]);
   }
   for (c = 0; c < MAX_LAYER; c++) {
     if (palettes[c])

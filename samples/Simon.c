@@ -138,11 +138,9 @@ static bool check_wall_left(int sprite_x, int world_x, int sprite_y) {
 static void move_right(int width) {
   int x_pre = x;
   int xw_pre = xworld;
-  if (x < 112)
-    x++;
-  else if (xworld < TLN_GetLayerWidth(1) - width)
+  if (xworld < TLN_GetLayerWidth(1) - width && x >= 112)
     xworld++;
-  else if (x < width - 16)
+  else if (x < 112 || x < width - 16)
     x++;
   if (check_wall_right(x, xworld, y)) {
     x = x_pre;
@@ -153,9 +151,7 @@ static void move_right(int width) {
 static void move_left(void) {
   int x_pre = x;
   int xw_pre = xworld;
-  if (x > 128)
-    x--;
-  else if (xworld > 0)
+  if (xworld > 0 && x <= 128)
     xworld--;
   else if (x > -4)
     x--;

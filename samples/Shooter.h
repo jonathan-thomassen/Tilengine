@@ -1,10 +1,7 @@
 #ifndef _SHOOTER_H
 #define _SHOOTER_H
 
-#include "Actor.h"
-#include "Sin.h"
 #include "Tilengine.h"
-
 
 #define WIDTH 400
 #define HEIGHT 240
@@ -12,7 +9,7 @@
 /* spritesets */
 enum { SPRITESET_MAIN, SPRITESET_HELLARM, MAX_SPRITESET };
 
-/* tipos de actores */
+/* types of actors */
 enum {
   TYPE_SHIP = 1,
   TYPE_CLAW,
@@ -25,18 +22,18 @@ enum {
 #define MAX_BULLETS 20
 #define MAX_ENEMIES 10
 
-/* actores */
+/* actors */
 enum {
-  ACTOR_SHIP,
-  ACTOR_CLAW1,
-  ACTOR_CLAW2,
-  ACTOR_ENEMY1,
+  ACTOR_SHIP = 0,
+  ACTOR_CLAW1 = 1,
+  ACTOR_CLAW2 = 2,
+  ACTOR_ENEMY1 = 3,
   ACTOR_BOSS = ACTOR_ENEMY1 + MAX_ENEMIES,
   ACTOR_BULLET1 = ACTOR_BOSS + 8,
   MAX_ACTOR = ACTOR_BULLET1 + MAX_BULLETS,
 };
 
-/* animaciones */
+/* animations */
 enum { SEQ_CLAW, SEQ_BLADE1, SEQ_BLADE2, SEQ_EXPLO1, SEQ_EXPLO2, MAX_SEQ };
 
 extern TLN_Sequence sequences[MAX_SEQ];

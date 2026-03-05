@@ -44,7 +44,7 @@ typedef struct {
   int height;
 } Size2D;
 
-struct _CRTHandler {
+struct CRTHandler {
   SDL_Renderer *renderer;
   SDL_Texture *framebuffer;
   SDL_Texture *overlay;
@@ -63,7 +63,7 @@ static SDL_Texture *create_tiled_texture(SDL_Renderer *renderer, int width,
 /* create CRT effect */
 CRTHandler CRTCreate(SDL_Renderer *renderer, SDL_Texture *framebuffer,
                      CRTType type, int wnd_width, int wnd_height, bool blur) {
-  CRTHandler crt = (CRTHandler)calloc(1, sizeof(struct _CRTHandler));
+  CRTHandler crt = (CRTHandler)calloc(1, sizeof(struct CRTHandler));
   if (crt == NULL)
     return NULL;
 

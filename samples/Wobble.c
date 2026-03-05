@@ -9,18 +9,17 @@
  * change vertical position.
  *
  ******************************************************************************/
+#include <stdio.h>
+
 #include "Sin.h"
 #include "Tilengine.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #define WIDTH 320
 #define HEIGHT 192
 #define COLUMNS WIDTH / 8 + 2
 
 /* linear interploation */
-#define lerp(x, x0, x1, fx0, fx1)                                              \
+#define lerp(x, x0, x1, fx0, fx1) \
   (fx0) + ((fx1) - (fx0)) * ((x) - (x0)) / ((x1) - (x0))
 
 /* layers */
@@ -32,7 +31,7 @@ int column[COLUMNS];
 static void raster_callback(int line);
 
 /* entry point */
-int main(int argc, char *argv[]) {
+int main(void) {
   TLN_Tilemap foreground;
   TLN_Tilemap background;
 

@@ -20,7 +20,9 @@ static void apply_palette_from_csv(TLN_Tilemap tilemap, const char *csv,
   for (int row = 0; row < rows; row++) {
     for (int col = 0; col < cols; col++) {
       while (*p == ' ' || *p == '\t' || *p == '\r' || *p == '\n') p++;
-      int val = (int)strtol(p, (char **)&p, 10);
+      char *end;
+      int val = (int)strtol(p, &end, 10);
+      p = end;
       while (*p == ',') p++;
       TLN_Tile tile = TLN_GetTilemapTiles(tilemap, row, col);
       if (tile)

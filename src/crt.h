@@ -10,7 +10,7 @@ typedef enum {
   CRT_SHADOW,
 } CRTType;
 
-typedef struct _CRTHandler *CRTHandler;
+typedef struct CRTHandler *CRTHandler;
 
 #ifdef __cplusplus
 extern "C" {
