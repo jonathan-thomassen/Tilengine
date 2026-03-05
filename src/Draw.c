@@ -661,7 +661,7 @@ static bool DrawTiledScanlinePixelMapping(int nlayer, uint32_t *dstpixel,
 
 /* draw sprite scanline */
 static bool DrawSpriteScanline(int nsprite, uint32_t *dstscan, int nscan,
-                               int /*tx1*/, int /*tx2*/) {
+                               int tx1, int tx2) {
   Sprite *sprite = &engine->sprites[nsprite];
 
   Tilescan scan = {0};
@@ -700,7 +700,7 @@ static bool DrawSpriteScanline(int nsprite, uint32_t *dstscan, int nscan,
 
 /* draw sprite scanline with scaling */
 static bool DrawScalingSpriteScanline(int nsprite, uint32_t *dstscan, int nscan,
-                                      int /*tx1*/, int /*tx2*/) {
+                                      int tx1, int tx2) {
   Sprite *sprite = &engine->sprites[nsprite];
 
   int srcx = sprite->srcrect.x1;

@@ -43,7 +43,7 @@ typedef struct {
 } ResHeader;
 
 /* private ResPack memory handler */
-struct _ResPack {
+struct ResPack {
   FILE *pf;             /* file handler */
   uint32_t key[60];     /* scheduled AES key*/
   uint32_t num_entries; /* number of assets */
@@ -52,7 +52,7 @@ struct _ResPack {
 };
 
 /* private opened asset memory handler */
-struct _ResAsset {
+struct ResAsset {
   FILE *pf;          /* file handler */
   uint32_t size;     /* actual size of asset */
   char filename[32]; /* temp filename */
@@ -174,7 +174,7 @@ ResPack ResPack_Open(const char *filename, const char *passphrase) {
   }
 
   /* create object */
-  size = sizeof(struct _ResPack) + sizeof(ResEntry) * res_header.num_regs;
+  size = sizeof(struct ResPack) + sizeof(ResEntry) * res_header.num_regs;
   rp = (ResPack)calloc(size, 1);
   if (rp == NULL) {
     fclose(pf);
@@ -237,7 +237,7 @@ ResAsset ResPack_OpenAsset(ResPack rp, const char *filename) {
   if (content == NULL)
     return NULL;
 
-  asset = (ResAsset)malloc(sizeof(struct _ResAsset));
+  asset = (ResAsset)malloc(sizeof(struct ResAsset));
   if (asset == NULL)
     return NULL;
 
@@ -268,7 +268,7 @@ FILE *ResPack_GetAssetFile(ResAsset asset) {
 }
 
 /* returns actual size of an opened asset */
-uint32_t ResPack_GetAssetSize(struct _ResAsset const *asset) {
+uint32_t ResPack_GetAssetSize(struct ResAsset const *asset) {
   if (asset != NULL)
     return asset->size;
   else

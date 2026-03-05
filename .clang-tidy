@@ -2,7 +2,8 @@ Checks: >
   bugprone-*,
   cert-*,
   misc-*,
-  performance-*
+  performance-*,
+  -bugprone-easily-swappable-parameters
 
 # Treat these as errors (empty = none forced to error)
 WarningsAsErrors: ''

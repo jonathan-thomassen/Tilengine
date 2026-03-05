@@ -14,10 +14,9 @@
 
 #include "Tilengine.h"
 
-
 #define BLEND_SIZE (1 << 16)
 
-static uint8_t *_blend_tables[MAX_BLEND];
+static uint8_t *blend_tables[MAX_BLEND];
 static int instances = 0;
 
 bool CreateBlendTables(void) {
@@ -28,8 +27,8 @@ bool CreateBlendTables(void) {
 
   /* get memory */
   for (int c = BLEND_MIX25; c < MAX_BLEND; c++) {
-    _blend_tables[c] = (uint8_t *)malloc(BLEND_SIZE);
-    if (_blend_tables[c] == NULL)
+    blend_tables[c] = (uint8_t *)malloc(BLEND_SIZE);
+    if (blend_tables[c] == NULL)
       return false;
   }
 
@@ -37,13 +36,13 @@ bool CreateBlendTables(void) {
   for (int a = 0; a < 256; a++) {
     for (int b = 0; b < 256; b++) {
       const int offset = (a << 8) + b;
-      _blend_tables[BLEND_MIX25][offset] = (uint8_t)((a + b + b) / 3);
-      _blend_tables[BLEND_MIX50][offset] = (uint8_t)((a + b) >> 1);
-      _blend_tables[BLEND_MIX75][offset] = (uint8_t)((a + a + b) / 3);
-      _blend_tables[BLEND_ADD][offset] = (a + b) > 255 ? 255 : (uint8_t)(a + b);
-      _blend_tables[BLEND_SUB][offset] = (a - b) < 0 ? 0 : (uint8_t)(a - b);
-      _blend_tables[BLEND_MOD][offset] = (uint8_t)(a * b) / 255;
-      _blend_tables[BLEND_CUSTOM][offset] = (uint8_t)a;
+      blend_tables[BLEND_MIX25][offset] = (uint8_t)((a + b + b) / 3);
+      blend_tables[BLEND_MIX50][offset] = (uint8_t)((a + b) >> 1);
+      blend_tables[BLEND_MIX75][offset] = (uint8_t)((a + a + b) / 3);
+      blend_tables[BLEND_ADD][offset] = (a + b) > 255 ? 255 : (uint8_t)(a + b);
+      blend_tables[BLEND_SUB][offset] = (a - b) < 0 ? 0 : (uint8_t)(a - b);
+      blend_tables[BLEND_MOD][offset] = (uint8_t)(a * b) / 255;
+      blend_tables[BLEND_CUSTOM][offset] = (uint8_t)a;
     }
   }
   return true;
@@ -57,12 +56,12 @@ void DeleteBlendTables(void) {
     return;
 
   for (int c = BLEND_MIX25; c < MAX_BLEND; c++) {
-    if (_blend_tables[c] != NULL)
-      free(_blend_tables[c]);
+    if (blend_tables[c] != NULL)
+      free(blend_tables[c]);
   }
 }
 
 /* returns blend table according to selected blend mode */
 uint8_t *SelectBlendTable(TLN_Blend mode) {
-  return _blend_tables[mode];
+  return blend_tables[mode];
 }

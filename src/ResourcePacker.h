@@ -15,8 +15,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
-typedef struct _ResPack *ResPack;
-typedef struct _ResAsset *ResAsset;
+typedef struct ResPack *ResPack;
+typedef struct ResAsset *ResAsset;
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,7 +39,7 @@ ResAsset ResPack_OpenAsset(ResPack rp, const char *filename);
 FILE *ResPack_GetAssetFile(ResAsset asset);
 
 /* returns actual size of an opened asset with ResPack_OpenAsset() */
-uint32_t ResPack_GetAssetSize(struct _ResAsset const *asset);
+uint32_t ResPack_GetAssetSize(struct ResAsset const *asset);
 
 /* closes opened asset, deletes temporal file */
 void ResPack_CloseAsset(ResAsset asset);

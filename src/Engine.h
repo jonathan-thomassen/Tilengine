@@ -99,6 +99,6 @@ extern Engine *engine;
 extern void tln_trace(TLN_LogLevel log_level, const char *message);
 
 #define GetFramebufferLine(line)                                               \
-  (uint32_t *)(engine->framebuffer.data + ((line) * engine->framebuffer.pitch))
+  (uint32_t *)(engine->framebuffer.data + ((ptrdiff_t)(line) * engine->framebuffer.pitch))
 
 #endif

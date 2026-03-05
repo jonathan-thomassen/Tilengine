@@ -81,17 +81,17 @@ typedef enum {
  * layer blend modes. Must be one of these and are mutually exclusive:
  */
 typedef enum {
-  BLEND_NONE,   /*!< blending disabled */
-  BLEND_MIX25,  /*!< color averaging 1 */
-  BLEND_MIX50,  /*!< color averaging 2 */
-  BLEND_MIX75,  /*!< color averaging 3 */
-  BLEND_MIX90,  /*!< color averaging 4 (90% layer, 10% background) */
-  BLEND_ADD,    /*!< color is always brighter (simulate light effects) */
-  BLEND_SUB,    /*!< color is always darker (simulate shadow effects) */
-  BLEND_MOD,    /*!< color is always darker (simulate shadow effects) */
-  BLEND_CUSTOM, /*!< user provided blend function with
-                   TLN_SetCustomBlendFunction() */
-  MAX_BLEND,
+  BLEND_NONE = 0,   /*!< blending disabled */
+  BLEND_MIX25 = 1,  /*!< color averaging 1 */
+  BLEND_MIX50 = 2,  /*!< color averaging 2 */
+  BLEND_MIX75 = 3,  /*!< color averaging 3 */
+  BLEND_MIX90 = 4,  /*!< color averaging 4 (90% layer, 10% background) */
+  BLEND_ADD = 5,    /*!< color is always brighter (simulate light effects) */
+  BLEND_SUB = 6,    /*!< color is always darker (simulate shadow effects) */
+  BLEND_MOD = 7,    /*!< color is always darker (simulate shadow effects) */
+  BLEND_CUSTOM = 8, /*!< user provided blend function with
+                      TLN_SetCustomBlendFunction() */
+  MAX_BLEND = 9,
   BLEND_MIX = BLEND_MIX50
 } TLN_Blend;
 
@@ -277,20 +277,20 @@ typedef enum {
 
 /*! Standard inputs query for TLN_GetInput() */
 typedef enum {
-  INPUT_NONE = 0, /*!< no input */
-  INPUT_UP,       /*!< up direction */
-  INPUT_DOWN,     /*!< down direction */
-  INPUT_LEFT,     /*!< left direction */
-  INPUT_RIGHT,    /*!< right direction */
-  INPUT_BUTTON1,  /*!< 1st action button */
-  INPUT_BUTTON2,  /*!< 2nd action button */
-  INPUT_BUTTON3,  /*!< 3th action button */
-  INPUT_BUTTON4,  /*!< 4th action button */
-  INPUT_BUTTON5,  /*!< 5th action button */
-  INPUT_BUTTON6,  /*!< 6th action button */
-  INPUT_START,    /*!< Start button */
-  INPUT_QUIT,     /*!< Window close (only Player 1 keyboard) */
-  INPUT_CRT,      /*!< CRT toggle (only Player 1 keyboard) */
+  INPUT_NONE = 0,      /*!< no input */
+  INPUT_UP = 1,        /*!< up direction */
+  INPUT_DOWN = 2,      /*!< down direction */
+  INPUT_LEFT = 3,      /*!< left direction */
+  INPUT_RIGHT = 4,     /*!< right direction */
+  INPUT_BUTTON1 = 5,   /*!< 1st action button */
+  INPUT_BUTTON2 = 6,   /*!< 2nd action button */
+  INPUT_BUTTON3 = 7,   /*!< 3th action button */
+  INPUT_BUTTON4 = 8,   /*!< 4th action button */
+  INPUT_BUTTON5 = 9,   /*!< 5th action button */
+  INPUT_BUTTON6 = 10,  /*!< 6th action button */
+  INPUT_START = 11,    /*!< Start button */
+  INPUT_QUIT = 12,     /*!< Window close (only Player 1 keyboard) */
+  INPUT_CRT = 13,      /*!< CRT toggle (only Player 1 keyboard) */
 
   /* ... up to 32 unique inputs */
 

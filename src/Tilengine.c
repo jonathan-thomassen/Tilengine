@@ -652,7 +652,8 @@ bool TLN_SetBGPalette(TLN_Palette palette) {
   return true;
 }
 
-/* \brief Sets one of the eight global palettes used by tiled layers
+/*!
+ * \brief Sets one of the eight global palettes used by tiled layers
  * \param index Palette index [0 - 7]
  * \param palette Reference of palette to set, or NULL to disable it
  * \returns true if success, or false if error
