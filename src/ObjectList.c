@@ -61,7 +61,7 @@ static void handle_object_gid_attribute(const char *szValue) {
 
 static void handle_object_attribute(const char *szAttribute,
                                     const char *szValue) {
-  int intvalue = atoi(szValue);
+  int intvalue = (int)strtol(szValue, NULL, 10);
   if (!strcasecmp(szAttribute, "id"))
     loader.object.id = (uint16_t)intvalue;
   else if (!strcasecmp(szAttribute, "gid"))
@@ -125,9 +125,9 @@ static void handle_finish_tag(const char *szName) {
 }
 
 /* XML parser callback */
-static void *handler(SimpleXmlParser parser, SimpleXmlEvent evt,
-                     const char *szName, const char *szAttribute,
-                     const char *szValue) {
+static void *handler(SimpleXmlParser parser [[maybe_unused]],
+                     SimpleXmlEvent evt, const char *szName,
+                     const char *szAttribute, const char *szValue) {
   ODB("handler evt=%d szName=%s szAttr=%s szVal=%s", evt,
       szName ? szName : "(null)", szAttribute ? szAttribute : "(null)",
       szValue ? szValue : "(null)");
@@ -228,7 +228,9 @@ bool TLN_AddTileObjectToList(TLN_ObjectList list, uint16_t id, uint16_t gid,
   if (obj_node == NULL)
     return false;
 
+  obj_node->id = id;
   obj_node->gid = gid;
+  obj_node->flags = flags;
   obj_node->x = x;
   obj_node->y = y;
   add_to_list(list, obj_node);

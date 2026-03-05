@@ -391,7 +391,8 @@ static bool DrawTiledScanline(int nlayer, uint32_t *dstpixel, int nscan,
     int ytile = ypos >> tileset->vshift;
     scan.srcy = ypos & GetTilesetVMask(tileset);
 
-    const union Tile *tile = &tilemap->tiles[ytile * tilemap->cols + xtile];
+    const union Tile *tile =
+        &tilemap->tiles[(ptrdiff_t)ytile * tilemap->cols + xtile];
 
     /* get effective tile width */
     int tilewidth = tileset->width - scan.srcx;
@@ -492,7 +493,8 @@ static bool DrawTiledScanlineScaling(int nlayer, uint32_t *dstpixel, int nscan,
     int width = x1 - x;
 
     /* paint if tile is not empty */
-    const union Tile *tile = &tilemap->tiles[ytile * tilemap->cols + xtile];
+    const union Tile *tile =
+        &tilemap->tiles[(ptrdiff_t)ytile * tilemap->cols + xtile];
     if (tile->index != 0) {
       const struct Tileset *tileset2 = tilemap->tilesets[tile->tileset];
       const uint16_t tile_index = tileset2->tiles[tile->index] - 1;
@@ -572,7 +574,8 @@ static bool DrawTiledScanlineAffine(int nlayer, uint32_t *dstpixel, int nscan,
 
     scan.srcx = xpos & GetTilesetHMask(tileset);
     scan.srcy = ypos & GetTilesetVMask(tileset);
-    const union Tile *tile = &tilemap->tiles[ytile * tilemap->cols + xtile];
+    const union Tile *tile =
+        &tilemap->tiles[(ptrdiff_t)ytile * tilemap->cols + xtile];
 
     /* paint if not empty tile */
     if (tile->index != 0) {
@@ -629,7 +632,8 @@ static bool DrawTiledScanlinePixelMapping(int nlayer, uint32_t *dstpixel,
 
     scan.srcx = xpos & GetTilesetHMask(tileset);
     scan.srcy = ypos & GetTilesetVMask(tileset);
-    const union Tile *tile = &tilemap->tiles[ytile * tilemap->cols + xtile];
+    const union Tile *tile =
+        &tilemap->tiles[(ptrdiff_t)ytile * tilemap->cols + xtile];
 
     /* paint if not empty tile */
     if (tile->index != 0) {

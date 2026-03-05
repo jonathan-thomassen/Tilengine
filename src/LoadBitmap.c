@@ -367,7 +367,7 @@ static TLN_Bitmap LoadBMP(const char *filename) {
 
     fseek(pf, sizeof(BITMAPFILEHEADER) + bv5.bV5Size, SEEK_SET);
     palette = TLN_CreatePalette(bv5.bV5ClrUsed);
-    for (c = 0; c < (int)bv5.bV5ClrUsed; c++) {
+    for (c = 0; c < bv5.bV5ClrUsed; c++) {
       RGBQUAD color;
       fread(&color, sizeof(RGBQUAD), 1, pf);
       TLN_SetPaletteColor(palette, c, color.r, color.g, color.b);

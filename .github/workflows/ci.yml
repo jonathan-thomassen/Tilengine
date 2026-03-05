@@ -28,7 +28,7 @@ jobs:
         id: cache_sdl3
         uses: actions/cache@v4
         with:
-          path: /usr/local
+          path: /opt/sdl3
           key: sdl3-3.2.8-${{ runner.os }}
 
       - name: Install SDL3
@@ -40,15 +40,16 @@ jobs:
           cmake -S SDL3-${SDL_VERSION} -B sdl3-build -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DSDL_SHARED=ON -DSDL_STATIC=OFF \
-            -DCMAKE_INSTALL_PREFIX=/usr/local
+            -DCMAKE_INSTALL_PREFIX=/opt/sdl3
           cmake --build sdl3-build
-          sudo cmake --install sdl3-build
+          cmake --install sdl3-build
 
       - name: Configure (with sanitizers)
         run: |
           cmake -S . -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=Debug \
-            -DSANITIZE=ON
+            -DSANITIZE=ON \
+            -DCMAKE_PREFIX_PATH=/opt/sdl3
 
       - name: Build
         id: build
@@ -80,7 +81,8 @@ jobs:
       - name: Configure (Valgrind, no sanitizers)
         run: |
           cmake -S . -B build-valgrind -G Ninja \
-            -DCMAKE_BUILD_TYPE=Debug
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_PREFIX_PATH=/opt/sdl3
 
       - name: Build (Valgrind)
         id: build_valgrind

@@ -624,9 +624,21 @@ bool TLN_EnableLayer(int nlayer) {
   layer = &engine->layers[nlayer];
 
   /* check proper config */
-  if (layer->type == LAYER_TILE && layer->tilemap != NULL ||
-      layer->type == LAYER_BITMAP && layer->bitmap != NULL ||
-      layer->type == LAYER_OBJECT && layer->objects != NULL) {
+  bool configured = false;
+  switch (layer->type) {
+    case LAYER_TILE:
+      configured = layer->tilemap != NULL;
+      break;
+    case LAYER_BITMAP:
+      configured = layer->bitmap != NULL;
+      break;
+    case LAYER_OBJECT:
+      configured = layer->objects != NULL;
+      break;
+    default:
+      break;
+  }
+  if (configured) {
     layer->flags.ok = true;
     TLN_SetLastError(TLN_ERR_IDX_LAYER);
     return true;
