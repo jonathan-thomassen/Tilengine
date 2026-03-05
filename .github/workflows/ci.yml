@@ -24,7 +24,15 @@ jobs:
             libxinerama-dev libxss-dev libxfixes-dev \
             libasound2-dev libpulse-dev libdbus-1-dev
 
+      - name: Cache SDL3
+        id: cache_sdl3
+        uses: actions/cache@v4
+        with:
+          path: /usr/local
+          key: sdl3-3.2.8-${{ runner.os }}
+
       - name: Install SDL3
+        if: steps.cache_sdl3.outputs.cache-hit != 'true'
         run: |
           SDL_VERSION=3.2.8
           curl -L "https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL3-${SDL_VERSION}.tar.gz" \

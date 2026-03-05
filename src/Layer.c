@@ -228,16 +228,6 @@ bool TLN_SetLayerPriority(int nlayer, bool enable) {
   return true;
 }
 
-/* removed, keep for ABI compatibility  */
-bool TLN_SetLayerParent(int /*nlayer*/, int /*parent*/) {
-  return true;
-}
-
-/* removed, keep for ABI compatibility  */
-bool TLN_DisableLayerParent(int /*nlayer*/) {
-  return true;
-}
-
 /*!
  * \brief
  * Returns the layer width in pixels

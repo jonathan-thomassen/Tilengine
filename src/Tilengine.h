@@ -585,8 +585,6 @@ TLNAPI bool TLN_ResetLayerMode(int nlayer);
 TLNAPI bool TLN_SetLayerObjects(int nlayer, TLN_ObjectList objects,
                                 TLN_Tileset tileset);
 TLNAPI bool TLN_SetLayerPriority(int nlayer, bool enable);
-TLNAPI bool TLN_SetLayerParent(int nlayer, int parent);
-TLNAPI bool TLN_DisableLayerParent(int nlayer);
 TLNAPI bool TLN_DisableLayer(int nlayer);
 TLNAPI bool TLN_EnableLayer(int nlayer);
 TLNAPI TLN_LayerType TLN_GetLayerType(int nlayer);
