@@ -125,7 +125,7 @@ static void handle_finish_tag(const char *szName) {
 }
 
 /* XML parser callback */
-static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
+static void *handler(SimpleXmlParser parser, SimpleXmlEvent evt,
                      const char *szName, const char *szAttribute,
                      const char *szValue) {
   ODB("handler evt=%d szName=%s szAttr=%s szVal=%s", evt,
@@ -217,8 +217,8 @@ static bool CloneObjectToList(TLN_ObjectList list, TLN_Object const *data) {
  * \param y Layer-space bertical coordinate of the top-left corner
  * \return true if success or false if error
  */
-bool TLN_AddTileObjectToList(TLN_ObjectList list, uint16_t /*id*/, uint16_t gid,
-                             uint16_t /*flags*/, int x, int y) {
+bool TLN_AddTileObjectToList(TLN_ObjectList list, uint16_t id, uint16_t gid,
+                             uint16_t flags, int x, int y) {
   struct _Object *obj_node;
 
   if (!CheckBaseObject(list, OT_OBJECTLIST))

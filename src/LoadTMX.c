@@ -7,7 +7,6 @@
 #include "Tileset.h"
 #include "simplexml.h"
 
-
 static TMXInfo tmxinfo;
 
 static void init_current_layer(TLN_LayerType type) {
@@ -111,7 +110,7 @@ static void handle_finish_tag(const char *szName) {
 }
 
 /* XML parser callback */
-static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
+static void *handler(SimpleXmlParser parser, SimpleXmlEvent evt,
                      const char *szName, const char *szAttribute,
                      const char *szValue) {
   switch (evt) {

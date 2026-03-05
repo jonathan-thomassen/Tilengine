@@ -97,17 +97,25 @@ jobs:
         run: |
           result() { [ "$1" = "success" ] && echo "✅ Pass" || echo "❌ Fail"; }
 
-          append_log() {
-            local label="$1" log="$2" outcome="$3"
+          # Appends a diff block with errors in red (-) and warnings in yellow (!)
+          # Skips the section entirely if the log has no errors or warnings.
+          append_filtered_log() {
+            local label="$1" log="$2"
+            [ -s "$log" ] || return
+            local content
+            content=$(grep -iE "error:|warning:" "$log" 2>/dev/null || true)
+            [ -z "$content" ] && return
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "### $label — $(result $outcome)" >> $GITHUB_STEP_SUMMARY
-            if [ -s "$log" ]; then
-              echo '```' >> $GITHUB_STEP_SUMMARY
-              cat "$log" >> $GITHUB_STEP_SUMMARY
-              echo '```' >> $GITHUB_STEP_SUMMARY
-            else
-              echo "_No output._" >> $GITHUB_STEP_SUMMARY
-            fi
+            echo "### $label" >> $GITHUB_STEP_SUMMARY
+            echo '```diff' >> $GITHUB_STEP_SUMMARY
+            while IFS= read -r line; do
+              if echo "$line" | grep -qi "error:"; then
+                echo "- $line" >> $GITHUB_STEP_SUMMARY
+              else
+                echo "! $line" >> $GITHUB_STEP_SUMMARY
+              fi
+            done <<< "$content"
+            echo '```' >> $GITHUB_STEP_SUMMARY
           }
 
           echo "## CI Results" >> $GITHUB_STEP_SUMMARY
@@ -120,11 +128,11 @@ jobs:
           echo "| Build (Valgrind) | $(result ${{ steps.build_valgrind.outcome }}) |" >> $GITHUB_STEP_SUMMARY
           echo "| Valgrind | $(result ${{ steps.valgrind.outcome }}) |" >> $GITHUB_STEP_SUMMARY
 
-          append_log "Build"            /tmp/build.log          "${{ steps.build.outcome }}"
-          append_log "cppcheck"         /tmp/cppcheck.log       "${{ steps.cppcheck.outcome }}"
-          append_log "clang-tidy"       /tmp/clang-tidy.log     "${{ steps.clang_tidy.outcome }}"
-          append_log "Build (Valgrind)" /tmp/build-valgrind.log "${{ steps.build_valgrind.outcome }}"
-          append_log "Valgrind"         /tmp/valgrind.log       "${{ steps.valgrind.outcome }}"
+          append_filtered_log "Build"            /tmp/build.log
+          append_filtered_log "cppcheck"         /tmp/cppcheck.log
+          append_filtered_log "clang-tidy"       /tmp/clang-tidy.log
+          append_filtered_log "Build (Valgrind)" /tmp/build-valgrind.log
+          append_filtered_log "Valgrind"         /tmp/valgrind.log
 
       - name: Fail if any check failed
         if: >

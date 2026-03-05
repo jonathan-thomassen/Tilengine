@@ -39,9 +39,9 @@ typedef struct {
   uint8_t data[0];
 } object_t;
 
-#define ObjectType(ptr) ((object_t *)ptr)->type
-#define ObjectSize(ptr) ((object_t *)ptr)->size
-#define ObjectOwner(ptr) ((object_t *)ptr)->owner
+#define ObjectType(ptr) ((object_t *)(ptr))->type
+#define ObjectSize(ptr) ((object_t *)(ptr))->size
+#define ObjectOwner(ptr) ((object_t *)(ptr))->owner
 
 /* prototipos */
 void *CreateBaseObject(ObjectType type, size_t size);
