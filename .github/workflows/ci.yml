@@ -45,7 +45,7 @@ jobs:
       - name: Build
         id: build
         continue-on-error: true
-        run: cmake --build build
+        run: cmake --build build 2>&1 | tee /tmp/build.log; exit ${PIPESTATUS[0]}
 
       - name: cppcheck
         id: cppcheck
@@ -59,7 +59,7 @@ jobs:
             --suppress=unusedStructMember:src/Window.c \
             --suppress=unusedStructMember:src/ResourcePacker.c \
             --error-exitcode=1 \
-            src/
+            src/ 2>&1 | tee /tmp/cppcheck.log; exit ${PIPESTATUS[0]}
 
       - name: clang-tidy
         id: clang_tidy
@@ -67,7 +67,7 @@ jobs:
         run: |
           clang-tidy src/Tilengine.c src/Layer.c src/Sprite.c \
             samples/Intro.c samples/Drawbridge.c \
-            -p build
+            -p build 2>&1 | tee /tmp/clang-tidy.log; exit ${PIPESTATUS[0]}
 
       - name: Configure (Valgrind, no sanitizers)
         run: |
@@ -77,7 +77,7 @@ jobs:
       - name: Build (Valgrind)
         id: build_valgrind
         continue-on-error: true
-        run: cmake --build build-valgrind --target Test
+        run: cmake --build build-valgrind --target Test 2>&1 | tee /tmp/build-valgrind.log; exit ${PIPESTATUS[0]}
 
       - name: Valgrind
         id: valgrind
@@ -90,22 +90,41 @@ jobs:
             --leak-check=full \
             --track-origins=yes \
             $SUPP \
-            build-valgrind/Test
+            build-valgrind/Test 2>&1 | tee /tmp/valgrind.log; exit ${PIPESTATUS[0]}
 
       - name: Summary
         if: always()
         run: |
-          pass="✅ Pass"
-          fail="❌ Fail"
+          result() { [ "$1" = "success" ] && echo "✅ Pass" || echo "❌ Fail"; }
+
+          append_log() {
+            local label="$1" log="$2" outcome="$3"
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### $label — $(result $outcome)" >> $GITHUB_STEP_SUMMARY
+            if [ -s "$log" ]; then
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              cat "$log" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+            else
+              echo "_No output._" >> $GITHUB_STEP_SUMMARY
+            fi
+          }
+
           echo "## CI Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Check | Result |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Build | ${{ steps.build.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| cppcheck | ${{ steps.cppcheck.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| clang-tidy | ${{ steps.clang_tidy.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Build (Valgrind) | ${{ steps.build_valgrind.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Valgrind | ${{ steps.valgrind.outcome == 'success' && '✅ Pass' || '❌ Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | $(result ${{ steps.build.outcome }}) |" >> $GITHUB_STEP_SUMMARY
+          echo "| cppcheck | $(result ${{ steps.cppcheck.outcome }}) |" >> $GITHUB_STEP_SUMMARY
+          echo "| clang-tidy | $(result ${{ steps.clang_tidy.outcome }}) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build (Valgrind) | $(result ${{ steps.build_valgrind.outcome }}) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Valgrind | $(result ${{ steps.valgrind.outcome }}) |" >> $GITHUB_STEP_SUMMARY
+
+          append_log "Build"            /tmp/build.log          "${{ steps.build.outcome }}"
+          append_log "cppcheck"         /tmp/cppcheck.log       "${{ steps.cppcheck.outcome }}"
+          append_log "clang-tidy"       /tmp/clang-tidy.log     "${{ steps.clang_tidy.outcome }}"
+          append_log "Build (Valgrind)" /tmp/build-valgrind.log "${{ steps.build_valgrind.outcome }}"
+          append_log "Valgrind"         /tmp/valgrind.log       "${{ steps.valgrind.outcome }}"
 
       - name: Fail if any check failed
         if: >
