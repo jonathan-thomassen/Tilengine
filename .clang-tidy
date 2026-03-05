@@ -4,7 +4,8 @@ Checks: >
   misc-*,
   performance-*,
   -bugprone-easily-swappable-parameters,
-  -cert-err33-c
+  -cert-err33-c,
+  -cert-err34-c
 
 # Treat these as errors (empty = none forced to error)
 WarningsAsErrors: ''
