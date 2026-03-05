@@ -14,8 +14,10 @@
  ******************************************************************************/
 
 #include <SDL3/SDL.h>
-#include <Windows.h>
+// clang-format off
+#include <windows.h>  /* must precede bcrypt.h */
 #include <bcrypt.h>
+// clang-format on
 #include <stdio.h>
 
 #include "Tilengine.h"
