@@ -932,8 +932,8 @@ static bool DrawBitmapScanlinePixelMapping(int nlayer, uint32_t *dstpixel,
 static bool DrawObjectScanline(int nlayer, uint32_t *dstpixel, int nscan,
                                int tx1, int tx2) {
   const Layer *layer = (const Layer *)&engine->layers[nlayer];
-  struct _Object *object = layer->objects->list;
-  struct _Object tmpobject = {0};
+  struct Object *object = layer->objects->list;
+  struct Object tmpobject = {0};
 
   int x1 = layer->hstart + tx1;
   int x2 = layer->hstart + tx2;
@@ -943,7 +943,7 @@ static bool DrawObjectScanline(int nlayer, uint32_t *dstpixel, int nscan,
 
   while (object != NULL) {
     /* swap width & height for rotated objects */
-    memcpy(&tmpobject, object, sizeof(struct _Object));
+    memcpy(&tmpobject, object, sizeof(struct Object));
     if (tmpobject.flags & FLAG_ROTATE) {
       tmpobject.width = object->height;
       tmpobject.height = object->width;
