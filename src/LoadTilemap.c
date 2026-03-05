@@ -84,11 +84,13 @@ static void handle_add_attribute(const char *szName, const char *szAttribute,
 static void decode_base64_content(const char *szValue, uint32_t *data,
                                   int size) {
   if (loader.compression == COMPRESSION_NONE) {
-    base64decode(szValue, (int)strlen(szValue), (uint8_t *)data, &size);
+    base64decode((const uint8_t *)szValue, (int)strlen(szValue),
+                 (uint8_t *)data, &size);
   } else {
     uint8_t *deflated = (uint8_t *)malloc(size);
     int in_size = size;
-    base64decode(szValue, (int)strlen(szValue), deflated, &in_size);
+    base64decode((const uint8_t *)szValue, (int)strlen(szValue), deflated,
+                 &in_size);
     decompress(deflated, in_size, (uint8_t *)data, size);
     free(deflated);
   }

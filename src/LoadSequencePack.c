@@ -116,7 +116,7 @@ static void handle_finish_tag(const char *szName) {
 }
 
 /* XML parser callback */
-static void *handler(SimpleXmlParser /*parser*/, SimpleXmlEvent evt,
+static void *handler(SimpleXmlParser parser [[maybe_unused]], SimpleXmlEvent evt,
                      const char *szName, const char *szAttribute,
                      const char *szValue) {
   switch (evt) {

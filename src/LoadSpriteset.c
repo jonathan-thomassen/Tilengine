@@ -40,12 +40,29 @@ static TLN_SpriteData *load_txt_csv(const char *filename, int *num_entries) {
   data = (TLN_SpriteData *)calloc(*num_entries, sizeof(TLN_SpriteData));
   TLN_SpriteData *entry = data;
   while (fgets(line, sizeof(line), pf)) {
-    if (strchr(line, '='))
-      sscanf(line, "%64s = %d %d %d %d", entry->name, &entry->x, &entry->y,
-             &entry->w, &entry->h);
-    else if (strchr(line, ','))
-      sscanf(line, "%64[^,],%d,%d,%d,%d", entry->name, &entry->x, &entry->y,
-             &entry->w, &entry->h);
+    char const *sep;
+    char *p;
+    sep = strchr(line, '=');
+    if (sep != NULL) {
+      sscanf(line, "%64s", entry->name);
+      entry->x = (int)strtol(sep + 1, &p, 10);
+      entry->y = (int)strtol(p, &p, 10);
+      entry->w = (int)strtol(p, &p, 10);
+      entry->h = (int)strtol(p, NULL, 10);
+    } else {
+      sep = strchr(line, ',');
+      if (sep != NULL) {
+        size_t namelen = (size_t)(sep - line);
+        if (namelen >= sizeof(entry->name))
+          namelen = sizeof(entry->name) - 1;
+        memcpy(entry->name, line, namelen);
+        entry->name[namelen] = '\0';
+        entry->x = (int)strtol(sep + 1, &p, 10);
+        entry->y = (int)strtol(p + 1, &p, 10);
+        entry->w = (int)strtol(p + 1, &p, 10);
+        entry->h = (int)strtol(p + 1, NULL, 10);
+      }
+    }
     entry += 1;
   }
   FileClose(pf);
@@ -118,14 +135,14 @@ static TLN_SpriteData *load_json(const char *filename, int *num_entries) {
 /*!
  * \brief Loads a spriteset from an image png and its associated atlas
  * descriptor
- * \param name Base name of the files containing the spriteset, with or without
- * .png extension
+ * \param name Base name of the files containing the spriteset, with or
+ * without .png extension
  * \returns Reference to the newly loaded spriteset or NULL if error
  *
  * \remarks
  * The spriteset comes in a pair of files: an image file (bmp or png) and a
- * standarized atlas descriptor (json, csv or txt) The supported json format is
- * the array.
+ * standarized atlas descriptor (json, csv or txt) The supported json format
+ * is the array.
  */
 TLN_Spriteset TLN_LoadSpriteset(const char *name) {
   FileInfo fileinfo = {0};

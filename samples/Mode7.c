@@ -26,7 +26,7 @@
 typedef int fix_t;
 #define FIXED_BITS 16
 #define float2fix(f) (fix_t)((f) * (1 << FIXED_BITS))
-#define int2fix(i) ((int)(i) << FIXED_BITS)
+#define int2fix(i) ((int)(i) * (1 << FIXED_BITS))
 #define fix2int(f) ((int)(f) >> FIXED_BITS)
 #define fix2float(f) ((float)(f) / (1 << FIXED_BITS))
 
@@ -132,7 +132,7 @@ static void raster_callback(int line) {
     fix_t s1 = float2fix(5.0f);
     fix_t scale_fix = lerp(line, 24, HEIGHT, s0, s1);
     float scale = fix2float(scale_fix);
-    TLN_SetLayerTransform(LAYER_BACKGROUND, (float)angle, WIDTH / 2, HEIGHT,
+    TLN_SetLayerTransform(LAYER_BACKGROUND, (float)angle, WIDTH / 2.0f, HEIGHT,
                           scale, scale);
   }
 }
