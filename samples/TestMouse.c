@@ -14,10 +14,13 @@
  ******************************************************************************/
 
 #include <SDL3/SDL.h>
-// clang-format off
-#include <windows.h>  /* must precede bcrypt.h */
+#ifdef _WIN32
+#include <Windows.h>
 #include <bcrypt.h>
-// clang-format on
+#else
+#include <stdlib.h>
+#include <time.h>
+#endif
 #include <stdio.h>
 
 #include "Tilengine.h"
@@ -84,13 +87,19 @@ static void sdl_callback(SDL_Event *evt) {
 }
 
 int main(void) {
+#ifdef _WIN32
   BCRYPT_ALG_HANDLE prov;
+  int buffer;
+#endif
   TLN_Spriteset spriteset;
   TLN_SpriteInfo sprite_info;
   int frame = 0;
-  int buffer;
 
+#ifdef _WIN32
   BCryptOpenAlgorithmProvider(&prov, BCRYPT_RNG_ALGORITHM, NULL, 0);
+#else
+  srandom((unsigned int)time(NULL));
+#endif
 
   TLN_Init(WIDTH, HEIGHT, 0, MAX_ENTITIES, 0);
   spriteset = TLN_LoadSpriteset("assets/smw/smw_sprite.png");
@@ -104,10 +113,15 @@ int main(void) {
     Entity *entity = &entities[c];
     entity->guid = c; /* whatever you want */
     entity->enabled = true;
-    entity->x =
-        BCryptGenRandom(prov, (PUCHAR)(&buffer), sizeof(buffer), 0) % WIDTH;
-    entity->y =
-        BCryptGenRandom(prov, (PUCHAR)(&buffer), sizeof(buffer), 0) % HEIGHT;
+#ifdef _WIN32
+    BCryptGenRandom(prov, (PUCHAR)(&buffer), sizeof(buffer), 0);
+    entity->x = buffer % WIDTH;
+    BCryptGenRandom(prov, (PUCHAR)(&buffer), sizeof(buffer), 0);
+    entity->y = buffer % HEIGHT;
+#else
+    entity->x = (int)(random() % WIDTH);
+    entity->y = (int)(random() % HEIGHT);
+#endif
     entity->w = sprite_info.w;
     entity->h = sprite_info.h;
     entity->sprite_index = c;
@@ -118,7 +132,9 @@ int main(void) {
     TLN_SetSpritePicture(entity->sprite_index, 0);
   }
 
+#ifdef _WIN32
   BCryptCloseAlgorithmProvider(prov, 0);
+#endif
 
   /* windows and main loop */
   TLN_CreateWindow(CWF_NEAREST);
