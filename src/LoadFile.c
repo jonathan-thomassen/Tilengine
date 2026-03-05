@@ -236,12 +236,15 @@ void SplitFilename(const char *filename, FileInfo *fileinfo) {
 
     /* ext */
     block2 += 1;
-    strncpy(fileinfo->ext, block2, 16);
+    strncpy(fileinfo->ext, block2, sizeof(fileinfo->ext) - 1);
+    fileinfo->ext[sizeof(fileinfo->ext) - 1] = '\0';
   }
 
   /* name only */
-  else
-    strncpy(fileinfo->name, block1, 200);
+  else {
+    strncpy(fileinfo->name, block1, sizeof(fileinfo->name) - 1);
+    fileinfo->name[sizeof(fileinfo->name) - 1] = '\0';
+  }
 }
 
 /* builds complete file path */
