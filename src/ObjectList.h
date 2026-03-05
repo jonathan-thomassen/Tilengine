@@ -14,7 +14,7 @@
 #include "Object.h"
 #include "Tilengine.h"
 
-typedef struct _Object {
+typedef struct Object {
   uint16_t id;
   uint16_t gid;
   uint16_t flags;
@@ -27,7 +27,7 @@ typedef struct _Object {
   TLN_Bitmap bitmap; /* computed after calling TLN_SetLayerObjects() */
   bool has_gid;
   bool visible;
-  struct _Object *next;
+  struct Object *next;
 } TLN_Object;
 
 struct ObjectList {
@@ -38,12 +38,12 @@ struct ObjectList {
   int id;              /* id property */
   bool visible;        /* visible property */
   TLN_Tileset tileset; /* attached tileset, if any */
-  struct _Object *list;
-  struct _Object *last;
-  struct _Object *iterator;
+  struct Object *list;
+  struct Object *last;
+  struct Object *iterator;
   TLN_ObjectInfo *info;
 };
 
-extern bool IsObjectInLine(const struct _Object *object, int x1, int x2, int y);
+extern bool IsObjectInLine(const struct Object *object, int x1, int x2, int y);
 
 #endif

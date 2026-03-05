@@ -241,7 +241,7 @@ ResAsset ResPack_OpenAsset(ResPack rp, const char *filename) {
   if (asset == NULL)
     return NULL;
 
-  sprintf(asset->filename, "_tmp%u", entry->id);
+  snprintf(asset->filename, sizeof(asset->filename), "_tmp%u", entry->id);
   asset->pf = fopen(asset->filename, "wb");
   if (asset->pf == NULL) {
     free(asset);

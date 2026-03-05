@@ -134,7 +134,7 @@ static void *handler(SimpleXmlParser parser [[maybe_unused]],
   switch (evt) {
     case ADD_SUBTAG:
       if (!strcasecmp(szName, "object")) {
-        memset(&loader.object, 0, sizeof(struct _Object));
+        memset(&loader.object, 0, sizeof(struct Object));
         loader.object.visible = true;
       }
       break;
@@ -174,7 +174,7 @@ TLN_ObjectList TLN_CreateObjectList(void) {
 }
 
 /* adds entry to linked list */
-static void add_to_list(TLN_ObjectList list, struct _Object *object) {
+static void add_to_list(TLN_ObjectList list, struct Object *object) {
   if (list->list == NULL)
     list->list = object;
   else
@@ -193,16 +193,16 @@ static void add_to_list(TLN_ObjectList list, struct _Object *object) {
  * \return true if success or false if error
  */
 static bool CloneObjectToList(TLN_ObjectList list, TLN_Object const *data) {
-  struct _Object *obj_node;
+  struct Object *obj_node;
 
   if (!CheckBaseObject(list, OT_OBJECTLIST))
     return false;
 
-  obj_node = (struct _Object *)calloc(1, sizeof(struct _Object));
+  obj_node = (struct Object *)calloc(1, sizeof(struct Object));
   if (obj_node == NULL)
     return false;
 
-  memcpy(obj_node, data, sizeof(struct _Object));
+  memcpy(obj_node, data, sizeof(struct Object));
   add_to_list(list, obj_node);
   return true;
 }
@@ -219,12 +219,12 @@ static bool CloneObjectToList(TLN_ObjectList list, TLN_Object const *data) {
  */
 bool TLN_AddTileObjectToList(TLN_ObjectList list, uint16_t id, uint16_t gid,
                              uint16_t flags, int x, int y) {
-  struct _Object *obj_node;
+  struct Object *obj_node;
 
   if (!CheckBaseObject(list, OT_OBJECTLIST))
     return false;
 
-  obj_node = (struct _Object *)calloc(1, sizeof(struct _Object));
+  obj_node = (struct Object *)calloc(1, sizeof(struct Object));
   if (obj_node == NULL)
     return false;
 
@@ -298,7 +298,7 @@ TLN_ObjectList TLN_LoadObjectList(const char *filename, const char *layername) {
 }
 
 static void resolve_object_tilesets(TMXInfo *info) {
-  struct _Object *item;
+  struct Object *item;
   int gid = 0;
   int c;
 
@@ -363,7 +363,7 @@ static void resolve_object_tilesets(TMXInfo *info) {
  */
 TLN_ObjectList TLN_CloneObjectList(TLN_ObjectList src) {
   TLN_ObjectList list;
-  struct _Object *obj_node;
+  struct Object *obj_node;
 
   if (!CheckBaseObject(src, OT_OBJECTLIST))
     return NULL;
@@ -403,7 +403,7 @@ int TLN_GetListNumObjects(TLN_ObjectList list) {
  *  * If NULL, return the next item
  */
 bool TLN_GetListObject(TLN_ObjectList list, TLN_ObjectInfo *info) {
-  struct _Object *item;
+  struct Object *item;
   if (!CheckBaseObject(list, OT_OBJECTLIST)) {
     TLN_SetLastError(TLN_ERR_REF_LIST);
     return false;
@@ -438,7 +438,7 @@ bool TLN_GetListObject(TLN_ObjectList list, TLN_ObjectInfo *info) {
   return true;
 }
 
-bool IsObjectInLine(const struct _Object *object, int x1, int x2, int y) {
+bool IsObjectInLine(const struct Object *object, int x1, int x2, int y) {
   rect_t rect;
   MakeRect(&rect, object->x, object->y, object->width, object->height);
   if (y >= rect.y1 && y < rect.y2 && !(x1 > rect.x2 || x2 < rect.x1))
@@ -454,14 +454,14 @@ bool IsObjectInLine(const struct _Object *object, int x1, int x2, int y) {
  * \return true if success or false if error
  */
 bool TLN_DeleteObjectList(TLN_ObjectList list) {
-  struct _Object *obj_node;
+  struct Object *obj_node;
   if (!CheckBaseObject(list, OT_OBJECTLIST))
     return false;
 
   /* delete nodes */
   obj_node = list->list;
   while (obj_node != NULL) {
-    struct _Object *next;
+    struct Object *next;
     next = obj_node->next;
     free(obj_node);
     obj_node = next;

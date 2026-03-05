@@ -143,7 +143,8 @@ static TLN_Tileset load_tileset(TMXInfo const *info, const char *filename,
   TMXTileset const *tmxtileset = &info->tilesets[index];
   SplitFilename(filename, &fi);
   if (fi.path[0] != 0)
-    snprintf(tsxpath, sizeof(tsxpath), "%s/%s", fi.path, tmxtileset->source);
+    snprintf(tsxpath, sizeof(tsxpath), "%s/%s", fi.path,
+                   tmxtileset->source);
   else
     strncpy(tsxpath, tmxtileset->source, sizeof(tsxpath));
   return TLN_LoadTileset(tsxpath);
@@ -296,7 +297,7 @@ static int decompress(uint8_t *in, int in_size, uint8_t *out, int out_size) {
           [[fallthrough]];
         case Z_DATA_ERROR:
         case Z_MEM_ERROR:
-          (void)inflateEnd(&strm);
+          inflateEnd(&strm);
           return ret;
         default:
           break;
@@ -307,6 +308,6 @@ static int decompress(uint8_t *in, int in_size, uint8_t *out, int out_size) {
   } while (ret != Z_STREAM_END);
 
   /* clean up and return */
-  (void)inflateEnd(&strm);
+  inflateEnd(&strm);
   return ret == Z_STREAM_END ? Z_OK : Z_DATA_ERROR;
 }

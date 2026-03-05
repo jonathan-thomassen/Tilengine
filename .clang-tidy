@@ -3,7 +3,8 @@ Checks: >
   cert-*,
   misc-*,
   performance-*,
-  -bugprone-easily-swappable-parameters
+  -bugprone-easily-swappable-parameters,
+  -cert-err33-c
 
 # Treat these as errors (empty = none forced to error)
 WarningsAsErrors: ''

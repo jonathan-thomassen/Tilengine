@@ -168,7 +168,7 @@ static void handle_finish_tile(void) {
 
 static void handle_finish_animation(void) {
   char seq_name[16];
-  sprintf(seq_name, "%d", loader.tile.id);
+  snprintf(seq_name, sizeof(seq_name), "%d", loader.tile.id);
   TLN_Sequence sequence = TLN_CreateSequence(seq_name, loader.tile.id + 1,
                                              loader.frame_count, loader.frames);
   if (loader.sp == NULL)

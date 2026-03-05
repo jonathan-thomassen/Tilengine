@@ -158,7 +158,7 @@ TLN_Sequence TLN_CreateSpriteSequence(const char *name, TLN_Spriteset spriteset,
 
   /* find number of frames */
   do {
-    (void)snprintf(framename, sizeof(framename), "%s%d", basename, count + 1);
+    snprintf(framename, sizeof(framename), "%s%d", basename, count + 1);
     index = TLN_FindSpritesetSprite(spriteset, framename);
     if (index != -1)
       count += 1;
@@ -186,7 +186,7 @@ TLN_Sequence TLN_CreateSpriteSequence(const char *name, TLN_Spriteset spriteset,
   /* build frames from sprite name */
   frame = (TLN_SequenceFrame *)&sequence->data;
   for (int c = 0; c < count; c++) {
-    (void)snprintf(framename, sizeof(framename), "%s%d", basename, c + 1);
+    snprintf(framename, sizeof(framename), "%s%d", basename, c + 1);
     frame->index = TLN_FindSpritesetSprite(spriteset, framename);
     frame->delay = delay;
     frame += 1;
