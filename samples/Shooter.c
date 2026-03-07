@@ -166,7 +166,7 @@ int main(void) {
     /* layers */
     TLN_SetLayerTilemap(LAYER_BACKGROUND, layers[LAYER_FOREGROUND].tilemap);
     TLN_SetLayerTilemap(LAYER_FOREGROUND, layers[LAYER_BACKGROUND].tilemap);
-    TLN_SetLayerPosition(LAYER_BACKGROUND, time / 3, 160);
+    TLN_SetLayerPosition(LAYER_BACKGROUND, (int)time / 3, 160);
     TLN_SetLayerPosition(LAYER_FOREGROUND, fix2int(pos_background[0]), 64);
     TLN_SetLayerPalette(LAYER_FOREGROUND, palettes[LAYER_BACKGROUND]);
     TLN_SetLayerPalette(LAYER_BACKGROUND, palettes[LAYER_FOREGROUND]);
@@ -178,10 +178,10 @@ int main(void) {
       CreateBoss();
 
     /* actors */
-    TasksActors(time);
+    TasksActors((int)time);
 
     /* render to window */
-    TLN_DrawFrame(time);
+    TLN_DrawFrame((int)time);
 
     frame++;
   }
@@ -206,7 +206,7 @@ static void raster_callback(int line) {
 
   /* foreground */
   if (line == 32)
-    TLN_SetLayerPosition(LAYER_BACKGROUND, time / 4, 160);
+    TLN_SetLayerPosition(LAYER_BACKGROUND, (int)time / 4, 160);
 
   if (line == 64) {
     /* swap fore/background layers */
@@ -217,14 +217,14 @@ static void raster_callback(int line) {
     TLN_SetLayerPalette(LAYER_BACKGROUND, palettes[LAYER_BACKGROUND]);
 
     /* foreground: cloud layer */
-    TLN_SetLayerPosition(LAYER_FOREGROUND, (frame << 2) / 3, 192 - line);
+    TLN_SetLayerPosition(LAYER_FOREGROUND, (int)(frame << 2) / 3, 192 - line);
   }
 
   if (line == 112)
     TLN_DisableLayer(LAYER_FOREGROUND);
 
   if (line == 192) {
-    TLN_SetLayerPosition(LAYER_FOREGROUND, frame * 10, 448 - line);
+    TLN_SetLayerPosition(LAYER_FOREGROUND, (int)frame * 10, 448 - line);
   }
 
   /* background */

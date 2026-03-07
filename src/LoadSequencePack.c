@@ -97,7 +97,7 @@ static void handle_add_content(const char *szName, const char *szValue) {
     } else
       sscanf(ptr, "%u", &value);
 
-    loader.frames[loader.count].index = value;
+    loader.frames[loader.count].index = (int)value;
     loader.frames[loader.count].delay = loader.delay;
     loader.count++;
     while (*ptr && ishex(*ptr)) ptr++;

@@ -41,7 +41,8 @@ static TLN_SpriteData *load_txt_csv(const char *filename, int *num_entries) {
   TLN_SpriteData *entry = data;
   while (fgets(line, sizeof(line), pf)) {
     char const *sep;
-    char *p;
+    char *p = NULL;
+
     sep = strchr(line, '=');
     if (sep != NULL) {
       sscanf(line, "%64s", entry->name);
@@ -49,19 +50,21 @@ static TLN_SpriteData *load_txt_csv(const char *filename, int *num_entries) {
       entry->y = (int)strtol(p, &p, 10);
       entry->w = (int)strtol(p, &p, 10);
       entry->h = (int)strtol(p, NULL, 10);
-    } else {
-      sep = strchr(line, ',');
-      if (sep != NULL) {
-        size_t namelen = (size_t)(sep - line);
-        if (namelen >= sizeof(entry->name))
-          namelen = sizeof(entry->name) - 1;
-        memcpy(entry->name, line, namelen);
-        entry->name[namelen] = '\0';
-        entry->x = (int)strtol(sep + 1, &p, 10);
-        entry->y = (int)strtol(p + 1, &p, 10);
-        entry->w = (int)strtol(p + 1, &p, 10);
-        entry->h = (int)strtol(p + 1, NULL, 10);
-      }
+      entry += 1;
+      continue;
+    }
+
+    sep = strchr(line, ',');
+    if (sep != NULL) {
+      size_t namelen = (size_t)(sep - line);
+      if (namelen >= sizeof(entry->name))
+        namelen = sizeof(entry->name) - 1;
+      memcpy(entry->name, line, namelen);
+      entry->name[namelen] = '\0';
+      entry->x = (int)strtol(sep + 1, &p, 10);
+      entry->y = (int)strtol(p + 1, &p, 10);
+      entry->w = (int)strtol(p + 1, &p, 10);
+      entry->h = (int)strtol(p + 1, NULL, 10);
     }
     entry += 1;
   }

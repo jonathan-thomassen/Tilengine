@@ -263,8 +263,8 @@ static TLN_Bitmap LoadPNG(const char *filename) {
   png_set_sig_bytes(png, 8);
   png_read_info(png, info);
 
-  width = png_get_image_width(png, info);
-  height = png_get_image_height(png, info);
+  width = (int)png_get_image_width(png, info);
+  height = (int)png_get_image_height(png, info);
   color_type = png_get_color_type(png, info);
   bit_depth = png_get_bit_depth(png, info);
 
@@ -342,7 +342,8 @@ static TLN_Bitmap LoadBMP(const char *filename) {
   fread(&bv5, StructSize, 1, pf);
 
   /* create */
-  bitmap = TLN_CreateBitmap(bv5.bV5Width, bv5.bV5Height, bv5.bV5BitCount);
+  bitmap = TLN_CreateBitmap((int)bv5.bV5Width, (int)bv5.bV5Height,
+                            (int)bv5.bV5BitCount);
   if (!bitmap) {
     FileClose(pf);
     return NULL;
@@ -350,9 +351,9 @@ static TLN_Bitmap LoadBMP(const char *filename) {
 
   /* load scanlines */
   pitch = TLN_GetBitmapPitch(bitmap);
-  fseek(pf, bfh.OffsetData, SEEK_SET);
+  fseek(pf, (long)bfh.OffsetData, SEEK_SET);
   for (c = 0; c < bv5.bV5Height; c++) {
-    uint8_t *line = TLN_GetBitmapPtr(bitmap, 0, bv5.bV5Height - c - 1);
+    uint8_t *line = TLN_GetBitmapPtr(bitmap, 0, (int)(bv5.bV5Height - c - 1));
     fread(line, pitch, 1, pf);
   }
 
@@ -365,12 +366,12 @@ static TLN_Bitmap LoadBMP(const char *filename) {
       bv5.bV5ClrUsed =
           (bfh.OffsetData - sizeof(bfh) - bv5.bV5Size) / sizeof(RGBQUAD);
 
-    fseek(pf, sizeof(BITMAPFILEHEADER) + bv5.bV5Size, SEEK_SET);
-    palette = TLN_CreatePalette(bv5.bV5ClrUsed);
+    fseek(pf, (long)(sizeof(BITMAPFILEHEADER) + bv5.bV5Size), SEEK_SET);
+    palette = TLN_CreatePalette((int)bv5.bV5ClrUsed);
     for (c = 0; c < bv5.bV5ClrUsed; c++) {
       RGBQUAD color;
       fread(&color, sizeof(RGBQUAD), 1, pf);
-      TLN_SetPaletteColor(palette, c, color.r, color.g, color.b);
+      TLN_SetPaletteColor(palette, (int)c, color.r, color.g, color.b);
     }
     TLN_SetBitmapPalette(bitmap, palette);
   }
