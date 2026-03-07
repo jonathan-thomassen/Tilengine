@@ -75,7 +75,7 @@ jobs:
         continue-on-error: true
         run: |
           clang-tidy src/Tilengine.c src/Layer.c src/Sprite.c \
-            samples/Intro.c samples/Drawbridge.c \
+            sc4/Intro.c sc4/Drawbridge.c \
             -p build 2>&1 | tee /tmp/clang-tidy.log; exit ${PIPESTATUS[0]}
 
       - name: Configure (Valgrind, no sanitizers)
