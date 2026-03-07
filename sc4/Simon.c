@@ -27,6 +27,8 @@ int xworld;
 SimonState state;
 Direction direction;
 
+static bool camera_frozen = false;
+
 static Direction air_dir = DIR_NONE;
 static int dir_change_timer = 0;
 static Direction prev_input = DIR_NONE;
@@ -37,8 +39,8 @@ void SimonInit() {
   sp = TLN_LoadSequencePack("simon_walk.sqx");
   walk = TLN_FindSequence(sp, "walk");
 
-  TLN_SetSpriteSet(0, simon);
-  TLN_SetSpritePosition(0, x, y);
+  TLN_SetSpriteSet(SIMON_SPRITE, simon);
+  TLN_SetSpritePosition(SIMON_SPRITE, x, y);
 
   SimonSetState(SIMON_IDLE);
   direction = DIR_RIGHT;
@@ -51,6 +53,17 @@ void SimonDeinit(void) {
   TLN_DeleteSpriteset(simon);
 }
 
+void SimonBringToFront(void) {
+  /* Removing and re-adding the sprite moves it to the tail of the engine's
+   * render list, ensuring it is drawn on top of all other sprites. */
+  TLN_DisableSprite(SIMON_SPRITE);
+  TLN_SetSpriteSet(SIMON_SPRITE, simon);
+}
+
+void SimonFreezeCamera(void) {
+  camera_frozen = true;
+}
+
 void SimonSetState(int s) {
   if ((int)state == s)
     return;
@@ -58,17 +71,17 @@ void SimonSetState(int s) {
   state = s;
   switch (state) {
     case SIMON_IDLE:
-      TLN_DisableSpriteAnimation(0);
-      TLN_SetSpritePicture(0, 0);
+      TLN_DisableSpriteAnimation(SIMON_SPRITE);
+      TLN_SetSpritePicture(SIMON_SPRITE, 0);
       break;
 
     case SIMON_WALKING:
-      TLN_SetSpriteAnimation(0, walk, 0);
+      TLN_SetSpriteAnimation(SIMON_SPRITE, walk, 0);
       break;
 
     case SIMON_JUMPING:
-      TLN_DisableSpriteAnimation(0);
-      TLN_SetSpritePicture(0, 7);
+      TLN_DisableSpriteAnimation(SIMON_SPRITE);
+      TLN_SetSpritePicture(SIMON_SPRITE, 7);
       sy = -18;
       break;
   }
@@ -140,7 +153,7 @@ static bool check_wall_left(int sprite_x, int world_x, int sprite_y) {
 static void move_right(int width) {
   int x_pre = x;
   int xw_pre = xworld;
-  if (xworld < TLN_GetLayerWidth(1) - width && x >= 112)
+  if (!camera_frozen && xworld < TLN_GetLayerWidth(1) - width && x >= 112)
     xworld++;
   else if (x < 112 || x < width - 16)
     x++;
@@ -153,7 +166,7 @@ static void move_right(int width) {
 static void move_left(void) {
   int x_pre = x;
   int xw_pre = xworld;
-  if (xworld > 0 && x <= 128)
+  if (!camera_frozen && xworld > 0 && x <= 128)
     xworld--;
   else if (x > -4)
     x--;
@@ -235,11 +248,11 @@ static void check_floor(int sprite_x, int world_x, int *inout_y,
 static void update_facing(Direction input) {
   if (input == DIR_RIGHT && direction == DIR_LEFT) {
     direction = input;
-    TLN_EnableSpriteFlag(0, FLAG_FLIPX, false);
+    TLN_EnableSpriteFlag(SIMON_SPRITE, FLAG_FLIPX, false);
   }
   if (input == DIR_LEFT && direction == DIR_RIGHT) {
     direction = input;
-    TLN_EnableSpriteFlag(0, FLAG_FLIPX, true);
+    TLN_EnableSpriteFlag(SIMON_SPRITE, FLAG_FLIPX, true);
   }
 }
 
@@ -368,7 +381,7 @@ void SimonTasks(void) {
   if (state == SIMON_IDLE && input != DIR_NONE)
     SimonSetState(SIMON_WALKING);
 
-  TLN_SetSpritePosition(0, x, y);
+  TLN_SetSpritePosition(SIMON_SPRITE, x, y);
 }
 
 int SimonGetPosition(void) {
@@ -379,5 +392,24 @@ void SimonSetPosition(int px, int py) {
   x = px;
   y = py;
   xworld = 0;
-  TLN_SetSpritePosition(0, x, y);
+  TLN_SetSpritePosition(SIMON_SPRITE, x, y);
+}
+
+void SimonPushRight(int pixels) {
+  x += pixels;
+  /* clamp to one sprite-width past the right screen edge */
+  if (x > TLN_GetWidth())
+    x = TLN_GetWidth();
+  TLN_SetSpritePosition(SIMON_SPRITE, x, y);
+}
+
+int SimonGetScreenX(void) {
+  return x;
+}
+
+void SimonSetFeetY(int feet_y) {
+#define SIMON_HEIGHT 48
+  y = feet_y - SIMON_HEIGHT;
+  TLN_SetSpritePosition(SIMON_SPRITE, x, y);
+#undef SIMON_HEIGHT
 }

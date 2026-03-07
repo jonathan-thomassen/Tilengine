@@ -8,6 +8,7 @@
 #include "Sandblock.h"
 #include "Simon.h"
 #include "Tilengine.h"
+#include "Torch.h"
 
 #define WIDTH 256
 #define HEIGHT 224
@@ -21,11 +22,14 @@ int xpos;
 
 /* Spawns a single Tiled object into the appropriate game system. */
 static void spawn_object(TLN_ObjectInfo const *info) {
-  if (!strcasecmp(info->name, "Simon")) {
+  if (!strcasecmp(info->name, "simon")) {
     /* Tiled tile-object y is bottom of sprite; convert to top-left */
     SimonSetPosition(info->x, info->y - info->height);
-  } else if (!strcasecmp(info->name, "Sandblock")) {
+  } else if (!strcasecmp(info->name, "sandblock")) {
     SandblockSpawn(info->x, info->y - info->height);
+  } else if (!strcasecmp(info->name, "torch")) {
+    if (TorchSpawn(info->x, info->y - info->height) < 0)
+      printf("[objects] could not spawn torch at (%d,%d)\n", info->x, info->y);
   } else if (!strcasecmp(info->name, "moon")) {
     /* Screen-fixed; renders behind all tilemap layers */
     if (PropSpawnBackground(info->name, info->x, info->y) < 0)
@@ -35,6 +39,21 @@ static void spawn_object(TLN_ObjectInfo const *info) {
     printf("[objects] could not spawn prop '%s' at (%d,%d)\n", info->name,
            info->x, info->y);
   }
+}
+
+/* Advances the drawbridge animation by one game step.
+ * Loads the tilemap on the first call (skipping the tick so the first
+ * rendered frame is always at progress=0), then ticks every subsequent call.
+ * p_tilemap must point to a TLN_Tilemap variable initialised to NULL. */
+static void step_drawbridge(TLN_Tilemap *p_tilemap, int *p_frame) {
+  if (*p_tilemap == NULL) {
+    *p_tilemap = TLN_LoadTilemap("drawbridge_drawbridge.tmx", NULL);
+    TLN_SetLayerTilemap(MAIN_LAYER, *p_tilemap);
+    TLN_SetLayerWindow(MAIN_LAYER, 0, 32, 256, 192, false);
+    return; /* skip tick on load frame */
+  }
+  if (DrawbridgeTick())
+    (*p_frame)++;
 }
 
 /* entry point */
@@ -48,7 +67,8 @@ int main(void) {
   TLN_Tilemap drawbridge_drawbridge = NULL;
 
   /* setup engine */
-  TLN_Init(WIDTH, HEIGHT, 7, 1 + MAX_SANDBLOCKS + MAX_PROPS, 0);
+  TLN_Init(WIDTH, HEIGHT, 7, 1 + MAX_SANDBLOCKS + MAX_TORCHES + MAX_PROPS + 1,
+           0);
   TLN_SetBGColor(0x10, 0x00, 0x20);
 
   /* load resources*/
@@ -71,6 +91,7 @@ int main(void) {
 
   SimonInit();
   SandblockInit();
+  TorchInit();
   PropInit();
   HudInit(hud);
 
@@ -91,6 +112,9 @@ int main(void) {
         "Objects");
   }
 
+  /* Ensure Simon renders on top of all spawned torches and props. */
+  SimonBringToFront();
+
   TLN_SetLayerBlendMode(ROCKS_LAYER, BLEND_MIX50);
 
   /* main loop */
@@ -107,27 +131,41 @@ int main(void) {
     /* scroll */
     xpos = SimonGetPosition();
 
-    /* drawbridge animation: triggered at xpos 768, lasts 1200 frames */
+    /* drawbridge animation: triggered once xpos reaches 768, then runs to
+     * completion regardless of player position.
+     * (134 ticks × 9 game frames/tick ≈ 1197 frames at 60 fps = 20 s). */
     static int db_frame = 0;
-    if (xpos >= 768 && db_frame <= 1200) {
-      db_frame++;
-      drawbridge_drawbridge =
-          TLN_LoadTilemap("drawbridge_drawbridge.tmx", NULL);
-      TLN_SetLayerTilemap(MAIN_LAYER, drawbridge_drawbridge);
-      TLN_SetLayerWindow(MAIN_LAYER, 0, 32, 256, 192, false);
+    static bool db_triggered = false;
+    if (!db_triggered && xpos >= 768) {
+      db_triggered = true;
+      SimonFreezeCamera();
     }
-    DrawbridgeSetProgress((float)db_frame / 1200.0f);
+    if (db_triggered && db_frame < 134)
+      step_drawbridge(&drawbridge_drawbridge, &db_frame);
+    DrawbridgeSetProgress((float)db_frame / 134.0f);
 
-    /* Lock the camera once the drawbridge animation begins. */
-    if (db_frame > 0)
-      xpos = 768;
+    /* Push Simon rightward as the bridge rises; accumulate fractional pixels
+     * so the force builds smoothly from the first frame. */
+    if (db_frame > 0) {
+      static float push_acc = 0.0f;
+      float p = (float)db_frame / 134.0f;
+      push_acc += p * 2.5f;
+      int push = (int)push_acc;
+      push_acc -= (float)push;
+      SimonPushRight(push);
+      SimonSetFeetY((int)DrawbridgeSurfaceY(SimonGetScreenX()) - 4);
+    }
+
+    /* Camera is locked by SimonFreezeCamera(); xpos stays at its
+     * frozen value for all layer positions. */
 
     SandblockTasks(xpos);
+    TorchTasks(xpos);
     PropTasks(xpos);
     DrawbridgeTasks();
     TLN_SetLayerPosition(ROCKS_LAYER, xpos, 0);
-    TLN_SetLayerPosition(MAIN_LAYER, xpos + (db_frame > 0 ? 80 : 0),
-                         (db_frame > 0 ? 8 : 0));
+    TLN_SetLayerPosition(MAIN_LAYER, xpos + (db_triggered ? 80 : 0),
+                         (db_triggered ? 8 : 0));
     TLN_SetLayerPosition(WATER_LAYER, xpos, 0);
     TLN_SetLayerPosition(BACKGROUND_LAYER, xpos * 2 / 5, 0);
     TLN_SetLayerPosition(COLLISION_LAYER, xpos, 0);
@@ -137,6 +175,7 @@ int main(void) {
   }
 
   PropDeinit();
+  TorchDeinit();
   SandblockDeinit();
   SimonDeinit();
   TLN_DeleteTilemap(collision);

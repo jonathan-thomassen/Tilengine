@@ -6,9 +6,10 @@
 
 #include "Sandblock.h" /* for MAX_SANDBLOCKS — defines where our slots begin */
 #include "Tilengine.h"
+#include "Torch.h" /* for MAX_TORCHES */
 
-/* Prop sprite slots follow Simon (0) and the sandblocks (1..MAX_SANDBLOCKS). */
-#define SPRITE_BASE (1 + MAX_SANDBLOCKS)
+/* Prop sprite slots follow sandblocks and torches. */
+#define SPRITE_BASE (1 + MAX_SANDBLOCKS + MAX_TORCHES)
 
 /* A loaded spriteset shared by all props of the same name. */
 typedef struct {

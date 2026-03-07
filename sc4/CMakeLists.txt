@@ -60,6 +60,7 @@ add_executable(intro
      Intro.c
      Simon.c
      Sandblock.c
+     Torch.c
      Prop.c
      Hud.c
      Drawbridge.c)
