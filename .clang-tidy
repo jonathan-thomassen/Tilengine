@@ -6,7 +6,8 @@ Checks: >
   -bugprone-easily-swappable-parameters,
   -cert-err33-c,
   -cert-err34-c,
-  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+  -misc-include-cleaner
 
 # Treat these as errors (empty = none forced to error)
 WarningsAsErrors: ''
