@@ -78,6 +78,32 @@ void load_and_split_palette(const char *path, int stride, TLN_Palette out[8]) {
   free(buf);
 }
 
+/* Find the CSV data from the "Palette" layer in a TMX file buffer. */
+static const char *find_csv_start(const char *data) {
+  const char *p = data;
+  while ((p = strstr(p, "<layer")) != NULL) {
+    const char *tag_end = strstr(p, ">");
+    const char *name_attr = strstr(p, "name=");
+    if (!name_attr || !tag_end || name_attr >= tag_end) {
+      p++;
+      continue;
+    }
+    const char *val = name_attr + 5;
+    char quote = *val++;
+    if ((quote != '"' && quote != '\'') || strncmp(val, "Palette", 7) != 0 ||
+        *(val + 7) != quote) {
+      p++;
+      continue;
+    }
+    const char *data_tag = strstr(tag_end, "<data");
+    if (!data_tag)
+      return NULL;
+    const char *data_content = strchr(data_tag, '>');
+    return data_content ? data_content + 1 : NULL;
+  }
+  return NULL;
+}
+
 /* Read a file into a malloc'd buffer; caller must free(). */
 static uint8_t *read_file(const char *path, long *out_size) {
   FILE *f = fopen(path, "rb");
@@ -85,7 +111,10 @@ static uint8_t *read_file(const char *path, long *out_size) {
     return NULL;
   fseek(f, 0, SEEK_END);
   long sz = ftell(f);
-  rewind(f);
+  if (sz <= 0 || fseek(f, 0, SEEK_SET) != 0) {
+    fclose(f);
+    return NULL;
+  }
   uint8_t *buf = malloc((size_t)sz);
   if (buf)
     fread(buf, 1, (size_t)sz, f);
@@ -103,29 +132,7 @@ void apply_palette_layer(TLN_Tilemap tilemap, const char *tmxpath) {
   if (!data)
     return;
 
-  /* Locate the <layer element whose name attribute equals "Palette". */
-  const char *csv_start = NULL;
-  const char *p = (const char *)data;
-  while ((p = strstr(p, "<layer")) != NULL) {
-    const char *tag_end = strstr(p, ">");
-    const char *name_attr = strstr(p, "name=");
-    if (name_attr && tag_end && name_attr < tag_end) {
-      const char *val = name_attr + 5;
-      char quote = *val++;
-      if ((quote == '"' || quote == '\'') && strncmp(val, "Palette", 7) == 0 &&
-          *(val + 7) == quote) {
-        /* Found the Palette layer – locate the CSV content after <data ...> */
-        const char *data_tag = strstr(tag_end, "<data");
-        if (data_tag) {
-          const char *data_content = strchr(data_tag, '>');
-          if (data_content)
-            csv_start = data_content + 1;
-        }
-        break;
-      }
-    }
-    p++;
-  }
+  const char *csv_start = find_csv_start((const char *)data);
 
   if (csv_start)
     apply_palette_from_csv(tilemap, csv_start, cols, rows);

@@ -172,7 +172,7 @@ int main(void) {
     TLN_SetLayerPalette(LAYER_BACKGROUND, palettes[LAYER_FOREGROUND]);
 
     if (time < 500) {
-      if (rand() % 30 == 1)
+      if (rand() % 30 == 1)  // NOLINT(cert-msc30-c,cert-msc50-cpp)
         CreateEnemy();
     } else if (time == 600)
       CreateBoss();
@@ -232,8 +232,8 @@ static void raster_callback(int line) {
     int pos = lerp(line, 112, 240, pos_background[1], pos_background[2]);
     int y = (224 - 112);
     if (line >= 120 && line <= 230)
-      y += CalcSin(line * 5 + frame, 5);
+      y += CalcSin(line * 5 + (int)frame, 5);
     TLN_SetLayerPosition(LAYER_BACKGROUND,
-                         fix2int(pos) + CalcSin(line * 5 + frame, 5), y);
+                         fix2int(pos) + CalcSin(line * 5 + (int)frame, 5), y);
   }
 }

@@ -83,8 +83,8 @@ void BossTasks(Actor *actor) {
   /* destruye */
   if (actor->state == 3) {
     if (!GetActorTimeout(actor, 0)) {
-      actor->x += (rand() % 3 - 1);
-      actor->y += (rand() % 3 - 1);
+      actor->x += (rand() % 3 - 1);  // NOLINT(cert-msc30-c,cert-msc50-cpp)
+      actor->y += (rand() % 3 - 1);  // NOLINT(cert-msc30-c,cert-msc50-cpp)
     } else {
       actor->vx = 1;
       actor->vy = 1;
@@ -96,7 +96,7 @@ void BossTasks(Actor *actor) {
       int expl;
 
       SetActorTimeout(actor, 1, 3);
-      index = rand() % 7;
+      index = rand() % 7;  // NOLINT(cert-msc30-c,cert-msc50-cpp)
       part = boss->parts[index];
       expl = GetAvailableActor(ACTOR_BULLET1, MAX_BULLETS);
       if (expl != -1) {
@@ -106,8 +106,12 @@ void BossTasks(Actor *actor) {
         TLN_SpriteInfo si;
         TLN_GetSpriteInfo(spritesets[SPRITESET_MAIN], BossGfx[index].picture,
                           &si);
-        x = part->x + (rand() % (si.w - 0)) - (si.w >> 1);
-        y = part->y + (rand() % (si.h - 0)) - (si.h >> 1);
+        x = part->x +
+            (rand() % (si.w - 0)) -  // NOLINT(cert-msc30-c,cert-msc50-cpp)
+            (si.w >> 1);
+        y = part->y +
+            (rand() % (si.h - 0)) -  // NOLINT(cert-msc30-c,cert-msc50-cpp)
+            (si.h >> 1);
         explosion = CreateExplosion(expl, x, y, sequences[SEQ_EXPLO1]);
         explosion->vx = -2;
         explosion->vy = 0;
