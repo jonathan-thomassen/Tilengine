@@ -52,7 +52,7 @@ int main(void) {
   TLN_SetBGColor(0x10, 0x00, 0x20);
 
   /* load resources*/
-  TLN_SetLoadPath("assets/sc4");
+  TLN_SetLoadPath("assets");
   collision = TLN_LoadTilemap("drawbridge_main.tmx", "Collision");
   drawbridge_bg = TLN_LoadTilemap("drawbridge_bg.tmx", NULL);
   drawbridge_water = TLN_LoadTilemap("drawbridge_water.tmx", NULL);

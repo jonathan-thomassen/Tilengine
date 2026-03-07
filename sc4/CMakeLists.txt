@@ -47,7 +47,7 @@ endif()
 # Copy assets at build time so changes to source assets are reflected
 # on every incremental build, not only when CMake is re-configured.
 # The destination is removed first so deleted source files don't linger.
-add_custom_target(copy_assets ALL
+add_custom_target(copy_sc4_assets ALL
     COMMAND ${CMAKE_COMMAND} -E rm -rf
         "${CMAKE_CURRENT_BINARY_DIR}/assets"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -58,7 +58,6 @@ add_custom_target(copy_assets ALL
 
 add_executable(intro 
      Intro.c
-     PaletteLayer.c
      Simon.c
      Sandblock.c
      Prop.c
@@ -72,7 +71,7 @@ set(SC4_TARGETS
 
 # Must wait for assets to be in the build directory.
 foreach(SC4_TARGET ${SC4_TARGETS})
-    add_dependencies(${SC4_TARGET} copy_assets)
+    add_dependencies(${SC4_TARGET} copy_sc4_assets)
 endforeach()
 
 # Copy required DLLs on MinGW once
