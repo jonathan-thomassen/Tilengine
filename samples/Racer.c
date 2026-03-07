@@ -22,7 +22,7 @@
 
 /* linear interploation */
 #define lerp(x, x0, x1, fx0, fx1) \
-  (fx0) + ((fx1) - (fx0)) * ((x) - (x0)) / ((x1) - (x0))
+  ((fx0) + ((fx1) - (fx0)) * ((x) - (x0)) / ((x1) - (x0)))
 
 typedef struct {
   int r;

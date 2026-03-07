@@ -9,7 +9,7 @@
  *
  ******************************************************************************/
 
-#define _USE_MATH_DEFINES
+#define USE_MATH_DEFINES
 #include <math.h>
 #include <stdio.h>
 
@@ -28,7 +28,7 @@
 
 /* linear interploation */
 #define lerp(x, x0, x1, fx0, fx1) \
-  (fx0) + ((fx1) - (fx0)) * ((x) - (x0)) / ((x1) - (x0))
+  ((fx0) + ((fx1) - (fx0)) * ((x) - (x0)) / ((x1) - (x0)))
 
 /* layers */
 enum { LAYER_FOREGROUND, LAYER_BACKGROUND, MAX_LAYER };
