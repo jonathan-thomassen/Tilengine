@@ -74,8 +74,15 @@ jobs:
         id: clang_tidy
         continue-on-error: true
         run: |
-          clang-tidy src/Tilengine.c src/Layer.c src/Sprite.c \
-            sc4/Intro.c sc4/Drawbridge.c \
+          clang-tidy \
+            src/Tilengine.c src/Layer.c src/Sprite.c \
+            src/LoadBitmap.c src/LoadTMX.c src/LoadTilemap.c \
+            src/LoadSpriteset.c src/LoadSequencePack.c \
+            src/ObjectList.c src/LoadFile.c \
+            samples/Shooter.c samples/Racer.c samples/Boss.c \
+            samples/Benchmark.c samples/PaletteLayer.c samples/TestMouse.c \
+            sc4/Intro.c sc4/Drawbridge.c sc4/Simon.c \
+            sc4/Hud.c sc4/Prop.c sc4/Barrel.c \
             -p build 2>&1 | tee /tmp/clang-tidy.log; exit ${PIPESTATUS[0]}
 
       - name: Configure (Valgrind, no sanitizers)
