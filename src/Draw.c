@@ -377,7 +377,7 @@ static bool DrawTiledScanline(int nlayer, uint32_t *dstpixel, int nscan,
   scan.srcx = xpos & GetTilesetHMask(tileset);
 
   /* cache loop-invariant values */
-  const TLN_Palette layer_palette = layer->palette;
+  struct Palette *const layer_palette = layer->palette;
   const int layer_height = layer->height;
 
   /* fill whole scanline */
@@ -463,7 +463,7 @@ static bool DrawTiledScanlineScaling(int nlayer, uint32_t *dstpixel, int nscan,
   scan.srcx = xpos & GetTilesetHMask(tileset);
 
   /* cache loop-invariant values */
-  const TLN_Palette layer_palette = layer->palette;
+  struct Palette *const layer_palette = layer->palette;
   const fix_t xfactor = layer->scale.xfactor;
   const fix_t scale_dy = layer->scale.dy;
   const int layer_height = layer->height;

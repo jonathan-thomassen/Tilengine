@@ -16,7 +16,7 @@ typedef struct {
   int hinge_x;
   int hinge_y;
   float progress;    /* 0 = flat, 1 = fully raised */
-  float sin_theta;   /* cached sinf(progress * π/2) */
+  float tan_theta;   /* cached tan(progress * π/2), for surface-Y queries */
   bool affine_dirty; /* true when the affine transform needs to be re-sent */
   int tick;          /* frame counter for the 9-frame rate divider */
 } DrawbridgeState;
@@ -30,7 +30,7 @@ void DrawbridgeInit(int layer, int hinge_x, int hinge_y) {
   db.hinge_x = hinge_x;
   db.hinge_y = hinge_y;
   db.progress = 0.0f;
-  db.sin_theta = 0.0f;
+  db.tan_theta = 0.0f;
   db.affine_dirty = false;
   db.tick = 0;
 }
@@ -43,7 +43,9 @@ void DrawbridgeSetProgress(float progress) {
   if (progress == db.progress)
     return;
   db.progress = progress;
-  db.sin_theta = sinf(progress * (float)(M_PI / 2.0));
+  /* Clamp slightly below 90° so tan stays finite (at 0.999 → tan ≈ 36). */
+  float theta = (progress < 0.999f ? progress : 0.999f) * (float)(M_PI / 2.0);
+  db.tan_theta = tanf(theta);
   db.affine_dirty = true;
 }
 
@@ -64,20 +66,11 @@ bool DrawbridgeTick(void) {
 
 float DrawbridgeSurfaceY(int screen_x) {
   float d = (float)(db.hinge_x - screen_x); /* distance left of hinge */
-  return (float)db.hinge_y - d * db.sin_theta;
+  return (float)db.hinge_y - d * db.tan_theta;
 }
 
 int DrawbridgeHingeX(void) {
   return db.hinge_x;
-}
-
-/* Inverse of DrawbridgeSurfaceY: given a sprite's feet y, returns the minimum
- * screen x where the sprite no longer overlaps the bridge surface. */
-int DrawbridgeMinX(int feet_y) {
-  if (db.progress <= 0.0f || db.sin_theta < 1e-4f)
-    return 0;
-  float d = ((float)db.hinge_y - (float)feet_y) / db.sin_theta;
-  return (db.hinge_x - (int)d);
 }
 
 void DrawbridgeTasks(void) {

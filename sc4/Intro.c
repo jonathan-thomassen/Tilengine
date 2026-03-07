@@ -1,4 +1,5 @@
 #include <SDL3/SDL_events.h>
+#include <SDL3/SDL_timer.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -121,6 +122,10 @@ int main(void) {
   TLN_CreateWindow(CWF_NEAREST | CWF_S6 | CWF_NOVSYNC);
   TLN_SetTargetFps(60);
 
+  uint32_t fps_t0 = SDL_GetTicks();
+  int fps_frames = 0;
+  char fps_title[32];
+
   while (TLN_ProcessWindow()) {
     SimonTasks();
     HudTasks();
@@ -143,15 +148,24 @@ int main(void) {
     if (db_triggered)
       DrawbridgeSetProgress((float)db_frame / 134.0f);
 
-    /* Push Simon rightward by the exact amount needed to keep him clear of
-     * the rising bridge surface — no push when he is already ahead of it,
-     * and track his Y to the surface so he rides the bridge up. */
+    /* While the bridge is in motion, pin Simon's feet to the bridge surface.
+     * DrawbridgeSurfaceY is hinge_y - d*sin_theta: one multiply, no new trig.
+     * Moving left raises Simon (distance from hinge grows); moving right lowers
+     * him.  SimonSetFeetY also zeroes sy so gravity doesn't fight the override.
+     * Once Simon passes the hinge he is on solid castle ground — stop tracking.
+     */
     if (db_frame > 0 && SimonGetScreenX() < DrawbridgeHingeX()) {
-      int min_x = DrawbridgeMinX(SimonGetFeetY());
-      int push = min_x - SimonGetScreenX();
+      SimonSetFeetY((int)DrawbridgeSurfaceY(SimonGetScreenX()));
+
+      /* Push Simon rightward by a rate proportional to the bridge angle:
+       * accumulate progress (0→1) each frame; push 1px per whole unit.
+       * Result: no push when flat, 1 px/frame when fully vertical. */
+      static float push_acc = 0.0f;
+      push_acc += DrawbridgeGetProgress();
+      int push = (int)push_acc;
+      push_acc -= (float)push;
       if (push > 0)
         SimonPushRight(push);
-      SimonSetFeetY((int)DrawbridgeSurfaceY(SimonGetScreenX()) - 4);
     }
 
     /* Camera is locked by SimonFreezeCamera(); xpos stays at its
@@ -173,6 +187,14 @@ int main(void) {
     }
 
     /* render to window */
+    fps_frames++;
+    uint32_t fps_now = SDL_GetTicks();
+    if (fps_now - fps_t0 >= 1000) {
+      SDL_snprintf(fps_title, sizeof(fps_title), "sc4 — %d fps", fps_frames);
+      TLN_SetWindowTitle(fps_title);
+      fps_frames = 0;
+      fps_t0 = fps_now;
+    }
     TLN_DrawFrame(0);
   }
 
