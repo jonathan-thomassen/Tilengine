@@ -376,17 +376,21 @@ static bool DrawTiledScanline(int nlayer, uint32_t *dstpixel, int nscan,
   scan.width = scan.height = scan.stride = tileset->width;
   scan.srcx = xpos & GetTilesetHMask(tileset);
 
+  /* cache loop-invariant values */
+  const TLN_Palette layer_palette = layer->palette;
+  const int layer_height = layer->height;
+
   /* fill whole scanline */
   int column = x % tileset->width;
   while (x < tx2) {
     /* column offset: update ypos */
     int ypos;
     if (layer->column) {
-      ypos = (layer->vstart + nscan + layer->column[column]) % layer->height;
+      ypos = (layer->vstart + nscan + layer->column[column]) % layer_height;
       if (ypos < 0)
-        ypos = layer->height + ypos;
+        ypos = layer_height + ypos;
     } else
-      ypos = (layer->vstart + nscan) % layer->height;
+      ypos = (layer->vstart + nscan) % layer_height;
 
     int ytile = ypos >> tileset->vshift;
     scan.srcy = ypos & GetTilesetVMask(tileset);
@@ -408,8 +412,8 @@ static bool DrawTiledScanline(int nlayer, uint32_t *dstpixel, int nscan,
 
       /* selects suitable palette */
       TLN_Palette palette = tileset2->palette;
-      if (layer->palette != NULL)
-        palette = layer->palette;
+      if (layer_palette != NULL)
+        palette = layer_palette;
       else if (engine->palettes[tile->palette] != NULL)
         palette = engine->palettes[tile->palette];
 
@@ -433,7 +437,8 @@ static bool DrawTiledScanline(int nlayer, uint32_t *dstpixel, int nscan,
 
     /* next tile */
     x += width;
-    xtile = (xtile + 1) % tilemap->cols;
+    if (++xtile >= tilemap->cols)
+      xtile = 0;
     scan.srcx = 0;
     column += 1;
   }
@@ -457,6 +462,12 @@ static bool DrawTiledScanlineScaling(int nlayer, uint32_t *dstpixel, int nscan,
   scan.width = scan.height = scan.stride = tileset->width;
   scan.srcx = xpos & GetTilesetHMask(tileset);
 
+  /* cache loop-invariant values */
+  const TLN_Palette layer_palette = layer->palette;
+  const fix_t xfactor = layer->scale.xfactor;
+  const fix_t scale_dy = layer->scale.dy;
+  const int layer_height = layer->height;
+
   /* fill whole scanline */
   fix_t fix_x = int2fix(x);
   int column = x % tileset->width;
@@ -466,11 +477,11 @@ static bool DrawTiledScanlineScaling(int nlayer, uint32_t *dstpixel, int nscan,
     if (layer->column)
       ypos += layer->column[column];
 
-    ypos = layer->vstart + fix2int(ypos * layer->scale.dy);
+    ypos = layer->vstart + fix2int(ypos * scale_dy);
     if (ypos < 0)
-      ypos = layer->height + ypos;
+      ypos = layer_height + ypos;
     else
-      ypos = ypos % layer->height;
+      ypos = ypos % layer_height;
 
     int ytile = ypos >> tileset->vshift;
     scan.srcy = ypos & GetTilesetVMask(tileset);
@@ -478,7 +489,7 @@ static bool DrawTiledScanlineScaling(int nlayer, uint32_t *dstpixel, int nscan,
     /* get effective tile width */
     int tilewidth = tileset->width - scan.srcx;
     fix_t dx = int2fix(tilewidth);
-    fix_t fix_tilewidth = tilewidth * layer->scale.xfactor;
+    fix_t fix_tilewidth = tilewidth * xfactor;
     fix_x += fix_tilewidth;
     int x1 = fix2int(fix_x);
     int tilescalewidth = x1 - x;
@@ -501,8 +512,8 @@ static bool DrawTiledScanlineScaling(int nlayer, uint32_t *dstpixel, int nscan,
 
       /* selects suitable palette */
       TLN_Palette palette = tileset2->palette;
-      if (layer->palette != NULL)
-        palette = layer->palette;
+      if (layer_palette != NULL)
+        palette = layer_palette;
       else if (engine->palettes[tile->palette] != NULL)
         palette = engine->palettes[tile->palette];
 
@@ -528,7 +539,8 @@ static bool DrawTiledScanlineScaling(int nlayer, uint32_t *dstpixel, int nscan,
 
     /* next tile */
     x = x1;
-    xtile = (xtile + 1) % tilemap->cols;
+    if (++xtile >= tilemap->cols)
+      xtile = 0;
     scan.srcx = 0;
     column += 1;
   }

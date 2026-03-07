@@ -122,9 +122,6 @@ int main(void) {
   TLN_SetTargetFps(60);
 
   while (TLN_ProcessWindow()) {
-    char title[48];
-    snprintf(title, sizeof(title), "FPS: %d", TLN_GetAverageFps());
-    TLN_SetWindowTitle(title);
     SimonTasks();
     HudTasks();
 
@@ -136,23 +133,24 @@ int main(void) {
      * (134 ticks × 9 game frames/tick ≈ 1197 frames at 60 fps = 20 s). */
     static int db_frame = 0;
     static bool db_triggered = false;
+    static int prev_xpos = -1;
     if (!db_triggered && xpos >= 768) {
       db_triggered = true;
       SimonFreezeCamera();
     }
     if (db_triggered && db_frame < 134)
       step_drawbridge(&drawbridge_drawbridge, &db_frame);
-    DrawbridgeSetProgress((float)db_frame / 134.0f);
+    if (db_triggered)
+      DrawbridgeSetProgress((float)db_frame / 134.0f);
 
-    /* Push Simon rightward as the bridge rises; accumulate fractional pixels
-     * so the force builds smoothly from the first frame. */
-    if (db_frame > 0) {
-      static float push_acc = 0.0f;
-      float p = (float)db_frame / 134.0f;
-      push_acc += p * 2.5f;
-      int push = (int)push_acc;
-      push_acc -= (float)push;
-      SimonPushRight(push);
+    /* Push Simon rightward by the exact amount needed to keep him clear of
+     * the rising bridge surface — no push when he is already ahead of it,
+     * and track his Y to the surface so he rides the bridge up. */
+    if (db_frame > 0 && SimonGetScreenX() < DrawbridgeHingeX()) {
+      int min_x = DrawbridgeMinX(SimonGetFeetY());
+      int push = min_x - SimonGetScreenX();
+      if (push > 0)
+        SimonPushRight(push);
       SimonSetFeetY((int)DrawbridgeSurfaceY(SimonGetScreenX()) - 4);
     }
 
@@ -163,12 +161,16 @@ int main(void) {
     TorchTasks(xpos);
     PropTasks(xpos);
     DrawbridgeTasks();
-    TLN_SetLayerPosition(ROCKS_LAYER, xpos, 0);
-    TLN_SetLayerPosition(MAIN_LAYER, xpos + (db_triggered ? 80 : 0),
-                         (db_triggered ? 8 : 0));
-    TLN_SetLayerPosition(WATER_LAYER, xpos, 0);
-    TLN_SetLayerPosition(BACKGROUND_LAYER, xpos * 2 / 5, 0);
-    TLN_SetLayerPosition(COLLISION_LAYER, xpos, 0);
+    if (xpos != prev_xpos) {
+      int main_x_off = db_triggered ? 80 : 0;
+      int main_y_off = db_triggered ? 8 : 0;
+      TLN_SetLayerPosition(ROCKS_LAYER, xpos, 0);
+      TLN_SetLayerPosition(MAIN_LAYER, xpos + main_x_off, main_y_off);
+      TLN_SetLayerPosition(WATER_LAYER, xpos, 0);
+      TLN_SetLayerPosition(BACKGROUND_LAYER, xpos * 2 / 5, 0);
+      TLN_SetLayerPosition(COLLISION_LAYER, xpos, 0);
+      prev_xpos = xpos;
+    }
 
     /* render to window */
     TLN_DrawFrame(0);

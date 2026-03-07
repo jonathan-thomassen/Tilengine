@@ -64,7 +64,7 @@ static void blitFastScaling_8_32(const uint8_t *srcpixel, TLN_Palette palette,
   uint32_t *dstpixel = (uint32_t *)dstptr;
   uint32_t const *color = (uint32_t *)palette->data;
   while (width) {
-    uint32_t src = *(srcpixel + offset / (1 << FIXED_BITS));
+    uint32_t src = *(srcpixel + (offset >> FIXED_BITS));
     *dstpixel++ = color[src];
     offset += dx;
     width--;
@@ -81,7 +81,7 @@ static void blitFastBlendScaling_8_32(const uint8_t *srcpixel,
   uint32_t *color = (uint32_t *)palette->data;
   dst = (uint8_t *)dstptr;
   while (width) {
-    uint32_t item = *(srcpixel + offset / (1 << FIXED_BITS));
+    uint32_t item = *(srcpixel + (offset >> FIXED_BITS));
     uint8_t const *src = (uint8_t *)&color[item];
     dst[0] = blendfunc(blend, src[0], dst[0]);
     dst[1] = blendfunc(blend, src[1], dst[1]);
@@ -100,8 +100,8 @@ static void blitKey_8_32(const uint8_t *srcpixel, TLN_Palette palette,
   uint32_t *dstpixel = (uint32_t *)dstptr;
   uint32_t const *color = (uint32_t *)palette->data;
   while (width) {
-    if (*srcpixel)
-      *dstpixel = color[*srcpixel];
+    uint8_t p = *srcpixel;
+    *dstpixel = p ? color[p] : *dstpixel;
     srcpixel += dx;
     dstpixel++;
     width--;
@@ -137,10 +137,8 @@ static void blitKeyScaling_8_32(const uint8_t *srcpixel, TLN_Palette palette,
   uint32_t *dstpixel = (uint32_t *)dstptr;
   uint32_t const *color = (uint32_t *)palette->data;
   while (width) {
-    uint32_t src = *(srcpixel + offset / (1 << FIXED_BITS));
-    if (src)
-      *dstpixel = color[src];
-
+    uint32_t src = *(srcpixel + (offset >> FIXED_BITS));
+    *dstpixel = src ? color[src] : *dstpixel;
     offset += dx;
     dstpixel++;
     width--;
@@ -157,7 +155,7 @@ static void blitKeyBlendScaling_8_32(const uint8_t *srcpixel,
   uint32_t *color = (uint32_t *)palette->data;
   dst = (uint8_t *)dstptr;
   while (width) {
-    uint32_t item = *(srcpixel + offset / (1 << FIXED_BITS));
+    uint32_t item = *(srcpixel + (offset >> FIXED_BITS));
     if (item) {
       src = (uint8_t *)&color[item];
       dst[0] = blendfunc(blend, src[0], dst[0]);

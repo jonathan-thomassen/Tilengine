@@ -30,6 +30,9 @@ static Direction direction;
 
 static bool camera_frozen = false;
 
+static int
+    layer_width; /* cached TLN_GetLayerWidth(1) — set once in SimonInit */
+
 static Direction air_dir = DIR_NONE;
 static int dir_change_timer = 0;
 static Direction prev_input = DIR_NONE;
@@ -42,6 +45,8 @@ void SimonInit(void) {
 
   TLN_SetSpriteSet(SIMON_SPRITE, simon);
   TLN_SetSpritePosition(SIMON_SPRITE, x, y);
+
+  layer_width = TLN_GetLayerWidth(1);
 
   SimonSetState(SIMON_IDLE);
   direction = DIR_RIGHT;
@@ -111,6 +116,10 @@ static bool check_wall_right(int sprite_x, int world_x, int sprite_y) {
       continue;
     if (wall_x < sb.world_x || wall_x >= sb.world_x + SANDBLOCK_WIDTH)
       continue;
+    /* cull blocks entirely above or below the sampled y range */
+    if (sprite_y + 4 >= sb.world_y + SANDBLOCK_HEIGHT ||
+        sprite_y + 36 < sb.world_y)
+      continue;
     for (int c = 4; c < 44; c += 16) {
       if (sprite_y + c >= sb.world_y &&
           sprite_y + c < sb.world_y + SANDBLOCK_HEIGHT)
@@ -142,6 +151,10 @@ static bool check_wall_left(int sprite_x, int world_x, int sprite_y) {
       continue;
     if (wall_x < sb.world_x || wall_x >= sb.world_x + SANDBLOCK_WIDTH)
       continue;
+    /* cull blocks entirely above or below the sampled y range */
+    if (sprite_y + 4 >= sb.world_y + SANDBLOCK_HEIGHT ||
+        sprite_y + 36 < sb.world_y)
+      continue;
     for (int c = 4; c < 44; c += 16) {
       if (sprite_y + c >= sb.world_y &&
           sprite_y + c < sb.world_y + SANDBLOCK_HEIGHT)
@@ -154,7 +167,7 @@ static bool check_wall_left(int sprite_x, int world_x, int sprite_y) {
 static void move_right(int width) {
   int x_pre = x;
   int xw_pre = xworld;
-  if (!camera_frozen && xworld < TLN_GetLayerWidth(1) - width && x >= 112)
+  if (!camera_frozen && xworld < layer_width - width && x >= 112)
     xworld++;
   else if (x < 112 || x < width - 16)
     x++;
@@ -232,6 +245,10 @@ static void check_floor(int sprite_x, int world_x, int *inout_y,
   SandblockState sb;
   for (int i = 0; i < MAX_SANDBLOCKS; i++) {
     if (!SandblockGet(i, &sb) || sb.falling)
+      continue;
+    /* cull blocks whose x range can't contain either foot sample */
+    if (sprite_x + 16 + world_x < sb.world_x ||
+        sprite_x + 8 + world_x >= sb.world_x + SANDBLOCK_WIDTH)
       continue;
     for (int c = 8; c < 24; c += 8) {
       int foot_x = sprite_x + c + world_x;
@@ -411,4 +428,8 @@ int SimonGetScreenX(void) {
 void SimonSetFeetY(int feet_y) {
   y = feet_y - SIMON_HEIGHT;
   TLN_SetSpritePosition(SIMON_SPRITE, x, y);
+}
+
+int SimonGetFeetY(void) {
+  return y + SIMON_HEIGHT;
 }

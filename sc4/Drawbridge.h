@@ -24,4 +24,14 @@ bool DrawbridgeTick(void);
  */
 float DrawbridgeSurfaceY(int screen_x);
 
+/** Returns the screen x of the bridge hinge (the fixed right-side anchor). */
+int DrawbridgeHingeX(void);
+
+/**
+ * Returns the minimum screen x at which a sprite's feet (at feet_y) no longer
+ * overlap the rising bridge surface.  Returns 0 when progress is 0 or the
+ * bridge angle is negligible.
+ */
+int DrawbridgeMinX(int feet_y);
+
 #endif

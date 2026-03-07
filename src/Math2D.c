@@ -36,8 +36,9 @@ void Matrix3SetIdentity(Matrix3 *matrix) {
 // load rotation matrix
 void Matrix3SetRotation(Matrix3 *matrix, math2d_t ang) {
   float angle = ang * 3.1415926f / 180;
-  math2d_t data[] = {cosf(angle), sinf(angle), 0, -sinf(angle), cosf(angle), 0,
-                     0,           0,           1};
+  float c = cosf(angle);
+  float s = sinf(angle);
+  math2d_t data[] = {c, s, 0, -s, c, 0, 0, 0, 1};
   Matrix3Set(matrix, data);
 }
 

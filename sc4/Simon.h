@@ -43,4 +43,7 @@ int SimonGetScreenX(void);
  */
 void SimonSetFeetY(int feet_y);
 
+/** Returns the screen y coordinate of Simon's feet (bottom of sprite). */
+int SimonGetFeetY(void);
+
 #endif
