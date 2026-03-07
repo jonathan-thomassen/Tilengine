@@ -8,10 +8,6 @@
 /* Tilengine sprite slots reserved for sandblocks start right after Simon (0) */
 #define SPRITE_BASE 1
 
-/* Pixel dimensions of one sandblock sprite */
-#define SANDBLOCK_W 16
-#define SANDBLOCK_H 16
-
 #define MAX_PICTURE 3 /* pictures 0-3 = states 1-4 */
 
 /* Cumulative stood_frames thresholds at which each transition fires.
@@ -87,7 +83,7 @@ void SandblockTasks(int xworld) {
         blocks[i].vy += 2;
       blocks[i].world_y += blocks[i].vy / 3;
       /* Deactivate once off the bottom of the screen. */
-      if (blocks[i].world_y > TLN_GetHeight() + SANDBLOCK_H) {
+      if (blocks[i].world_y > TLN_GetHeight() + SANDBLOCK_HEIGHT) {
         blocks[i].active = false;
         TLN_DisableSprite(SPRITE_BASE + i);
         continue;

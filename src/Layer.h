@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _LAYER_H
-#define _LAYER_H
+#ifndef LAYER_H
+#define LAYER_H
 
 #include "Blitters.h"
 #include "Draw.h"

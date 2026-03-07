@@ -1,5 +1,5 @@
-#ifndef _PROP_H
-#define _PROP_H
+#ifndef PROP_H
+#define PROP_H
 
 /** Maximum number of prop instances that can exist simultaneously. */
 #define MAX_PROPS 16

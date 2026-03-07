@@ -1,5 +1,5 @@
-#ifndef _SIN_H
-#define _SIN_H
+#ifndef SIN_H
+#define SIN_H
 
 #ifdef __cplusplus
 extern "C" {

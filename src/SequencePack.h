@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _SEQUENCE_PACK_H
-#define _SEQUENCE_PACK_H
+#ifndef SEQUENCE_PACK_H
+#define SEQUENCE_PACK_H
 
 #include "Object.h"
 #include "Tilengine.h"

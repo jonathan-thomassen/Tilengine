@@ -1,5 +1,5 @@
-#ifndef _RACER_H
-#define _RACER_H
+#ifndef RACER_H
+#define RACER_H
 
 #include "Tilengine.h"
 

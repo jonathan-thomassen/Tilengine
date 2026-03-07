@@ -1,5 +1,5 @@
-#ifndef _ACTOR_H
-#define _ACTOR_H
+#ifndef ACTOR_H
+#define ACTOR_H
 
 typedef struct {
   int x1;

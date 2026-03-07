@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _OBJECT_H
-#define _OBJECT_H
+#ifndef OBJECT_H
+#define OBJECT_H
 
 #include <stdbool.h>
 #include <stddef.h>

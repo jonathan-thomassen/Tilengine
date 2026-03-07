@@ -6,7 +6,7 @@
 #include "Shooter.h"
 #include "Tilengine.h"
 
-/* partes del jefe */
+/* boss parts */
 enum {
   PART_CORE,
   PART_UPPER_JOINT,

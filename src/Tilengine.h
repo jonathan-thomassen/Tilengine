@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _TILENGINE_H
-#define _TILENGINE_H
+#ifndef TILENGINE_H
+#define TILENGINE_H
 
 /**
  * \defgroup types

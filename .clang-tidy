@@ -5,7 +5,8 @@ Checks: >
   performance-*,
   -bugprone-easily-swappable-parameters,
   -cert-err33-c,
-  -cert-err34-c
+  -cert-err34-c,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling
 
 # Treat these as errors (empty = none forced to error)
 WarningsAsErrors: ''

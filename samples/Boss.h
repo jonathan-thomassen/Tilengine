@@ -1,5 +1,5 @@
-#ifndef _BOSS_H
-#define _BOSS_H
+#ifndef BOSS_H
+#define BOSS_H
 
 void CreateBoss(void);
 

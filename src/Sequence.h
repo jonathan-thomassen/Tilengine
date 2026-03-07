@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _SEQUENCE_H
-#define _SEQUENCE_H
+#ifndef SEQUENCE_H
+#define SEQUENCE_H
 
 #include "Object.h"
 

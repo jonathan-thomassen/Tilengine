@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _ANIMATION_H
-#define _ANIMATION_H
+#ifndef ANIMATION_H
+#define ANIMATION_H
 
 #include "List.h"
 #include "Tilengine.h"

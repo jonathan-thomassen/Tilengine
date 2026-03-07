@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _TILESET_H
-#define _TILESET_H
+#ifndef TILESET_H
+#define TILESET_H
 
 #include "Animation.h"
 #include "Object.h"

@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _OBJECT_LIST_H
-#define _OBJECT_LIST_H
+#ifndef OBJECT_LIST_H
+#define OBJECT_LIST_H
 
 #include "Object.h"
 #include "Tilengine.h"

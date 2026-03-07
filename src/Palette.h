@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _PALETTE_H
-#define _PALETTE_H
+#ifndef PALETTE_H
+#define PALETTE_H
 
 #include "Object.h"
 

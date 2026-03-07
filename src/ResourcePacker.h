@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _RESPACK_H
-#define _RESPACK_H
+#ifndef RESPACK_H
+#define RESPACK_H
 
 #include <stdbool.h>
 #include <stdint.h>

@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _SPRITE_H
-#define _SPRITE_H
+#ifndef SPRITE_H
+#define SPRITE_H
 
 #include "Animation.h"
 #include "Blitters.h"

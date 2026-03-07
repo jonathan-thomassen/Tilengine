@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _TILEMAP_H
-#define _TILEMAP_H
+#ifndef TILEMAP_H
+#define TILEMAP_H
 
 #include "Object.h"
 #include "Tileset.h"

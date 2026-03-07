@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _MATH_2D_H
-#define _MATH_2D_H
+#ifndef MATH_2D_H
+#define MATH_2D_H
 
 typedef float math2d_t;
 

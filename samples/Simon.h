@@ -1,5 +1,5 @@
-#ifndef _SIMON_H
-#define _SIMON_H
+#ifndef SIMON_H
+#define SIMON_H
 
 #define COLLISION_LAYER 5
 

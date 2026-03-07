@@ -1,5 +1,5 @@
-#ifndef _HUD_H
-#define _HUD_H
+#ifndef HUD_H
+#define HUD_H
 
 #include "Tilengine.h"
 

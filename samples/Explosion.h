@@ -1,5 +1,5 @@
-#ifndef _EXPLOSION_H
-#define _EXPLOSION_H
+#ifndef EXPLOSION_H
+#define EXPLOSION_H
 
 #include "Actor.h"
 #include "Tilengine.h"

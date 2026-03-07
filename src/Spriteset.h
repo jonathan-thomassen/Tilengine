@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _SPRITESET_H
-#define _SPRITESET_H
+#ifndef SPRITESET_H
+#define SPRITESET_H
 
 #include "Object.h"
 #include "Tilengine.h"

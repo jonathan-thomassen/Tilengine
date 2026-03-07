@@ -1,5 +1,5 @@
-#ifndef _CRT_H
-#define _CRT_H
+#ifndef CRT_H
+#define CRT_H
 
 #include <SDL3/SDL.h>
 #include <stdbool.h>

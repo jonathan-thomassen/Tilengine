@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _TABLES_H
-#define _TABLES_H
+#ifndef TABLES_H
+#define TABLES_H
 
 #include "Tilengine.h"
 #include <stdbool.h>

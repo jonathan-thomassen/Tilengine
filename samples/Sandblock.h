@@ -1,5 +1,5 @@
-#ifndef _SANDBLOCK_H
-#define _SANDBLOCK_H
+#ifndef SANDBLOCK_H
+#define SANDBLOCK_H
 
 /** Maximum number of sandblocks that can exist simultaneously. */
 #define MAX_SANDBLOCKS 4
@@ -48,8 +48,8 @@ typedef struct {
 } SandblockState;
 
 /** Pixel dimensions of one sandblock — needed for AABB tests in Simon.c. */
-#define SANDBLOCK_W 16
-#define SANDBLOCK_H 16
+#define SANDBLOCK_WIDTH 16
+#define SANDBLOCK_HEIGHT 16
 
 /**
  * Fills \p out with the state of slot \p index.

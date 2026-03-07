@@ -95,10 +95,11 @@ static bool check_wall_right(int sprite_x, int world_x, int sprite_y) {
   for (int i = 0; i < MAX_SANDBLOCKS; i++) {
     if (!SandblockGet(i, &sb) || sb.falling)
       continue;
-    if (wall_x < sb.world_x || wall_x >= sb.world_x + SANDBLOCK_W)
+    if (wall_x < sb.world_x || wall_x >= sb.world_x + SANDBLOCK_WIDTH)
       continue;
     for (int c = 4; c < 44; c += 16) {
-      if (sprite_y + c >= sb.world_y && sprite_y + c < sb.world_y + SANDBLOCK_H)
+      if (sprite_y + c >= sb.world_y &&
+          sprite_y + c < sb.world_y + SANDBLOCK_HEIGHT)
         return true;
     }
   }
@@ -125,10 +126,11 @@ static bool check_wall_left(int sprite_x, int world_x, int sprite_y) {
   for (int i = 0; i < MAX_SANDBLOCKS; i++) {
     if (!SandblockGet(i, &sb) || sb.falling)
       continue;
-    if (wall_x < sb.world_x || wall_x >= sb.world_x + SANDBLOCK_W)
+    if (wall_x < sb.world_x || wall_x >= sb.world_x + SANDBLOCK_WIDTH)
       continue;
     for (int c = 4; c < 44; c += 16) {
-      if (sprite_y + c >= sb.world_y && sprite_y + c < sb.world_y + SANDBLOCK_H)
+      if (sprite_y + c >= sb.world_y &&
+          sprite_y + c < sb.world_y + SANDBLOCK_HEIGHT)
         return true;
     }
   }
@@ -219,8 +221,8 @@ static void check_floor(int sprite_x, int world_x, int *inout_y,
       continue;
     for (int c = 8; c < 24; c += 8) {
       int foot_x = sprite_x + c + world_x;
-      if (foot_x >= sb.world_x && foot_x < sb.world_x + SANDBLOCK_W &&
-          foot_y >= sb.world_y && foot_y < sb.world_y + SANDBLOCK_H) {
+      if (foot_x >= sb.world_x && foot_x < sb.world_x + SANDBLOCK_WIDTH &&
+          foot_y >= sb.world_y && foot_y < sb.world_y + SANDBLOCK_HEIGHT) {
         *inout_vy = 0;
         *inout_y = sb.world_y - 46;
         SandblockMarkStood(i);

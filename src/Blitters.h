@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _BLITTERS_H
-#define _BLITTERS_H
+#ifndef BLITTERS_H
+#define BLITTERS_H
 
 #include "Tilengine.h"
 

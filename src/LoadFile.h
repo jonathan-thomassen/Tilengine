@@ -11,8 +11,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#ifndef _LOAD_FILE_H
-#define _LOAD_FILE_H
+#ifndef LOAD_FILE_H
+#define LOAD_FILE_H
 
 /* win32 replacement for unix strcasecmp() */
 #if defined(_MSC_VER)

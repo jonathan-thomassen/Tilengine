@@ -1,5 +1,5 @@
-#ifndef _ENEMY_H
-#define _ENEMY_H
+#ifndef ENEMY_H
+#define ENEMY_H
 
 #include "Actor.h"
 

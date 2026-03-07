@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _BITMAP_H
-#define _BITMAP_H
+#ifndef BITMAP_H
+#define BITMAP_H
 
 #include "Object.h"
 #include "Tilengine.h"

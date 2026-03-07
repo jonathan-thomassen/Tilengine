@@ -1,5 +1,5 @@
-#ifndef _LOAD_TMX_H
-#define _LOAD_TMX_H
+#ifndef LOAD_TMX_H
+#define LOAD_TMX_H
 
 #include <stdbool.h>
 #include <stdint.h>
