@@ -29,7 +29,7 @@ int main(void) {
 
   /* setup engine */
   TLN_Init(HRES, VRES, 1, NUM_SPRITES, 0);
-  framebuffer = malloc(HRES * VRES * 4);
+  framebuffer = malloc((size_t)HRES * VRES * 4);
   TLN_SetRenderTarget(framebuffer, HRES * 4);
   TLN_DisableBGColor();
 
@@ -101,7 +101,7 @@ static uint32_t Profile(void) {
 
   t0 = TLN_GetTicks();
   do {
-    TLN_UpdateFrame(frame);
+    TLN_UpdateFrame((int)frame);
     frame++;
   } while (frame < NUM_FRAMES);
   elapse = TLN_GetTicks() - t0;

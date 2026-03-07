@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(samples)
+project(sc4)
 
 include_directories(../src)
 
@@ -56,97 +56,43 @@ add_custom_target(copy_assets ALL
     COMMENT "Syncing assets to build directory"
 )
 
-add_executable(mode7
-     Mode7.c
-     Sin.c)
+add_executable(intro 
+     Intro.c
+     PaletteLayer.c
+     Simon.c
+     Sandblock.c
+     Prop.c
+     Hud.c
+     Drawbridge.c)
 
-add_executable(platformer
-     Platformer.c)
-
-add_executable(racer
-     Racer.c
-     Tree.c
-     Actor.c)
-
-add_executable(scaling
-     Scaling.c)
-
-add_executable(shadow
-     Shadow.c)
-
-add_executable(shooter
-     Shooter.c
-     Actor.c
-     Boss.c
-     Enemy.c
-     Explosion.c
-     Ship.c
-     Sin.c)
-
-add_executable(tutorial
-     Tutorial.c)
-
-add_executable(wobble
-     Wobble.c
-     Sin.c)
-
-add_executable(colorcycle
-     ColorCycle.c)
-
-add_executable(benchmark
-     Benchmark.c)
-
-add_executable(supermarioclone
-     SuperMarioClone.c)
-
-add_executable(test_mouse
-     TestMouse.c)
-if (WIN32)
-    target_link_libraries(test_mouse PRIVATE bcrypt)
-endif()
-
-add_executable(forest
-     Forest.c)
-
-add_executable(querylayer
-     QueryLayer.c)
-
-add_executable(layerwindow
-     LayerWindow.c)
-
-add_executable(layercircle
-     LayerCircle.c)
-
-# Master list of all sample targets, used for dependency wiring below.
-set(SAMPLE_TARGETS
-    mode7 platformer racer scaling shadow shooter
-    tutorial wobble colorcycle benchmark supermarioclone
-    test_mouse forest querylayer layerwindow layercircle
+# Master list of all sc4 targets, used for dependency wiring below.
+set(SC4_TARGETS
+    intro
 )
 
-# Every sample must wait for assets to be in the build directory.
-foreach(SAMPLE_TARGET ${SAMPLE_TARGETS})
-    add_dependencies(${SAMPLE_TARGET} copy_assets)
+# Must wait for assets to be in the build directory.
+foreach(SC4_TARGET ${SC4_TARGETS})
+    add_dependencies(${SC4_TARGET} copy_assets)
 endforeach()
 
-# Copy required DLLs on MinGW once for all samples
+# Copy required DLLs on MinGW once
 if (MINGW)
     if (EXISTS "C:/msys64/mingw64/bin")
         set(MINGW_BIN_DIR "C:/msys64/mingw64/bin")
     endif()
 
     if (DEFINED MINGW_BIN_DIR)
-        add_custom_target(copy_sample_dlls
+        add_custom_target(copy_sc4_dlls
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 "${MINGW_BIN_DIR}/libpng16-16.dll"
                 "${MINGW_BIN_DIR}/zlib1.dll"
                 "${MINGW_BIN_DIR}/SDL3.dll"
                 "${CMAKE_CURRENT_BINARY_DIR}"
-            COMMENT "Copying required DLLs to samples directory"
+            COMMENT "Copying required DLLs to sc4 directory"
         )
 
-        foreach(SAMPLE_TARGET ${SAMPLE_TARGETS})
-            add_dependencies(${SAMPLE_TARGET} copy_sample_dlls)
+        foreach(SC4_TARGET ${SC4_TARGETS})
+            add_dependencies(${SC4_TARGET} copy_sc4_dlls)
         endforeach()
     endif()
 endif()
