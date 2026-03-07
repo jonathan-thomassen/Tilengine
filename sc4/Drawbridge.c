@@ -6,7 +6,6 @@
 #include "Drawbridge.h"
 
 #include <math.h>
-#include <stdbool.h>
 
 #include "Tilengine.h"
 

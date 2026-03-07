@@ -7,12 +7,12 @@
 #define MAX_TORCHES 8
 
 /**
- * Loads the sandblock spriteset and clears all slots.
+ * Loads the torch spriteset and clears all slots.
  * Must be called once before TorchSpawn().
  */
 void TorchInit(void);
 
-/** Frees all sandblock resources. */
+/** Frees all torch resources. */
 void TorchDeinit(void);
 
 /**
@@ -36,10 +36,7 @@ void TorchTasks(int xworld);
 #define TORCH_WIDTH 16
 #define TORCH_HEIGHT 16
 
-/**
- * Fills \p out with the state of slot \p index.
- * Returns true if the slot is active, false if empty (\p out is not written).
- */
+/** Returns true if slot \p index is active, false if empty. */
 bool TorchGet(int index);
 
 #endif

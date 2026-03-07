@@ -1,7 +1,7 @@
 #include "Torch.h"
 
 #include <stdbool.h>
-#include <stddef.h>
+#include <stdlib.h>
 
 #include "Sandblock.h" /* for MAX_SANDBLOCKS */
 #include "Tilengine.h"
@@ -9,8 +9,6 @@
 /* Torch slots follow sandblocks: 1..MAX_SANDBLOCKS are sandblocks,
  * 1+MAX_SANDBLOCKS..1+MAX_SANDBLOCKS+MAX_TORCHES-1 are torches. */
 #define SPRITE_BASE (1 + MAX_SANDBLOCKS)
-
-#define MAX_PICTURE 3 /* pictures 0-3 = states 1-4 */
 
 typedef struct {
   bool active;

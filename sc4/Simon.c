@@ -6,6 +6,7 @@
 #define HANGTIME 8
 #define TERM_VELOCITY 10
 #define AIR_TURN_DELAY 6
+#define SIMON_HEIGHT 48
 
 typedef enum { SIMON_IDLE, SIMON_WALKING, SIMON_JUMPING } SimonState;
 
@@ -15,17 +16,17 @@ typedef enum {
   DIR_RIGHT,
 } Direction;
 
-TLN_Spriteset simon;
-TLN_SequencePack sp;
-TLN_Sequence walk;
+static TLN_Spriteset simon;
+static TLN_SequencePack sp;
+static TLN_Sequence walk;
 
-int x;
-int y;
-int sy = 0;
-int apex_hang = 0;
-int xworld;
-SimonState state;
-Direction direction;
+static int x;
+static int y;
+static int sy = 0;
+static int apex_hang = 0;
+static int xworld;
+static SimonState state;
+static Direction direction;
 
 static bool camera_frozen = false;
 
@@ -34,7 +35,7 @@ static int dir_change_timer = 0;
 static Direction prev_input = DIR_NONE;
 static int move_frame = 0;
 
-void SimonInit() {
+void SimonInit(void) {
   simon = TLN_LoadSpriteset("simon_walk");
   sp = TLN_LoadSequencePack("simon_walk.sqx");
   walk = TLN_FindSequence(sp, "walk");
@@ -408,8 +409,6 @@ int SimonGetScreenX(void) {
 }
 
 void SimonSetFeetY(int feet_y) {
-#define SIMON_HEIGHT 48
   y = feet_y - SIMON_HEIGHT;
   TLN_SetSpritePosition(SIMON_SPRITE, x, y);
-#undef SIMON_HEIGHT
 }
