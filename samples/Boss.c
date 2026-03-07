@@ -18,10 +18,10 @@ enum {
   MAX_PART
 };
 
-struct {
+static struct {
   int picture;
   uint16_t flags;
-} static BossGfx[MAX_PART] = {
+} BossGfx[MAX_PART] = {
     {7, 0}, {6, 0}, {5, 0}, {0, 0}, {6, FLAG_FLIPY}, {5, FLAG_FLIPY}, {0, 0},
 };
 

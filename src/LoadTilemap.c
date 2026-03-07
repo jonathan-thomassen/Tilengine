@@ -44,14 +44,14 @@ typedef enum {
 } compression_t;
 
 /* load manager */
-struct {
+static struct {
   TMXLayer *layer; /* target layer */
   bool state;
   encoding_t encoding;       /* encoding */
   compression_t compression; /* compression */
   uint32_t *data;            /* map data (rows*cols) */
   uint32_t numtiles;
-} static loader;
+} loader;
 
 static void handle_data_encoding(const char *szValue) {
   if (!strcasecmp(szValue, "csv"))
@@ -143,10 +143,11 @@ static TLN_Tileset load_tileset(TMXInfo const *info, const char *filename,
   TMXTileset const *tmxtileset = &info->tilesets[index];
   SplitFilename(filename, &fi);
   if (fi.path[0] != 0)
-    snprintf(tsxpath, sizeof(tsxpath), "%s/%s", fi.path,
-                   tmxtileset->source);
-  else
-    strncpy(tsxpath, tmxtileset->source, sizeof(tsxpath));
+    snprintf(tsxpath, sizeof(tsxpath), "%s/%s", fi.path, tmxtileset->source);
+  else {
+    strncpy(tsxpath, tmxtileset->source, sizeof(tsxpath) - 1);
+    tsxpath[sizeof(tsxpath) - 1] = '\0';
+  }
   return TLN_LoadTileset(tsxpath);
 }
 

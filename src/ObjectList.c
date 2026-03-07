@@ -36,13 +36,13 @@ typedef enum {
 } Property;
 
 /* load manager */
-struct {
+static struct {
   TMXLayer *layer;
   bool state;
   TLN_ObjectList objects;
   TLN_Object object;
   Property property; /* current property */
-} static loader;
+} loader;
 
 static bool CloneObjectToList(TLN_ObjectList list, TLN_Object const *data);
 static void resolve_object_tilesets(TMXInfo *info);
@@ -78,8 +78,10 @@ static void handle_object_attribute(const char *szAttribute,
     loader.object.type = (uint8_t)intvalue;
   else if (!strcasecmp(szAttribute, "visible"))
     loader.object.visible = (bool)intvalue;
-  else if (!strcasecmp(szAttribute, "name"))
-    strncpy(loader.object.name, szValue, sizeof(loader.object.name));
+  else if (!strcasecmp(szAttribute, "name")) {
+    strncpy(loader.object.name, szValue, sizeof(loader.object.name) - 1);
+    loader.object.name[sizeof(loader.object.name) - 1] = '\0';
+  }
 }
 
 static void handle_property_attribute(const char *szAttribute,
@@ -430,8 +432,10 @@ bool TLN_GetListObject(TLN_ObjectList list, TLN_ObjectInfo *info) {
   info->height = item->height;
   info->type = item->type;
   info->visible = item->visible;
-  if (item->name[0])
-    strncpy(info->name, item->name, sizeof(info->name));
+  if (item->name[0]) {
+    strncpy(info->name, item->name, sizeof(info->name) - 1);
+    info->name[sizeof(info->name) - 1] = '\0';
+  }
 
   /* advance */
   list->iterator = item->next;

@@ -39,15 +39,17 @@ static void handle_tileset_attribute(const char *szAttribute, int intvalue,
   if (!strcasecmp(szAttribute, "firstgid"))
     tileset->firstgid = intvalue;
   else if (!strcasecmp(szAttribute, "source"))
-    strncpy(tileset->source, szValue, sizeof(tileset->source));
+    strncpy(tileset->source, szValue, sizeof(tileset->source) - 1);
+  tileset->source[sizeof(tileset->source) - 1] = '\0';
 }
 
 static void handle_layer_attribute(const char *szAttribute, int intvalue,
                                    float floatvalue, const char *szValue) {
   TMXLayer *layer = &tmxinfo.layers[tmxinfo.num_layers];
-  if (!strcasecmp(szAttribute, "name"))
-    strncpy(layer->name, szValue, sizeof(layer->name));
-  else if (!strcasecmp(szAttribute, "id"))
+  if (!strcasecmp(szAttribute, "name")) {
+    strncpy(layer->name, szValue, sizeof(layer->name) - 1);
+    layer->name[sizeof(layer->name) - 1] = '\0';
+  } else if (!strcasecmp(szAttribute, "id"))
     layer->id = intvalue;
   else if (!strcasecmp(szAttribute, "visible"))
     layer->visible = (bool)intvalue;
@@ -72,9 +74,10 @@ static void handle_layer_attribute(const char *szAttribute, int intvalue,
 static void handle_image_attribute(const char *szAttribute, int intvalue,
                                    const char *szValue) {
   TMXLayer *layer = &tmxinfo.layers[tmxinfo.num_layers];
-  if (!strcasecmp(szAttribute, "source"))
-    strncpy(layer->image, szValue, sizeof(layer->name));
-  else if (!strcasecmp(szAttribute, "width"))
+  if (!strcasecmp(szAttribute, "source")) {
+    strncpy(layer->image, szValue, sizeof(layer->image) - 1);
+    layer->image[sizeof(layer->image) - 1] = '\0';
+  } else if (!strcasecmp(szAttribute, "width"))
     layer->width = intvalue;
   else if (!strcasecmp(szAttribute, "height"))
     layer->height = intvalue;
@@ -176,7 +179,8 @@ bool TMXLoad(const char *filename, TMXInfo *info) {
       printf("parse error on line %li:\n%s\n", simpleXmlGetLineNumber(parser),
              simpleXmlGetErrorDescription(parser));
     } else {
-      strncpy(tmxinfo.filename, filename, sizeof(tmxinfo.filename));
+      strncpy(tmxinfo.filename, filename, sizeof(tmxinfo.filename) - 1);
+      tmxinfo.filename[sizeof(tmxinfo.filename) - 1] = '\0';
       TLN_SetLastError(TLN_ERR_OK);
       retval = true;
     }

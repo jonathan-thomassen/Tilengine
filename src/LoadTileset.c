@@ -32,7 +32,7 @@ typedef enum {
 } ImageContext;
 
 /* load manager */
-struct {
+static struct {
   char source[64];
   int tilecount;
   int tilewidth;
@@ -55,7 +55,7 @@ struct {
     bool priority;     /* value of priority property */
     TLN_Bitmap bitmap; /* bitmap of image-based tile */
   } tile;
-} static loader;
+} loader;
 
 static void handle_subtag(const char *szName) {
   if (!strcasecmp(szName, "animation"))
@@ -212,10 +212,10 @@ static void *handler(SimpleXmlParser parser [[maybe_unused]],
  * instances of the same */
 #define CACHE_SIZE 16
 static int cache_entries = 0;
-struct {
+static struct {
   char name[200];
   TLN_Tileset tileset;
-} static cache[16];
+} cache[16];
 
 static TLN_Tileset search_cache(const char *name) {
   for (int c = 0; c < cache_entries; c += 1) {

@@ -26,8 +26,9 @@
 
 /* paints scanline without checking color key (always solid) */
 static void blitFast_8_32(const uint8_t *srcpixel, TLN_Palette palette,
-                          void *dstptr, int width, int dx, int offset,
-                          const uint8_t *blend) {
+                          void *dstptr, int width, int dx,
+                          int offset [[maybe_unused]],
+                          const uint8_t *blend [[maybe_unused]]) {
   uint32_t *dstpixel = (uint32_t *)dstptr;
   uint32_t const *color = (uint32_t *)palette->data;
   while (width) {
@@ -39,7 +40,8 @@ static void blitFast_8_32(const uint8_t *srcpixel, TLN_Palette palette,
 
 /* paints scanline without checking color key (always solid) with blending */
 static void blitFastBlend_8_32(const uint8_t *srcpixel, TLN_Palette palette,
-                               void *dstptr, int width, int dx, int offset,
+                               void *dstptr, int width, int dx,
+                               int offset [[maybe_unused]],
                                const uint8_t *blend) {
   uint8_t *dst;
   uint32_t *color = (uint32_t *)palette->data;
@@ -58,7 +60,7 @@ static void blitFastBlend_8_32(const uint8_t *srcpixel, TLN_Palette palette,
 /* paints scanline without checking color key (always solid) with scaling */
 static void blitFastScaling_8_32(const uint8_t *srcpixel, TLN_Palette palette,
                                  void *dstptr, int width, int dx, int offset,
-                                 const uint8_t *blend) {
+                                 const uint8_t *blend [[maybe_unused]]) {
   uint32_t *dstpixel = (uint32_t *)dstptr;
   uint32_t const *color = (uint32_t *)palette->data;
   while (width) {
@@ -92,8 +94,9 @@ static void blitFastBlendScaling_8_32(const uint8_t *srcpixel,
 
 /* paints scanline skipping empty pixels */
 static void blitKey_8_32(const uint8_t *srcpixel, TLN_Palette palette,
-                         void *dstptr, int width, int dx, int /*offset*/,
-                         const uint8_t *blend) {
+                         void *dstptr, int width, int dx,
+                         int offset [[maybe_unused]],
+                         const uint8_t *blend [[maybe_unused]]) {
   uint32_t *dstpixel = (uint32_t *)dstptr;
   uint32_t const *color = (uint32_t *)palette->data;
   while (width) {
@@ -107,7 +110,8 @@ static void blitKey_8_32(const uint8_t *srcpixel, TLN_Palette palette,
 
 /* paints scanline skipping empty pixels with blending */
 static void blitKeyBlend_8_32(const uint8_t *srcpixel, TLN_Palette palette,
-                              void *dstptr, int width, int dx, int offset,
+                              void *dstptr, int width, int dx,
+                              int offset [[maybe_unused]],
                               const uint8_t *blend) {
   uint8_t const *src;
   uint8_t *dst;
@@ -129,7 +133,7 @@ static void blitKeyBlend_8_32(const uint8_t *srcpixel, TLN_Palette palette,
 /* paints scanline skipping empty pixels with scaling */
 static void blitKeyScaling_8_32(const uint8_t *srcpixel, TLN_Palette palette,
                                 void *dstptr, int width, int dx, int offset,
-                                const uint8_t *blend) {
+                                const uint8_t *blend [[maybe_unused]]) {
   uint32_t *dstpixel = (uint32_t *)dstptr;
   uint32_t const *color = (uint32_t *)palette->data;
   while (width) {
