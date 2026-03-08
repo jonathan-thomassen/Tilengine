@@ -89,6 +89,23 @@ static void step_simon_on_bridge(int db_frame) {
   }
 }
 
+/* Raster callback: applies BLEND_MIX50 to MAIN_LAYER only on scanlines where
+ * the water layer has a tile beneath them, so main-layer pixels above the moat
+ * appear translucent over the water.  Water tiles start at tilemap x=512
+ * (tile column 64, 8 px/tile).  vstart for the water layer is always 0, so the
+ * tilemap y equals the screen scanline directly. */
+static void raster_cb(int scanline) {
+  TLN_TileInfo ti;
+  /* Pick a tilemap-x guaranteed to be inside the moat (world x >= 512).
+   * When scrolled past the moat start use the left screen edge (xpos);
+   * otherwise anchor to x=512, the first tile column of the moat. */
+  int sample_x = (xpos >= 512) ? xpos : 512;
+  bool has_water = (sample_x < xpos + WIDTH) &&
+                   TLN_GetLayerTile(WATER_LAYER, sample_x, scanline, &ti) &&
+                   (ti.index != 0);
+  TLN_SetLayerBlendMode(MAIN_LAYER, has_water ? BLEND_MIX50 : BLEND_NONE);
+}
+
 /* Updates all layer scroll positions whenever xpos changes. */
 static void update_layer_positions(int scroll_x, bool db_triggered,
                                    int *p_prev_xpos) {
@@ -171,6 +188,7 @@ int main(void) {
 
   /* main loop */
   TLN_CreateWindow(CWF_NEAREST | CWF_S6 | CWF_NOVSYNC);
+  TLN_SetRasterCallback(raster_cb);
   TLN_SetTargetFps(60);
 
   uint32_t fps_t0 = (uint32_t)SDL_GetTicks();

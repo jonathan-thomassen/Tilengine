@@ -607,12 +607,10 @@ static bool DrawTiledScanlineAffine(int nlayer, uint32_t *dstpixel, int nscan,
       const uint8_t pix =
           GetTilesetPixel(tileset2, tile_index, scan.srcx, scan.srcy);
       if (pix != 0) {
-        if (tile->flags & FLAG_PRIORITY) {
-          *prioritypixel = palette->data[pix];
-          priority = true;
-        } else {
-          *dstpixel = palette->data[pix];
-        }
+        bool is_priority = (tile->flags & FLAG_PRIORITY) != 0;
+        uint32_t *target = is_priority ? prioritypixel : dstpixel;
+        *target = palette->data[pix];
+        priority |= is_priority;
       }
     }
 
