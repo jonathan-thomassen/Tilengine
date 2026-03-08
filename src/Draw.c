@@ -299,14 +299,15 @@ bool DrawScanline(void) {
   bool background_priority = draw_regular_layers(line);
   bool sprite_priority = draw_regular_sprites(scan, line);
 
-  if (engine->numlayers > 0)
-    draw_priority_layers(line);
-
   if (background_priority)
     overlay_priority_pixels(scan);
 
   if (sprite_priority)
     draw_priority_sprites(scan, line);
+
+  /* Priority layers are drawn last so they appear above all sprites. */
+  if (engine->numlayers > 0)
+    draw_priority_layers(line);
 
   engine->world.dirty = false;
   engine->timing.line++;

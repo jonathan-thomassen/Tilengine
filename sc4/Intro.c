@@ -14,14 +14,14 @@
 #define WIDTH 256
 #define HEIGHT 224
 #define HUD_LAYER 0
-#define ROCKS_LAYER 1
-#define MAIN_LAYER 2
-#define WATER_LAYER 3
-#define BACKGROUND_LAYER 4
+#define MAIN_LAYER 1
+#define WATER_LAYER 2
+#define BACKGROUND_LAYER 3
 
 int xpos;
 
 static int chain_prop_idx = -1;
+static int pillar_prop_idx = -1;
 
 /* Spawns a single Tiled object into the appropriate game system. */
 static void spawn_object(TLN_ObjectInfo const *info) {
@@ -42,6 +42,11 @@ static void spawn_object(TLN_ObjectInfo const *info) {
     chain_prop_idx = PropSpawn(info->name, info->x, info->y);
     if (chain_prop_idx < 0)
       printf("[objects] could not spawn prop 'chain' at (%d,%d)\n", info->x,
+             info->y);
+  } else if (!strcasecmp(info->name, "pillar")) {
+    pillar_prop_idx = PropSpawn(info->name, info->x, info->y);
+    if (pillar_prop_idx < 0)
+      printf("[objects] could not spawn prop 'pillar' at (%d,%d)\n", info->x,
              info->y);
   } else if (PropSpawn(info->name, info->x, info->y) < 0) {
     printf("[objects] could not spawn prop '%s' at (%d,%d)\n", info->name,
@@ -64,6 +69,26 @@ static void step_drawbridge(TLN_Tilemap *p_tilemap, int *p_frame) {
     (*p_frame)++;
 }
 
+/* Pins Simon's feet to the drawbridge surface while the bridge is in motion
+ * and pushes him rightward at a rate proportional to the bridge angle.
+ * Moving left raises Simon (distance from hinge grows); moving right lowers
+ * him. SimonSetFeetY also zeroes sy so gravity doesn't fight the override.
+ * Once Simon passes the hinge he is on solid castle ground — stop tracking. */
+static void step_simon_on_bridge(int db_frame) {
+  if (db_frame > 0 && SimonGetScreenX() < DrawbridgeHingeX()) {
+    SimonSetFeetY((int)DrawbridgeSurfaceY(SimonGetScreenX()));
+    /* Push Simon rightward by a rate proportional to the bridge angle:
+     * accumulate progress (0→1) each frame; push 1px per whole unit.
+     * Result: no push when flat, 1 px/frame when fully vertical. */
+    static float push_acc = 0.0f;
+    push_acc += DrawbridgeGetProgress();
+    int push = (int)push_acc;
+    push_acc -= (float)push;
+    if (push > 0)
+      SimonPushRight(push);
+  }
+}
+
 /* Updates all layer scroll positions whenever xpos changes. */
 static void update_layer_positions(int scroll_x, bool db_triggered,
                                    int *p_prev_xpos) {
@@ -71,7 +96,6 @@ static void update_layer_positions(int scroll_x, bool db_triggered,
     return;
   int main_x_off = db_triggered ? 80 : 0;
   int main_y_off = db_triggered ? 8 : 0;
-  TLN_SetLayerPosition(ROCKS_LAYER, scroll_x, 0);
   TLN_SetLayerPosition(MAIN_LAYER, scroll_x + main_x_off, main_y_off);
   TLN_SetLayerPosition(WATER_LAYER, scroll_x, 0);
   TLN_SetLayerPosition(BACKGROUND_LAYER, scroll_x * 2 / 5, 0);
@@ -85,7 +109,6 @@ int main(void) {
   TLN_Tilemap drawbridge_bg;
   TLN_Tilemap drawbridge_water;
   TLN_Tilemap drawbridge_main;
-  TLN_Tilemap drawbridge_rocks;
   TLN_Tilemap hud;
   TLN_Tilemap drawbridge_drawbridge = NULL;
 
@@ -100,17 +123,16 @@ int main(void) {
   drawbridge_bg = TLN_LoadTilemap("drawbridge_bg.tmx", NULL);
   drawbridge_water = TLN_LoadTilemap("drawbridge_water.tmx", NULL);
   drawbridge_main = TLN_LoadTilemap("drawbridge_main.tmx", "Tiles");
-  drawbridge_rocks = TLN_LoadTilemap("drawbridge_rocks.tmx", NULL);
   hud = TLN_LoadTilemap("hud.tmx", NULL);
   TLN_SetLayerTilemap(COLLISION_LAYER, collision);
   TLN_SetLayerTilemap(BACKGROUND_LAYER, drawbridge_bg);
   TLN_SetLayerTilemap(WATER_LAYER, drawbridge_water);
   TLN_SetLayerTilemap(MAIN_LAYER, drawbridge_main);
-  TLN_SetLayerTilemap(ROCKS_LAYER, drawbridge_rocks);
 
   DrawbridgeInit(MAIN_LAYER, 221, 183);
 
   TLN_SetLayerTilemap(HUD_LAYER, hud);
+  TLN_SetLayerPriority(HUD_LAYER, true);
 
   SimonInit();
   SandblockInit();
@@ -138,12 +160,14 @@ int main(void) {
   /* Ensure Simon renders on top of all spawned torches and props,
    * then bring the chain in front of Simon and in front of priority tiles. */
   SimonBringToFront();
+  if (pillar_prop_idx >= 0) {
+    PropBringToFront(pillar_prop_idx);
+    PropSetPriority(pillar_prop_idx, true);
+  }
   if (chain_prop_idx >= 0) {
     PropBringToFront(chain_prop_idx);
     PropSetPriority(chain_prop_idx, true);
   }
-
-  TLN_SetLayerBlendMode(ROCKS_LAYER, BLEND_MIX50);
 
   /* main loop */
   TLN_CreateWindow(CWF_NEAREST | CWF_S6 | CWF_NOVSYNC);
@@ -175,25 +199,7 @@ int main(void) {
     if (db_triggered)
       DrawbridgeSetProgress((float)db_frame / 134.0f);
 
-    /* While the bridge is in motion, pin Simon's feet to the bridge surface.
-     * DrawbridgeSurfaceY is hinge_y - d*sin_theta: one multiply, no new trig.
-     * Moving left raises Simon (distance from hinge grows); moving right lowers
-     * him.  SimonSetFeetY also zeroes sy so gravity doesn't fight the override.
-     * Once Simon passes the hinge he is on solid castle ground — stop tracking.
-     */
-    if (db_frame > 0 && SimonGetScreenX() < DrawbridgeHingeX()) {
-      SimonSetFeetY((int)DrawbridgeSurfaceY(SimonGetScreenX()));
-
-      /* Push Simon rightward by a rate proportional to the bridge angle:
-       * accumulate progress (0→1) each frame; push 1px per whole unit.
-       * Result: no push when flat, 1 px/frame when fully vertical. */
-      static float push_acc = 0.0f;
-      push_acc += DrawbridgeGetProgress();
-      int push = (int)push_acc;
-      push_acc -= (float)push;
-      if (push > 0)
-        SimonPushRight(push);
-    }
+    step_simon_on_bridge(db_frame);
 
     /* Camera is locked by SimonFreezeCamera(); xpos stays at its
      * frozen value for all layer positions. */
@@ -238,7 +244,6 @@ int main(void) {
   SimonDeinit();
   TLN_DeleteTilemap(collision);
   TLN_DeleteTilemap(drawbridge_bg);
-  TLN_DeleteTilemap(drawbridge_rocks);
   TLN_DeleteTilemap(drawbridge_water);
   TLN_DeleteTilemap(drawbridge_main);
   TLN_DeleteTilemap(drawbridge_drawbridge);
