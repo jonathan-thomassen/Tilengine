@@ -238,6 +238,29 @@ void Blit32_32(uint32_t *src, uint32_t *dst, int width, const uint8_t *blend) {
   }
 }
 
+/* per-pixel masked blit: src pixels rendered over mask[i]!=0 positions use
+ * blend; all other non-transparent src pixels are written directly. */
+void Blit32_32_Masked(uint32_t const *src, uint32_t *dst, uint8_t const *mask,
+                      const uint8_t *blend, int width) {
+  Color const *srcpixel = (Color const *)src;
+  Color *dstpixel = (Color *)dst;
+  while (width > 0) {
+    if (srcpixel->a != 0) {
+      if (*mask && blend != NULL) {
+        dstpixel->r = blendfunc(blend, srcpixel->r, dstpixel->r);
+        dstpixel->g = blendfunc(blend, srcpixel->g, dstpixel->g);
+        dstpixel->b = blendfunc(blend, srcpixel->b, dstpixel->b);
+      } else {
+        dstpixel->value = srcpixel->value;
+      }
+    }
+    srcpixel += 1;
+    dstpixel += 1;
+    mask += 1;
+    width -= 1;
+  }
+}
+
 /* helper: paint mosaic block with blending */
 static void PaintMosaicBlockBlend(Color const *srcpixel, Color *dstpixel,
                                   int block, const uint8_t *blend) {

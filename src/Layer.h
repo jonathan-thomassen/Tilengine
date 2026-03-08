@@ -63,6 +63,7 @@ typedef struct Layer {
   LayerScale scale;
   TLN_PixelMap *pixel_map; /* pointer to pixel mapping table */
   LayerFlags flags;
+  int blend_mask_layer; /* index of layer used as per-pixel blend mask, or -1 */
 
   /* world mode related data */
   struct {

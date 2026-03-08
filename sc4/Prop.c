@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "Sandblock.h" /* for MAX_SANDBLOCKS — defines where our slots begin */
+#include "Sprite.h"
 #include "Tilengine.h"
 #include "Torch.h" /* for MAX_TORCHES */
 
@@ -143,6 +144,12 @@ void PropSetWorldPos(int idx, int world_x, int world_y) {
     return;
   props[idx].world_x = world_x;
   props[idx].world_y = world_y;
+}
+
+void PropEnableBlendMask(int idx, bool enable) {
+  if (idx < 0 || idx >= MAX_PROPS || !props[idx].active)
+    return;
+  TLN_EnableSpriteFlag(SPRITE_BASE + idx, SPRITE_FLAG_BLEND_MASK, enable);
 }
 
 void PropBringToFront(int idx) {

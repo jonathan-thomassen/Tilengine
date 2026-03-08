@@ -785,7 +785,7 @@ bool TLN_SetLayerTransform(int layer, float angle, float dx, float dy, float sx,
  * \see TLN_SetLayerTransform(), TLN_SetLayerAffineTransform()
  */
 bool TLN_SetLayerTransformSC(int nlayer, float cos_a, float sin_a, float dx,
-                              float dy, float sx, float sy) {
+                             float dy, float sx, float sy) {
   Layer *layer;
   if (nlayer >= engine->numlayers) {
     TLN_SetLastError(TLN_ERR_IDX_LAYER);
@@ -926,6 +926,40 @@ bool TLN_SetLayerBlendMode(int nlayer, TLN_Blend blend) {
   Layer *layer = &engine->layers[nlayer];
   layer->render.blend = SelectBlendTable(blend);
   SetBlitter(layer);
+  TLN_SetLastError(TLN_ERR_OK);
+  return true;
+}
+
+/*!
+ * \brief Sets a per-pixel blend mask: pixels of nlayer that fall over a
+ * non-transparent tile of nmask are blended using nlayer's blend mode;
+ * all other non-transparent pixels are drawn opaque.
+ * \param nlayer Layer index to apply masked blending to [0, num_layers - 1]
+ * \param nmask  Layer index to use as the blend mask [0, num_layers - 1]
+ * \see TLN_ClearLayerBlendMask(), TLN_SetLayerBlendMode()
+ */
+bool TLN_SetLayerBlendMask(int nlayer, int nmask) {
+  if (nlayer >= engine->numlayers || nmask >= engine->numlayers) {
+    TLN_SetLastError(TLN_ERR_IDX_LAYER);
+    return false;
+  }
+  engine->layers[nlayer].blend_mask_layer = nmask;
+  TLN_SetLastError(TLN_ERR_OK);
+  return true;
+}
+
+/*!
+ * \brief Removes the per-pixel blend mask previously set with
+ * TLN_SetLayerBlendMask().
+ * \param nlayer Layer index [0, num_layers - 1]
+ * \see TLN_SetLayerBlendMask()
+ */
+bool TLN_ClearLayerBlendMask(int nlayer) {
+  if (nlayer >= engine->numlayers) {
+    TLN_SetLastError(TLN_ERR_IDX_LAYER);
+    return false;
+  }
+  engine->layers[nlayer].blend_mask_layer = -1;
   TLN_SetLastError(TLN_ERR_OK);
   return true;
 }

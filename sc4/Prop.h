@@ -77,4 +77,15 @@ void PropBringToFront(int idx);
  */
 void PropSetPriority(int idx, bool enable);
 
+/**
+ * Enables or disables per-pixel blend-mask rendering on a prop sprite.
+ * When enabled the sprite is composited through the engine's blend mask so
+ * pixels that sit over an opaque water (mask) pixel are blended 50/50 with
+ * whatever is already in the framebuffer.
+ *
+ * \param idx     Slot index returned by PropSpawn()
+ * \param enable  true to enable blend-mask compositing, false to disable
+ */
+void PropEnableBlendMask(int idx, bool enable);
+
 #endif

@@ -31,6 +31,10 @@ void BlitColor(void *dstptr, uint32_t color, int width, const uint8_t *blend);
 /* perfoms direct 32 -> 32 bpp blit with opcional blend */
 void Blit32_32(uint32_t *src, uint32_t *dst, int width, const uint8_t *blend);
 
+/* per-pixel masked blit: blend applied only where mask[i] != 0 */
+void Blit32_32_Masked(uint32_t const *src, uint32_t *dst,
+                      uint8_t const *mask, const uint8_t *blend, int width);
+
 /* performs mosaic blit */
 void BlitMosaic(uint32_t *src, uint32_t *dst, int width, int size,
                 const uint8_t *blend);

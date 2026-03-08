@@ -112,6 +112,77 @@ static void blit_clipped_window(uint32_t *scan, LayerWindow const *window,
     BlitColor(scan + window->x1, window->color, windowwidth, window->blend);
 }
 
+typedef struct {
+  struct Tileset const *tileset;
+  uint16_t tile_index;
+  union Tile const *tile;
+  int srcx;
+  int srcy;
+} TileMaskParams;
+
+/* fills one tile-width's worth of blend_mask entries by per-pixel sampling */
+static void fill_mask_tile(uint8_t *mask, int x, int width,
+                           TileMaskParams const *p) {
+  for (int i = 0; i < width; i++) {
+    int sx = (p->tile->flags & FLAG_FLIPX) ? p->tileset->width - 1 - p->srcx - i
+                                           : p->srcx + i;
+    if (GetTilesetPixel(p->tileset, p->tile_index, sx, p->srcy) != 0)
+      mask[x + i] = 1;
+  }
+}
+
+/* fills engine->blend_mask for the given scanline by sampling the actual
+ * tileset pixel index of each screen column from layer nmask: positions where
+ * the tileset pixel is non-zero (opaque) are set to 1, transparent pixels
+ * (palette index 0) or empty tiles leave the mask at 0. */
+static void fill_blend_mask_scanline(int nmask, int nscan) {
+  Layer const *layer = &engine->layers[nmask];
+  int framewidth = engine->framebuffer.width;
+  memset(engine->blend_mask, 0, framewidth);
+
+  if (!layer->flags.ok || layer->tilemap == NULL)
+    return;
+
+  struct Tilemap const *tilemap = layer->tilemap;
+  struct Tileset const *tileset = tilemap->tilesets[0];
+
+  int x = 0;
+  int xpos = (layer->hstart + x) % layer->width;
+  int xtile = xpos >> tileset->hshift;
+  int srcx = xpos & GetTilesetHMask(tileset);
+
+  int ypos = (layer->vstart + nscan) % layer->height;
+  int ytile = ypos >> tileset->vshift;
+  int srcy_base = ypos & GetTilesetVMask(tileset);
+
+  while (x < framewidth) {
+    int tilewidth = tileset->width - srcx;
+    int x1 = x + tilewidth;
+    if (x1 > framewidth)
+      x1 = framewidth;
+    int width = x1 - x;
+
+    union Tile const *tile =
+        &tilemap->tiles[(ptrdiff_t)ytile * tilemap->cols + xtile];
+
+    if (tile->index != 0) {
+      TileMaskParams p;
+      p.tileset = tilemap->tilesets[tile->tileset];
+      p.tile_index = p.tileset->tiles[tile->index] - 1;
+      p.tile = tile;
+      p.srcx = srcx;
+      p.srcy = (tile->flags & FLAG_FLIPY) ? p.tileset->height - srcy_base - 1
+                                          : srcy_base;
+      fill_mask_tile(engine->blend_mask, x, width, &p);
+    }
+
+    x += width;
+    if (++xtile >= tilemap->cols)
+      xtile = 0;
+    srcx = 0;
+  }
+}
+
 /* draw background scanline taking into account mosaic and windowing effects */
 static bool draw_background_scanline(int nlayer, int line) {
   Layer *layer = &engine->layers[nlayer];
@@ -122,6 +193,36 @@ static bool draw_background_scanline(int nlayer, int line) {
   const int windowwidth = layer->window.x2 - layer->window.x1;
   bool priority = false;
   bool build_mosaic = false;
+
+  /* per-pixel blend mask path: render layer to linebuffer without blend,
+   * then composite onto framebuffer using the mask layer's tile coverage. */
+  if (layer->blend_mask_layer >= 0 && engine->blend_mask != NULL) {
+    uint8_t *saved_blend = layer->render.blend;
+    ScanBlitPtr saved_blitters[2] = {layer->render.blitters[0],
+                                     layer->render.blitters[1]};
+    uint32_t *lb = engine->linebuffer;
+    uint32_t *fb = GetFramebufferLine(line);
+
+    /* temporarily switch to non-blend blitters so pixels land in linebuffer
+     * as plain RGBA values ready for the masked composite below. */
+    bool scaling = layer->render.mode == MODE_SCALING;
+    layer->render.blend = NULL;
+    layer->render.blitters[0] = SelectBlitter(false, scaling, false);
+    layer->render.blitters[1] = SelectBlitter(true, scaling, false);
+
+    memset(lb, 0, framewidth * sizeof(uint32_t));
+    priority |=
+        draw_window_region(nlayer, lb, line, window, inside, framewidth);
+
+    layer->render.blend = saved_blend;
+    layer->render.blitters[0] = saved_blitters[0];
+    layer->render.blitters[1] = saved_blitters[1];
+
+    engine->blend_mask_blend = saved_blend;
+    fill_blend_mask_scanline(layer->blend_mask_layer, line);
+    Blit32_32_Masked(lb, fb, engine->blend_mask, saved_blend, framewidth);
+    return priority;
+  }
 
   uint32_t *scan = select_scan_buffer(layer, line, &build_mosaic);
   if (scan == engine->linebuffer && scan != NULL)
@@ -225,6 +326,27 @@ static void draw_background_sprites(uint32_t *scan, int line) {
   }
 }
 
+/* draws a single sprite scanline via the blend mask when the sprite has
+ * SPRITE_FLAG_BLEND_MASK set; otherwise draws it directly onto scan. */
+static void draw_sprite_with_blend_mask(int index, Sprite const *sprite,
+                                        uint32_t *scan, int line) {
+  if (GetSpriteFlag(sprite, SPRITE_FLAG_BLEND_MASK) && engine->blend_mask &&
+      engine->blend_mask_blend) {
+    const int fw = engine->framebuffer.width;
+    int x1 = sprite->dstrect.x1 > 0 ? sprite->dstrect.x1 : 0;
+    int x2 = sprite->dstrect.x2 < fw ? sprite->dstrect.x2 : fw;
+    if (x1 < x2) {
+      uint32_t *lb = engine->linebuffer;
+      memset(lb + x1, 0, (x2 - x1) * sizeof(uint32_t));
+      sprite->funcs.draw(index, lb, line, 0, 0);
+      Blit32_32_Masked(lb + x1, scan + x1, engine->blend_mask + x1,
+                       engine->blend_mask_blend, x2 - x1);
+    }
+  } else {
+    sprite->funcs.draw(index, scan, line, 0, 0);
+  }
+}
+
 /* draws all non-priority sprites; returns true if any priority sprites exist */
 static bool draw_regular_sprites(uint32_t *scan, int line) {
   bool sprite_priority = false;
@@ -243,7 +365,7 @@ static bool draw_regular_sprites(uint32_t *scan, int line) {
     if (has_background) {
       /* already drawn before layers — skip */
     } else if (has_coverage && !has_priority)
-      sprite->funcs.draw(index, scan, line, 0, 0);
+      draw_sprite_with_blend_mask(index, sprite, scan, line);
     else if (has_coverage && has_priority)
       sprite_priority = true;
     index = sprite->list_node.next;
@@ -279,7 +401,7 @@ static void draw_priority_sprites(uint32_t *scan, int line) {
   while (index != -1) {
     Sprite const *sprite = &engine->sprites[index];
     if (check_sprite_coverage(sprite, line) && (sprite->flags & FLAG_PRIORITY))
-      sprite->funcs.draw(index, scan, line, 0, 0);
+      draw_sprite_with_blend_mask(index, sprite, scan, line);
     index = sprite->list_node.next;
   }
 }

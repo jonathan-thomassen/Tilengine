@@ -64,6 +64,7 @@ typedef struct {
 #define SPRITE_FLAG_COLLISION (1 << 26)
 #define SPRITE_FLAG_WORLD_SPACE (1 << 27)
 #define SPRITE_FLAG_DIRTY (1 << 28)
+#define SPRITE_FLAG_BLEND_MASK (1 << 29) /* render via per-pixel blend mask */
 
 /* sprite flag accessor macros */
 #define GetSpriteFlag(sprite, flag) (((sprite)->flags & (flag)) != 0)

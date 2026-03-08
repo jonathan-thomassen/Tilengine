@@ -100,13 +100,16 @@ static TLN_Engine create_context(int hres, int vres, int numlayers,
       TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
       return NULL;
     }
-    for (c = 0; c < context->numlayers; c++)
+    for (c = 0; c < context->numlayers; c++) {
       context->layers[c].mosaic.buffer =
           (uint32_t *)calloc(hres, sizeof(uint32_t));
+      context->layers[c].blend_mask_layer = -1;
+    }
 
     /* buffer for intermediate scanline output */
     context->linebuffer = (uint32_t *)calloc(hres, sizeof(uint32_t));
     context->priority = (uint32_t *)malloc(hres * sizeof(uint32_t));
+    context->blend_mask = (uint8_t *)calloc(hres, sizeof(uint8_t));
   }
 
   /* create static sprites */
@@ -245,6 +248,9 @@ bool TLN_DeleteContext(TLN_Engine context) {
 
   if (context->collision)
     free(context->collision);
+
+  if (context->blend_mask)
+    free(context->blend_mask);
 
   if (context->linebuffer)
     free(context->linebuffer);
