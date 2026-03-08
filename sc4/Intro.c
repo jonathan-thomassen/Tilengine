@@ -74,9 +74,16 @@ static void step_drawbridge(TLN_Tilemap *p_tilemap, int *p_frame) {
  * Moving left raises Simon (distance from hinge grows); moving right lowers
  * him. SimonSetFeetY also zeroes sy so gravity doesn't fight the override.
  * Once Simon passes the hinge he is on solid castle ground — stop tracking. */
-static void step_simon_on_bridge(int db_frame) {
-  if (db_frame > 0 && SimonGetScreenX() < DrawbridgeHingeX()) {
-    SimonSetFeetY((int)DrawbridgeSurfaceY(SimonGetScreenX()));
+static void step_simon_on_bridge(int db_frame, bool rails_active) {
+  if ((rails_active || db_frame > 0) &&
+      SimonGetScreenX() < DrawbridgeHingeX() - 8) {
+    int surface_y = (int)DrawbridgeSurfaceY(SimonGetScreenX());
+    /* Only snap Simon to the bridge when his feet are at or below the
+     * surface — this lets him jump freely above it while still landing
+     * on it when he comes back down. Skip when bridge is nearly vertical
+     * to avoid snapping Simon to an off-screen y position. */
+    if (SimonGetFeetY() >= surface_y && DrawbridgeGetProgress() < 1.0f)
+      SimonSetFeetY(surface_y);
     /* Push Simon rightward by a rate proportional to the bridge angle:
      * accumulate progress (0→1) each frame; push 1px per whole unit.
      * Result: no push when flat, 1 px/frame when fully vertical. */
@@ -203,15 +210,19 @@ int main(void) {
       rails_max = TLN_GetLayerWidth(MAIN_LAYER) - WIDTH;
       rails_step = ((float)rails_max - rails_pos) / (1.0f * 60.0f);
       SimonFreezeCamera();
-      /* Place Simon at world-x 768 so his feet land at the drawbridge trigger.
-       * screen_x = world_x - camera: 768 - (int)rails_pos */
-      SimonSetScreenX(120);
+      SimonSetScreenX(SimonGetScreenX() + 16);
     }
+    int camera_delta = 0;
     if (rails_triggered) {
       rails_pos += rails_step;
       if (rails_pos > (float)rails_max)
         rails_pos = (float)rails_max;
       xpos = (int)rails_pos;
+      /* prev_xpos holds last frame's camera position (set by
+       * update_layer_positions). The difference is how far the camera moved
+       * this frame; we'll subtract it from Simon's screen x to keep him
+       * stationary in world space unless the player moves him. */
+      camera_delta = xpos - prev_xpos;
     }
 
     /* drawbridge animation: triggered once xpos reaches 768, then runs to
@@ -226,13 +237,18 @@ int main(void) {
     if (db_triggered)
       DrawbridgeSetProgress((float)db_frame / 134.0f);
 
-    step_simon_on_bridge(db_frame);
+    step_simon_on_bridge(db_frame, rails_triggered);
+    /* Hard clamp: once the bridge is fully raised it acts as a wall;
+     * allow Simon up to 8px closer than the hinge. */
+    if (db_frame >= 134 && SimonGetScreenX() < DrawbridgeHingeX() - 8)
+      SimonSetScreenX(DrawbridgeHingeX() - 8);
 
-    /* Keep Simon pinned at screen x=120 for the entire rails sequence.
-     * This runs after step_simon_on_bridge so its SimonPushRight calls
-     * cannot slide Simon forward. */
-    if (rails_triggered)
-      SimonSetScreenX(120);
+    /* Compensate Simon's screen x for camera movement so his world position
+     * stays fixed during the rails scroll. Player input applied by
+     * SimonTasks() is preserved because it changes screen x before this
+     * correction. Stop compensating once the drawbridge takes over. */
+    if (rails_triggered && !db_triggered)
+      SimonSetScreenX(SimonGetScreenX() - camera_delta);
 
     /* Camera is locked by SimonFreezeCamera(); xpos stays at its
      * frozen value for all layer positions. */

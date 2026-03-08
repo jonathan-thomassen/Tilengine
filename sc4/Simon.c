@@ -104,12 +104,11 @@ void SimonSetState(int s) {
 static bool check_wall_right(int sprite_x, int world_x, int sprite_y) {
   for (int c = 4; c < 44; c += 16) {
     TLN_TileInfo ti;
-    TLN_GetLayerTile(COLLISION_LAYER, sprite_x + 24 + world_x, sprite_y + c,
-                     &ti);
+    TLN_GetLayerTile(COLLISION_LAYER, sprite_x + world_x, sprite_y + c, &ti);
     if (!ti.empty)
       return true;
   }
-  int wall_x = sprite_x + 24 + world_x;
+  int wall_x = sprite_x + world_x;
   SandblockState sb;
   for (int i = 0; i < MAX_SANDBLOCKS; i++) {
     if (!SandblockGet(i, &sb) || sb.falling)
@@ -433,6 +432,12 @@ void SimonSetScreenX(int screen_x) {
 void SimonSetFeetY(int feet_y) {
   y = feet_y - SIMON_HEIGHT;
   sy = 0; /* suppress gravity so physics doesn't fight the forced position */
+  /* Pinning feet to a surface counts as landing: cancel any in-progress jump
+   * so the jump sprite clears and the player can jump again next frame. */
+  if (state == SIMON_JUMPING) {
+    apex_hang = 0;
+    SimonSetState(SIMON_IDLE);
+  }
   TLN_SetSpritePosition(SIMON_SPRITE, x, y);
 }
 
