@@ -42,6 +42,12 @@ void Matrix3SetRotation(Matrix3 *matrix, math2d_t ang) {
   Matrix3Set(matrix, data);
 }
 
+/* Rotation from pre-computed cos/sin — skips the angle→trig conversion. */
+void Matrix3SetRotationSC(Matrix3 *matrix, math2d_t c, math2d_t s) {
+  math2d_t data[] = {c, s, 0, -s, c, 0, 0, 0, 1};
+  Matrix3Set(matrix, data);
+}
+
 // load translation matrix
 void Matrix3SetTranslation(Matrix3 *matrix, math2d_t x, math2d_t y) {
   math2d_t data[] = {1, 0, x, 0, 1, y, 0, 0, 1};

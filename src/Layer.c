@@ -775,6 +775,48 @@ bool TLN_SetLayerTransform(int layer, float angle, float dx, float dy, float sx,
 
 /*!
  * \brief
+ * Sets an affine rotation+scale transform using pre-computed cos/sin values.
+ *
+ * \remarks
+ * Equivalent to TLN_SetLayerTransform() but accepts cos_a and sin_a directly,
+ * avoiding a redundant angle-to-trig conversion when the caller already holds
+ * the rotation as a (cos, sin) pair (e.g. derived from a cached sinf/cosf).
+ *
+ * \see TLN_SetLayerTransform(), TLN_SetLayerAffineTransform()
+ */
+bool TLN_SetLayerTransformSC(int nlayer, float cos_a, float sin_a, float dx,
+                              float dy, float sx, float sy) {
+  Layer *layer;
+  if (nlayer >= engine->numlayers) {
+    TLN_SetLastError(TLN_ERR_IDX_LAYER);
+    return false;
+  }
+  layer = &engine->layers[nlayer];
+  {
+    Matrix3 transform;
+    math2d_t pdx = (float)layer->hstart + dx;
+    math2d_t pdy = (float)layer->vstart + dy;
+
+    Matrix3SetIdentity(&layer->transform);
+    Matrix3SetTranslation(&transform, -pdx, -pdy);
+    Matrix3Multiply(&layer->transform, &transform);
+    Matrix3SetRotationSC(&transform, cos_a, sin_a);
+    Matrix3Multiply(&layer->transform, &transform);
+    Matrix3SetScale(&transform, 1.0f / sx, 1.0f / sy);
+    Matrix3Multiply(&layer->transform, &transform);
+    Matrix3SetTranslation(&transform, pdx, pdy);
+    Matrix3Multiply(&layer->transform, &transform);
+
+    layer->render.mode = MODE_TRANSFORM;
+    layer->render.draw = GetLayerDraw(layer);
+    SetBlitter(layer);
+  }
+  TLN_SetLastError(TLN_ERR_OK);
+  return true;
+}
+
+/*!
+ * \brief
  * Sets simple scaling
  *
  * \param nlayer

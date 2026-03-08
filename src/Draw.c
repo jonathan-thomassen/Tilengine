@@ -551,6 +551,7 @@ static bool DrawTiledScanlineScaling(int nlayer, uint32_t *dstpixel, int nscan,
 static bool DrawTiledScanlineAffine(int nlayer, uint32_t *dstpixel, int nscan,
                                     int tx1, int tx2) {
   const Layer *layer = (const Layer *)&engine->layers[nlayer];
+  bool priority = false;
   Tilescan scan = {0};
 
   const struct Tilemap *tilemap = layer->tilemap;
@@ -576,6 +577,7 @@ static bool DrawTiledScanlineAffine(int nlayer, uint32_t *dstpixel, int nscan,
 
   scan.width = scan.height = scan.stride = tileset->width;
   dstpixel += tx1;
+  uint32_t *prioritypixel = engine->priority + tx1;
 
   while (tx1 < tx2) {
     xpos = abs(fix2int(x1) + layer->width) % layer->width;
@@ -603,8 +605,14 @@ static bool DrawTiledScanlineAffine(int nlayer, uint32_t *dstpixel, int nscan,
           layer->palette != NULL ? layer->palette : tileset2->palette;
       const uint8_t pix =
           GetTilesetPixel(tileset2, tile_index, scan.srcx, scan.srcy);
-      if (pix != 0)
-        *dstpixel = palette->data[pix];
+      if (pix != 0) {
+        if (tile->flags & FLAG_PRIORITY) {
+          *prioritypixel = palette->data[pix];
+          priority = true;
+        } else {
+          *dstpixel = palette->data[pix];
+        }
+      }
     }
 
     /* next pixel */
@@ -612,8 +620,9 @@ static bool DrawTiledScanlineAffine(int nlayer, uint32_t *dstpixel, int nscan,
     x1 += dx;
     y1 += dy;
     dstpixel += 1;
+    prioritypixel += 1;
   }
-  return false;
+  return priority;
 }
 
 /* draw scanline of tiled background with per-pixel mapping */

@@ -28,6 +28,19 @@ float DrawbridgeSurfaceY(int screen_x);
 int DrawbridgeHingeX(void);
 
 /**
+ * Returns the current screen position of a point that rests at
+ * (rest_sx, rest_sy) when the bridge is flat (progress = 0), after applying
+ * the bridge's affine rotation.
+ *
+ * \param rest_sx   Screen x of the point when progress is 0
+ * \param rest_sy   Screen y of the point when progress is 0
+ * \param out_sx    Receives the rotated screen x
+ * \param out_sy    Receives the rotated screen y
+ */
+void DrawbridgeRotatedPoint(float rest_sx, float rest_sy, float *out_sx,
+                             float *out_sy);
+
+/**
  * Returns the minimum screen x at which a sprite's feet (at feet_y) no longer
  * overlap the rising bridge surface.  Returns 0 when progress is 0 or the
  * bridge angle is negligible.

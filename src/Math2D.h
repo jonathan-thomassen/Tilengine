@@ -49,6 +49,7 @@ void Matrix3Set(Matrix3 *, const math2d_t *);
 void Matrix3Add(Matrix3 *, const Matrix3 *);
 void Matrix3Multiply(Matrix3 *, const Matrix3 *);
 void Matrix3SetRotation(Matrix3 *matrix, math2d_t angle);
+void Matrix3SetRotationSC(Matrix3 *matrix, math2d_t c, math2d_t s);
 void Matrix3SetTranslation(Matrix3 *matrix, math2d_t x, math2d_t y);
 void Matrix3SetScale(Matrix3 *matrix, math2d_t sx, math2d_t sy);
 

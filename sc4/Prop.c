@@ -137,3 +137,30 @@ void PropTasks(int xworld) {
                           props[i].world_y);
   }
 }
+
+void PropSetWorldPos(int idx, int world_x, int world_y) {
+  if (idx < 0 || idx >= MAX_PROPS || !props[idx].active)
+    return;
+  props[idx].world_x = world_x;
+  props[idx].world_y = world_y;
+}
+
+void PropBringToFront(int idx) {
+  if (idx < 0 || idx >= MAX_PROPS || !props[idx].active)
+    return;
+  int slot = SPRITE_BASE + idx;
+  int type_idx = props[idx].type_idx;
+  /* Disable removes the sprite from the render list; re-setting the spriteset
+   * re-appends it at the tail so it draws on top of all earlier sprites. */
+  TLN_DisableSprite(slot);
+  TLN_SetSpriteSet(slot, types[type_idx].ss);
+  TLN_SetSpritePicture(slot, 0);
+  if (types[type_idx].sp != NULL)
+    TLN_SetSpriteAnimation(slot, TLN_GetSequence(types[type_idx].sp, 0), 0);
+}
+
+void PropSetPriority(int idx, bool enable) {
+  if (idx < 0 || idx >= MAX_PROPS || !props[idx].active)
+    return;
+  TLN_EnableSpriteFlag(SPRITE_BASE + idx, FLAG_PRIORITY, enable);
+}

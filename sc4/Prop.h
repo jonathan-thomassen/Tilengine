@@ -51,4 +51,30 @@ int PropSpawnBackground(const char *name, int screen_x, int screen_y);
  */
 void PropTasks(int xworld);
 
+/**
+ * Overrides the world position of a spawned prop.
+ *
+ * \param idx      Slot index returned by PropSpawn()
+ * \param world_x  New world x position
+ * \param world_y  New world y position
+ */
+void PropSetWorldPos(int idx, int world_x, int world_y);
+
+/**
+ * Re-inserts a prop at the tail of Tilengine's sprite render list so it
+ * draws on top of sprites that were added before it.
+ *
+ * \param idx  Slot index returned by PropSpawn()
+ */
+void PropBringToFront(int idx);
+
+/**
+ * Sets or clears FLAG_PRIORITY on a prop sprite so it renders after priority
+ * tile pixels are composited (i.e. in front of priority tiles).
+ *
+ * \param idx     Slot index returned by PropSpawn()
+ * \param enable  true to enable priority rendering, false to disable
+ */
+void PropSetPriority(int idx, bool enable);
+
 #endif
