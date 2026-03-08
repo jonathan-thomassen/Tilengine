@@ -425,6 +425,11 @@ int SimonGetScreenX(void) {
   return x;
 }
 
+void SimonSetScreenX(int screen_x) {
+  x = screen_x;
+  TLN_SetSpritePosition(SIMON_SPRITE, x, y);
+}
+
 void SimonSetFeetY(int feet_y) {
   y = feet_y - SIMON_HEIGHT;
   sy = 0; /* suppress gravity so physics doesn't fight the forced position */

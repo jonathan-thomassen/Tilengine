@@ -37,6 +37,9 @@ void SimonPushRight(int pixels);
 /** Returns Simon's current screen x position. */
 int SimonGetScreenX(void);
 
+/** Sets Simon's screen x position without affecting the world scroll offset. */
+void SimonSetScreenX(int screen_x);
+
 /**
  * Sets Simon's y so that his feet land on the given screen y coordinate.
  * Used during the drawbridge animation to track the rising bridge surface.

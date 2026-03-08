@@ -188,12 +188,35 @@ int main(void) {
     /* scroll */
     xpos = SimonGetPosition();
 
-    /* drawbridge animation: triggered once xpos reaches 768, then runs to
-     * completion regardless of player position.
-     * (134 ticks × 9 game frames/tick ≈ 1197 frames at 60 fps = 20 s). */
+    /* Rails: once xpos reaches 633 the camera locks and auto-scrolls right
+     * to the end of the tilemap over ~5 seconds (300 frames at 60 fps). */
+    static bool rails_triggered = false;
+    static float rails_pos = 0.0f;
+    static float rails_step = 0.0f;
+    static int rails_max = 0;
     static int db_frame = 0;
     static bool db_triggered = false;
     static int prev_xpos = -1;
+    if (!rails_triggered && xpos >= 640) {
+      rails_triggered = true;
+      rails_pos = (float)xpos;
+      rails_max = TLN_GetLayerWidth(MAIN_LAYER) - WIDTH;
+      rails_step = ((float)rails_max - rails_pos) / (1.0f * 60.0f);
+      SimonFreezeCamera();
+      /* Place Simon at world-x 768 so his feet land at the drawbridge trigger.
+       * screen_x = world_x - camera: 768 - (int)rails_pos */
+      SimonSetScreenX(120);
+    }
+    if (rails_triggered) {
+      rails_pos += rails_step;
+      if (rails_pos > (float)rails_max)
+        rails_pos = (float)rails_max;
+      xpos = (int)rails_pos;
+    }
+
+    /* drawbridge animation: triggered once xpos reaches 768, then runs to
+     * completion regardless of player position.
+     * (134 ticks × 9 game frames/tick ≈ 1197 frames at 60 fps = 20 s). */
     if (!db_triggered && xpos >= 768) {
       db_triggered = true;
       SimonFreezeCamera();
@@ -204,6 +227,12 @@ int main(void) {
       DrawbridgeSetProgress((float)db_frame / 134.0f);
 
     step_simon_on_bridge(db_frame);
+
+    /* Keep Simon pinned at screen x=120 for the entire rails sequence.
+     * This runs after step_simon_on_bridge so its SimonPushRight calls
+     * cannot slide Simon forward. */
+    if (rails_triggered)
+      SimonSetScreenX(120);
 
     /* Camera is locked by SimonFreezeCamera(); xpos stays at its
      * frozen value for all layer positions. */
