@@ -572,6 +572,8 @@ TLNAPI bool TLN_SetLayerTransform(int layer, float angle, float dx, float dy,
                                   float sx, float sy);
 TLNAPI bool TLN_SetLayerTransformSC(int nlayer, float cos_a, float sin_a,
                                     float dx, float dy, float sx, float sy);
+TLNAPI bool TLN_SetLayerTransformMatrix(int nlayer, float a, float b, float c,
+                                        float d, int x0, int y0);
 TLNAPI bool TLN_SetLayerPixelMapping(int nlayer, TLN_PixelMap *table);
 TLNAPI bool TLN_SetLayerColumnOffset(int nlayer, int *offset);
 TLNAPI bool TLN_SetLayerBlendMode(int nlayer, TLN_Blend blend);

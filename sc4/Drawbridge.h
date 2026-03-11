@@ -4,8 +4,8 @@
 #include <stdbool.h>
 
 void DrawbridgeInit(int layer, int hinge_x, int hinge_y);
-void DrawbridgeSetProgress(float progress);
-float DrawbridgeGetProgress(void);
+void DrawbridgeSetProgress(int progress);
+int DrawbridgeGetProgress(void);
 void DrawbridgeSetHinge(int hinge_x, int hinge_y);
 void DrawbridgeTasks(void);
 
@@ -26,6 +26,13 @@ float DrawbridgeSurfaceY(int screen_x);
 
 /** Returns the screen x of the bridge hinge (the fixed right-side anchor). */
 int DrawbridgeHingeX(void);
+
+/**
+ * Returns the precomputed screen position of the chain-sprite anchor for the
+ * current animation step.  Add xpos to *out_x to get the world x coordinate.
+ * *out_y is the fully-baked world y (sprite height and drift already folded in).
+ */
+void DrawbridgeChainPos(int *out_x, int *out_y);
 
 /**
  * Returns the current screen position of a point that rests at

@@ -817,6 +817,93 @@ bool TLN_SetLayerTransformSC(int nlayer, float cos_a, float sin_a, float dx,
 
 /*!
  * \brief
+ * Sets an affine transform from an explicit 2\u00d72 matrix and pivot point.
+ *
+ * \param nlayer
+ * Layer index [0, num_layers - 1]
+ *
+ * \param a
+ * Row 0, column 0 of the linear transform (x-scale / cos component)
+ *
+ * \param b
+ * Row 0, column 1 (shear / sin component)
+ *
+ * \param c
+ * Row 1, column 0 (shear / -sin component)
+ *
+ * \param d
+ * Row 1, column 1 (y-scale / cos component)
+ *
+ * \param x0
+ * Horizontal pivot in world space — the transform origin
+ *
+ * \param y0
+ * Vertical pivot in world space — the transform origin
+ *
+ * \remarks
+ * Implements the matrix equation:
+ *   x' = a*(x-x0) + b*(y-y0) + x0
+ *   y' = c*(x-x0) + d*(y-y0) + y0
+ * The matrix [[a,b],[c,d]] must be non-singular (det = a*d - b*c != 0).
+ * Returns false with TLN_ERR_WRONG_FORMAT when the matrix is degenerate.
+ *
+ * \see TLN_SetLayerTransformSC(), TLN_SetLayerAffineTransform()
+ */
+bool TLN_SetLayerTransformMatrix(int nlayer, float a, float b, float c, float d,
+                                 int x0, int y0) {
+  Layer *layer;
+  float det;
+  float inv_det;
+
+  if (nlayer >= engine->numlayers) {
+    TLN_SetLastError(TLN_ERR_IDX_LAYER);
+    return false;
+  }
+
+  det = a * d - b * c;
+  if (fabsf(det) < 1e-6f) {
+    TLN_SetLastError(TLN_ERR_WRONG_FORMAT);
+    return false;
+  }
+
+  layer = &engine->layers[nlayer];
+  {
+    Matrix3 transform;
+    float px = (float)layer->hstart + (float)x0;
+    float py = (float)layer->vstart + (float)y0;
+    float inv_data[9];
+
+    inv_det = 1.0f / det;
+    /* Inverse of [[a,b],[c,d]], row-major {m11,m12,m13, m21,m22,m23,
+     * m31,m32,m33}. */
+    inv_data[0] = d * inv_det;
+    inv_data[1] = -b * inv_det;
+    inv_data[2] = 0.0f;
+    inv_data[3] = -c * inv_det;
+    inv_data[4] = a * inv_det;
+    inv_data[5] = 0.0f;
+    inv_data[6] = 0.0f;
+    inv_data[7] = 0.0f;
+    inv_data[8] = 1.0f;
+
+    Matrix3SetIdentity(&layer->transform);
+    Matrix3SetTranslation(&transform, -px, -py);
+    Matrix3Multiply(&layer->transform, &transform);
+    Matrix3Set(&transform, inv_data);
+    Matrix3Multiply(&layer->transform, &transform);
+    Matrix3SetTranslation(&transform, px, py);
+    Matrix3Multiply(&layer->transform, &transform);
+
+    layer->render.mode = MODE_TRANSFORM;
+    layer->render.draw = GetLayerDraw(layer);
+    SetBlitter(layer);
+  }
+  TLN_SetLastError(TLN_ERR_OK);
+  return true;
+}
+
+/*!
+ * \brief
  * Sets simple scaling
  *
  * \param nlayer

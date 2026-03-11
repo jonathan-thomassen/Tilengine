@@ -42,9 +42,15 @@ void SimonSetScreenX(int screen_x);
 
 /**
  * Sets Simon's y so that his feet land on the given screen y coordinate.
- * Used during the drawbridge animation to track the rising bridge surface.
+ * Zeroes vertical velocity and cancels any jump — use for landing events.
  */
 void SimonSetFeetY(int feet_y);
+
+/**
+ * Moves Simon's y so his feet are at feet_y without touching sy or state.
+ * Use for continuous surface tracking where physics must keep running.
+ */
+void SimonPinFeetY(int feet_y);
 
 /** Returns the screen y coordinate of Simon's feet (bottom of sprite). */
 int SimonGetFeetY(void);

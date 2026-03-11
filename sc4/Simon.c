@@ -104,11 +104,12 @@ void SimonSetState(int s) {
 static bool check_wall_right(int sprite_x, int world_x, int sprite_y) {
   for (int c = 4; c < 44; c += 16) {
     TLN_TileInfo ti;
-    TLN_GetLayerTile(COLLISION_LAYER, sprite_x + world_x, sprite_y + c, &ti);
+    TLN_GetLayerTile(COLLISION_LAYER, sprite_x + world_x + 24, sprite_y + c,
+                     &ti);
     if (!ti.empty)
       return true;
   }
-  int wall_x = sprite_x + world_x;
+  int wall_x = sprite_x + world_x + 24;
   SandblockState sb;
   for (int i = 0; i < MAX_SANDBLOCKS; i++) {
     if (!SandblockGet(i, &sb) || sb.falling)
@@ -139,11 +140,12 @@ static bool check_wall_right(int sprite_x, int world_x, int sprite_y) {
 static bool check_wall_left(int sprite_x, int world_x, int sprite_y) {
   for (int c = 4; c < 44; c += 16) {
     TLN_TileInfo ti;
-    TLN_GetLayerTile(COLLISION_LAYER, sprite_x + world_x, sprite_y + c, &ti);
+    TLN_GetLayerTile(COLLISION_LAYER, sprite_x + world_x + 8, sprite_y + c,
+                     &ti);
     if (!ti.empty)
       return true;
   }
-  int wall_x = sprite_x + world_x;
+  int wall_x = sprite_x + world_x + 8;
   SandblockState sb;
   for (int i = 0; i < MAX_SANDBLOCKS; i++) {
     if (!SandblockGet(i, &sb) || sb.falling)
@@ -438,6 +440,13 @@ void SimonSetFeetY(int feet_y) {
     apex_hang = 0;
     SimonSetState(SIMON_IDLE);
   }
+  TLN_SetSpritePosition(SIMON_SPRITE, x, y);
+}
+
+void SimonPinFeetY(int feet_y) {
+  /* Position-only correction: does not zero sy or change state.
+   * Use for continuous surface tracking where physics must keep running. */
+  y = feet_y - SIMON_HEIGHT;
   TLN_SetSpritePosition(SIMON_SPRITE, x, y);
 }
 
