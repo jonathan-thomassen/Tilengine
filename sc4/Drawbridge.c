@@ -7,13 +7,6 @@
 
 #include "Tilengine.h"
 
-/* 8.8 fixed-point type: values stored as real * 256 (matching SNES Mode 7
- * rotation registers M7A-M7D).  real = fix88_t / FIX88_ONE */
-typedef int16_t fix88_t;
-#define FIX88_ONE 256
-/* Convert a float constant to fix88_t at compile time. */
-#define FIX88(x) ((fix88_t)((x) * FIX88_ONE))
-
 /* ------------------------------------------------------------------ */
 
 typedef struct {
@@ -32,41 +25,34 @@ static DrawbridgeState db;
 #define DB_STEPS 135
 #define TRIG_COS(i) baked_sin[(DB_STEPS - 1) - (i)]
 
-static const fix88_t baked_sin[DB_STEPS] = {
-    FIX88(0.0),        FIX88(0.01171875), FIX88(0.0234375),  FIX88(0.03515625),
-    FIX88(0.046875),   FIX88(0.05859375), FIX88(0.0703125),  FIX88(0.08203125),
-    FIX88(0.09375),    FIX88(0.10546875), FIX88(0.1171875),  FIX88(0.12890625),
-    FIX88(0.140625),   FIX88(0.15234375), FIX88(0.1640625),  FIX88(0.17578125),
-    FIX88(0.1875),     FIX88(0.19921875), FIX88(0.2109375),  FIX88(0.22265625),
-    FIX88(0.23046875), FIX88(0.2421875),  FIX88(0.25390625), FIX88(0.265625),
-    FIX88(0.27734375), FIX88(0.2890625),  FIX88(0.30078125), FIX88(0.3125),
-    FIX88(0.32421875), FIX88(0.33203125), FIX88(0.34375),    FIX88(0.35546875),
-    FIX88(0.3671875),  FIX88(0.37890625), FIX88(0.38671875), FIX88(0.3984375),
-    FIX88(0.41015625), FIX88(0.421875),   FIX88(0.4296875),  FIX88(0.44140625),
-    FIX88(0.453125),   FIX88(0.4609375),  FIX88(0.47265625), FIX88(0.484375),
-    FIX88(0.4921875),  FIX88(0.50390625), FIX88(0.51171875), FIX88(0.5234375),
-    FIX88(0.53515625), FIX88(0.54296875), FIX88(0.5546875),  FIX88(0.5625),
-    FIX88(0.57421875), FIX88(0.58203125), FIX88(0.58984375), FIX88(0.6015625),
-    FIX88(0.609375),   FIX88(0.62109375), FIX88(0.62890625), FIX88(0.63671875),
-    FIX88(0.6484375),  FIX88(0.65625),    FIX88(0.6640625),  FIX88(0.671875),
-    FIX88(0.68359375), FIX88(0.69140625), FIX88(0.69921875), FIX88(0.70703125),
-    FIX88(0.71484375), FIX88(0.72265625), FIX88(0.73046875), FIX88(0.73828125),
-    FIX88(0.74609375), FIX88(0.75390625), FIX88(0.76171875), FIX88(0.76953125),
-    FIX88(0.77734375), FIX88(0.78515625), FIX88(0.79296875), FIX88(0.80078125),
-    FIX88(0.8046875),  FIX88(0.8125),     FIX88(0.8203125),  FIX88(0.828125),
-    FIX88(0.83203125), FIX88(0.83984375), FIX88(0.84765625), FIX88(0.8515625),
-    FIX88(0.859375),   FIX88(0.86328125), FIX88(0.87109375), FIX88(0.875),
-    FIX88(0.8828125),  FIX88(0.88671875), FIX88(0.890625),   FIX88(0.8984375),
-    FIX88(0.90234375), FIX88(0.90625),    FIX88(0.9140625),  FIX88(0.91796875),
-    FIX88(0.921875),   FIX88(0.92578125), FIX88(0.9296875),  FIX88(0.93359375),
-    FIX88(0.9375),     FIX88(0.94140625), FIX88(0.9453125),  FIX88(0.94921875),
-    FIX88(0.953125),   FIX88(0.95703125), FIX88(0.9609375),  FIX88(0.96484375),
-    FIX88(0.96875),    FIX88(0.96875),    FIX88(0.97265625), FIX88(0.9765625),
-    FIX88(0.9765625),  FIX88(0.98046875), FIX88(0.984375),   FIX88(0.984375),
-    FIX88(0.98828125), FIX88(0.98828125), FIX88(0.98828125), FIX88(0.9921875),
-    FIX88(0.9921875),  FIX88(0.99609375), FIX88(0.99609375), FIX88(0.99609375),
-    FIX88(0.99609375), FIX88(1.0),        FIX88(1.0),        FIX88(1.0),
-    FIX88(1.0),        FIX88(1.0),        FIX88(1.0)};
+static const float baked_sin[DB_STEPS] = {
+    0.0f,        0.01171875f, 0.0234375f,  0.03515625f, 0.046875f,
+    0.05859375f, 0.0703125f,  0.08203125f, 0.09375f,    0.10546875f,
+    0.1171875f,  0.12890625f, 0.140625f,   0.15234375f, 0.1640625f,
+    0.17578125f, 0.1875f,     0.19921875f, 0.2109375f,  0.22265625f,
+    0.23046875f, 0.2421875f,  0.25390625f, 0.265625f,   0.27734375f,
+    0.2890625f,  0.30078125f, 0.3125f,     0.32421875f, 0.33203125f,
+    0.34375f,    0.35546875f, 0.3671875f,  0.37890625f, 0.38671875f,
+    0.3984375f,  0.41015625f, 0.421875f,   0.4296875f,  0.44140625f,
+    0.453125f,   0.4609375f,  0.47265625f, 0.484375f,   0.4921875f,
+    0.50390625f, 0.51171875f, 0.5234375f,  0.53515625f, 0.54296875f,
+    0.5546875f,  0.5625f,     0.57421875f, 0.58203125f, 0.58984375f,
+    0.6015625f,  0.609375f,   0.62109375f, 0.62890625f, 0.63671875f,
+    0.6484375f,  0.65625f,    0.6640625f,  0.671875f,   0.68359375f,
+    0.69140625f, 0.69921875f, 0.70703125f, 0.71484375f, 0.72265625f,
+    0.73046875f, 0.73828125f, 0.74609375f, 0.75390625f, 0.76171875f,
+    0.76953125f, 0.77734375f, 0.78515625f, 0.79296875f, 0.80078125f,
+    0.8046875f,  0.8125f,     0.8203125f,  0.828125f,   0.83203125f,
+    0.83984375f, 0.84765625f, 0.8515625f,  0.859375f,   0.86328125f,
+    0.87109375f, 0.875f,      0.8828125f,  0.88671875f, 0.890625f,
+    0.8984375f,  0.90234375f, 0.90625f,    0.9140625f,  0.91796875f,
+    0.921875f,   0.92578125f, 0.9296875f,  0.93359375f, 0.9375f,
+    0.94140625f, 0.9453125f,  0.94921875f, 0.953125f,   0.95703125f,
+    0.9609375f,  0.96484375f, 0.96875f,    0.96875f,    0.97265625f,
+    0.9765625f,  0.9765625f,  0.98046875f, 0.984375f,   0.984375f,
+    0.98828125f, 0.98828125f, 0.98828125f, 0.9921875f,  0.9921875f,
+    0.99609375f, 0.99609375f, 0.99609375f, 0.99609375f, 1.0f,
+    1.0f,        1.0f,        1.0f,        1.0f,        1.0f};
 
 /* Chain-sprite anchor — screen x and world y for the chain's bottom-left
  * corner at each animation step (triggered hinge = 221,175).
@@ -144,14 +130,14 @@ bool DrawbridgeTick(void) {
   return false;
 }
 
-float DrawbridgeSurfaceY(int screen_x) {
+int DrawbridgeSurfaceY(int screen_x) {
   int d = db.hinge_x - screen_x; /* distance left of hinge */
-  int c = TRIG_COS(db.progress);
-  int s = baked_sin[db.progress];
+  float c = TRIG_COS(db.progress);
+  float s = baked_sin[db.progress];
   /* tan = s/c; the DB_TRIG_ONE factors cancel: d*s/c (integer division). */
   if (c == 0)
-    return (float)db.hinge_y; /* bridge fully vertical */
-  return (float)db.hinge_y - (float)(d * s) / (float)c;
+    return db.hinge_y; /* bridge fully vertical */
+  return (int)((float)db.hinge_y - ((float)d * s) / c);
 }
 
 int DrawbridgeHingeX(void) {
@@ -164,23 +150,10 @@ void DrawbridgeChainPos(int *out_x, int *out_y) {
   *out_y = p->y;
 }
 
-void DrawbridgeRotatedPoint(float rest_sx, float rest_sy, float *out_sx,
-                            float *out_sy) {
-  /* Convert fixed-point to float once; multiply at boundary. */
-  float cf = (float)TRIG_COS(db.progress) * (1.0f / FIX88_ONE);
-  float sf = (float)baked_sin[db.progress] * (1.0f / FIX88_ONE);
-  float rx = rest_sx - (float)db.hinge_x;
-  float ry = rest_sy - (float)db.hinge_y;
-  *out_sx = (float)db.hinge_x + rx * cf - ry * sf;
-  *out_sy = (float)db.hinge_y + rx * sf + ry * cf;
-}
-
 void DrawbridgeTasks(void) {
   if (db.affine_dirty) {
-    int p = db.progress;
-    /* Convert fixed-point to float at the API boundary only. */
-    float cf = (float)TRIG_COS(p) * (1.0f / FIX88_ONE);
-    float sf = (float)baked_sin[p] * (1.0f / FIX88_ONE);
+    float cf = TRIG_COS(db.progress);
+    float sf = baked_sin[db.progress];
     /* Standard 2-D rotation matrix [[cos,-sin],[sin,cos]].
      * TLN_SetLayerTransformMatrix inverts it internally. */
     TLN_SetLayerTransformMatrix(db.layer, cf, -sf, sf, cf, db.hinge_x,

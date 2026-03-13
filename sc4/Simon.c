@@ -38,6 +38,17 @@ static int dir_change_timer = 0;
 static Direction prev_input = DIR_NONE;
 static int move_frame = 0;
 
+/* When set, replaces tile-based floor collision for the current frame.
+ * 32767 = inactive (no override). Set before calling SimonTasks(). */
+static int bridge_floor = 32767;
+
+void SimonSetBridgeFloor(int feet_y) {
+  bridge_floor = feet_y;
+}
+void SimonClearBridgeFloor(void) {
+  bridge_floor = 32767;
+}
+
 void SimonInit(void) {
   simon = TLN_LoadSpriteset("simon_walk");
   sp = TLN_LoadSequencePack("simon_walk.sqx");
@@ -363,7 +374,19 @@ static void apply_collisions(int s0) {
   int y2 = y + (sy > 0 ? sy / 3 : sy >> 2);
   if (sy < 0 && check_ceiling(x, xworld, &y2, &sy, y))
     apex_hang = 0;
-  check_floor(x, xworld, &y2, &sy);
+  if (bridge_floor < 32767) {
+    /* Bridge surface replaces tile floor check entirely — prevents castle
+     * approach tiles from fighting the bridge geometry.  Uses >= so that
+     * standing still (feet == floor) also zeroes sy every frame, stopping
+     * apex_hang from triggering gravity accumulation between snaps. */
+    if (y2 + SIMON_HEIGHT >= bridge_floor) {
+      y2 = bridge_floor - SIMON_HEIGHT;
+      sy = 0;
+      apex_hang = 0;
+    }
+  } else {
+    check_floor(x, xworld, &y2, &sy);
+  }
   if (s0 > 0 && sy == 0)
     SimonSetState(SIMON_IDLE);
   y = y2;
@@ -434,22 +457,29 @@ void SimonSetScreenX(int screen_x) {
 void SimonSetFeetY(int feet_y) {
   y = feet_y - SIMON_HEIGHT;
   sy = 0; /* suppress gravity so physics doesn't fight the forced position */
+  apex_hang =
+      0; /* reset hang timer so gravity can't accumulate on no-tile surfaces */
   /* Pinning feet to a surface counts as landing: cancel any in-progress jump
    * so the jump sprite clears and the player can jump again next frame. */
-  if (state == SIMON_JUMPING) {
-    apex_hang = 0;
+  if (state == SIMON_JUMPING)
     SimonSetState(SIMON_IDLE);
-  }
   TLN_SetSpritePosition(SIMON_SPRITE, x, y);
 }
 
 void SimonPinFeetY(int feet_y) {
-  /* Position-only correction: does not zero sy or change state.
-   * Use for continuous surface tracking where physics must keep running. */
+  /* Position-only correction: does not change state.
+   * Zeroes sy and resets apex_hang so advance_gravity cannot accumulate
+   * velocity on surfaces without collision tiles (e.g. the drawbridge deck). */
   y = feet_y - SIMON_HEIGHT;
+  sy = 0;
+  apex_hang = 0;
   TLN_SetSpritePosition(SIMON_SPRITE, x, y);
 }
 
 int SimonGetFeetY(void) {
   return y + SIMON_HEIGHT;
+}
+
+void SimonSetWorldX(int wx) {
+  xworld = wx;
 }

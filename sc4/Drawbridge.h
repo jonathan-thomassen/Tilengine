@@ -22,7 +22,7 @@ bool DrawbridgeTick(void);
  * Uses the hinge position and current progress to compute the rotated height.
  * Returns hinge_y when progress is 0 (bridge flat).
  */
-float DrawbridgeSurfaceY(int screen_x);
+int DrawbridgeSurfaceY(int screen_x);
 
 /** Returns the screen x of the bridge hinge (the fixed right-side anchor). */
 int DrawbridgeHingeX(void);
@@ -33,19 +33,6 @@ int DrawbridgeHingeX(void);
  * *out_y is the fully-baked world y (sprite height and drift already folded in).
  */
 void DrawbridgeChainPos(int *out_x, int *out_y);
-
-/**
- * Returns the current screen position of a point that rests at
- * (rest_sx, rest_sy) when the bridge is flat (progress = 0), after applying
- * the bridge's affine rotation.
- *
- * \param rest_sx   Screen x of the point when progress is 0
- * \param rest_sy   Screen y of the point when progress is 0
- * \param out_sx    Receives the rotated screen x
- * \param out_sy    Receives the rotated screen y
- */
-void DrawbridgeRotatedPoint(float rest_sx, float rest_sy, float *out_sx,
-                             float *out_sy);
 
 /**
  * Returns the minimum screen x at which a sprite's feet (at feet_y) no longer

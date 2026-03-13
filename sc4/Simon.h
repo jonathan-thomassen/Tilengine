@@ -47,12 +47,31 @@ void SimonSetScreenX(int screen_x);
 void SimonSetFeetY(int feet_y);
 
 /**
- * Moves Simon's y so his feet are at feet_y without touching sy or state.
- * Use for continuous surface tracking where physics must keep running.
+ * Moves Simon's y so his feet are at feet_y and zeroes fall velocity,
+ * without touching state or apex_hang.
  */
 void SimonPinFeetY(int feet_y);
 
 /** Returns the screen y coordinate of Simon's feet (bottom of sprite). */
 int SimonGetFeetY(void);
+
+/**
+ * Sets a bridge-surface floor override used by SimonTasks() physics.
+ * While active, the tile-based floor check is replaced by a hard clamp at
+ * feet_y — call this BEFORE SimonTasks() every frame Simon is on the bridge.
+ * Clears automatically each frame; re-set each frame while on the bridge.
+ */
+void SimonSetBridgeFloor(int feet_y);
+
+/** Removes the bridge floor override (restores tile-based collision). */
+void SimonClearBridgeFloor(void);
+
+/**
+ * Directly sets the internal world-scroll offset used for tile collision
+ * queries. Call once per frame during forced-scroll sequences (e.g. rails)
+ * after advancing the camera position so that collision queries stay in sync
+ * with the layer scroll position.
+ */
+void SimonSetWorldX(int wx);
 
 #endif

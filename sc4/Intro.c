@@ -18,8 +18,6 @@
 #define WATER_LAYER 2
 #define BACKGROUND_LAYER 3
 
-int xpos;
-
 static int chain_prop_idx = -1;
 static int pillar_prop_idx = -1;
 
@@ -69,36 +67,20 @@ static void step_drawbridge(TLN_Tilemap *p_tilemap, int *p_frame) {
     (*p_frame)++;
 }
 
-/* Pins Simon's feet to the drawbridge surface while the bridge is in motion
- * and pushes him rightward at a rate proportional to the bridge angle.
- * Moving left raises Simon (distance from hinge grows); moving right lowers
- * him. SimonSetFeetY also zeroes sy so gravity doesn't fight the override.
- * Once Simon passes the hinge he is on solid castle ground — stop tracking. */
+/* Pushes Simon rightward proportional to the bridge angle (Bresenham).
+ * Only active while the bridge is animating (db_active) and Simon is left
+ * of the hinge.  The bridge floor itself is set before SimonTasks() via
+ * SimonSetBridgeFloor() so physics handles the surface — no snap needed. */
 static void step_simon_on_bridge(bool db_active) {
-  if (SimonGetScreenX() + 16 < DrawbridgeHingeX()) {
-    int surface_y = (int)DrawbridgeSurfaceY(SimonGetScreenX() + 16);
-    if (!db_active) {
-      /* Flat bridge (before animation): prevent falling through the deck
-       * without touching sy or state — check_floor has no tiles here. */
-      if (SimonGetFeetY() >= surface_y)
-        SimonPinFeetY(surface_y);
-      return;
-    }
-    if (DrawbridgeGetProgress() < 134) {
-      /* Animated bridge: full landing snap — zeroes sy so gravity doesn't
-       * fight the forced position as the surface rises under Simon. */
-      if (SimonGetFeetY() >= surface_y)
-        SimonSetFeetY(surface_y);
-      /* Push Simon rightward by a rate proportional to the bridge angle:
-       * accumulate progress (0→1) each frame; push 1px per whole unit.
-       * Result: no push when flat, 1 px/frame when fully vertical. */
-      static float push_acc = 0.0f;
-      push_acc += (float)DrawbridgeGetProgress() / 134.0f;
-      int push = (int)push_acc;
-      push_acc -= (float)push;
-      if (push > 0)
-        SimonPushRight(push);
-    }
+  if (!db_active || DrawbridgeGetProgress() >= 134)
+    return;
+  if (SimonGetScreenX() + 16 >= DrawbridgeHingeX())
+    return;
+  static int push_acc = 0;
+  push_acc += DrawbridgeGetProgress();
+  if (push_acc >= 134) {
+    push_acc -= 134;
+    SimonPushRight(1);
   }
 }
 
@@ -152,7 +134,7 @@ static void setup_entity_priorities(void) {
 /* Pins the chain sprite to the rotating drawbridge surface.
  * Screen x and y are looked up directly from baked tables.
  */
-static void tick_chain_prop(bool db_triggered) {
+static void tick_chain_prop(bool db_triggered, int xpos) {
   if (db_triggered && chain_prop_idx >= 0) {
     int cx;
     int cy;
@@ -172,16 +154,27 @@ static bool process_pause(bool *p_paused, bool *p_esc_prev) {
 }
 
 /* Increments the frame counter and updates the window title once per second. */
-static void update_fps_title(uint32_t *p_t0, int *p_frames) {
+static void update_fps_title(Uint64 *p_t0, int *p_frames) {
   (*p_frames)++;
-  uint32_t now = (uint32_t)SDL_GetTicks();
+  Uint64 now = SDL_GetTicks();
   if (now - *p_t0 >= 1000) {
     char title[32];
-    SDL_snprintf(title, sizeof(title), "sc4 \xe2\x80\x94 %d fps", *p_frames);
+    SDL_snprintf(title, sizeof(title), "sc4 - %d fps", *p_frames);
     TLN_SetWindowTitle(title);
     *p_frames = 0;
     *p_t0 = now;
   }
+}
+
+/* Advances the drawbridge animation and reports its progress.
+ * No-op when db_triggered is false. */
+static void update_db_animation(bool db_triggered, int *p_frame,
+                                TLN_Tilemap *p_tilemap) {
+  if (!db_triggered)
+    return;
+  if (*p_frame < 134)
+    step_drawbridge(p_tilemap, p_frame);
+  DrawbridgeSetProgress(*p_frame);
 }
 
 /* entry point */
@@ -236,10 +229,18 @@ int main(void) {
   TLN_DefineInputKey(PLAYER1, INPUT_QUIT, SDLK_F4);
   TLN_SetTargetFps(60);
 
-  uint32_t fps_t0 = (uint32_t)SDL_GetTicks();
+  Uint64 fps_t0 = SDL_GetTicks();
   int fps_frames = 0;
   bool paused = false;
   bool esc_prev = false;
+  bool rails_triggered = false;
+  int rails_pos = 0;
+  int rails_step = 0;
+  int rails_max = 0;
+  int xpos = 0;
+  int db_frame = 0;
+  bool db_triggered = false;
+  int prev_xpos = -1;
 
   while (TLN_ProcessWindow()) {
     if (process_pause(&paused, &esc_prev)) {
@@ -247,6 +248,16 @@ int main(void) {
       continue;
     }
 
+    /* Set bridge floor BEFORE SimonTasks so the bridge surface acts as a
+     * true physics floor inside apply_collisions, replacing the tile check
+     * that would otherwise fight the bridge geometry.
+     * Guard on db_triggered (not rails_triggered): the bridge only animates
+     * after xpos >= 768; before that, normal tile floor collision must apply
+     * for the castle approach geometry to work correctly. */
+    if (db_triggered && SimonGetScreenX() + 16 < DrawbridgeHingeX())
+      SimonSetBridgeFloor(DrawbridgeSurfaceY(SimonGetScreenX() + 16));
+    else
+      SimonClearBridgeFloor();
     SimonTasks();
     HudTasks();
 
@@ -255,13 +266,6 @@ int main(void) {
 
     /* Rails: once xpos reaches 633 the camera locks and auto-scrolls right
      * to the end of the tilemap over ~5 seconds (300 frames at 60 fps). */
-    static bool rails_triggered = false;
-    static int rails_pos = 0;
-    static int rails_step = 0;
-    static int rails_max = 0;
-    static int db_frame = 0;
-    static bool db_triggered = false;
-    static int prev_xpos = -1;
     if (!rails_triggered && xpos >= 640) {
       rails_triggered = true;
       rails_pos = xpos;
@@ -295,13 +299,8 @@ int main(void) {
       DrawbridgeSetHinge(DrawbridgeHingeX(), 183 - 8);
       SimonFreezeCamera();
     }
-    if (db_triggered && db_frame < 134)
-      step_drawbridge(&drawbridge_drawbridge, &db_frame);
-    if (db_triggered)
-      DrawbridgeSetProgress(db_frame);
+    update_db_animation(db_triggered, &db_frame, &drawbridge_drawbridge);
 
-    if (rails_triggered)
-      step_simon_on_bridge(db_triggered);
     /* Hard clamp: once the bridge is fully raised it acts as a wall;
      * allow Simon up to 32px closer than the hinge. */
     if (db_frame >= 134 && SimonGetScreenX() < DrawbridgeHingeX() - 32)
@@ -314,10 +313,19 @@ int main(void) {
     if (rails_triggered && !db_triggered)
       SimonSetScreenX(SimonGetScreenX() - camera_delta);
 
+    /* Keep Simon's internal world-x in sync with the camera so that tile
+     * collision queries (check_floor, check_ceiling, check_wall_*) sample
+     * the correct tilemap column.  Without this, xworld stays frozen at the
+     * rails-trigger point while xpos advances, causing check_floor to miss
+     * the floor tiles and making Simon fall through the ground. */
+    if (rails_triggered)
+      SimonSetWorldX(xpos);
+
     /* Camera is locked by SimonFreezeCamera(); xpos stays at its
      * frozen value for all layer positions. */
+    step_simon_on_bridge(db_triggered);
 
-    tick_chain_prop(db_triggered);
+    tick_chain_prop(db_triggered, xpos);
 
     SandblockTasks(xpos);
     TorchTasks(xpos);
