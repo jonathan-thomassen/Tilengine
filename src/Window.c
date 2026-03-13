@@ -202,9 +202,10 @@ static void calibrate_timing(WindowFlags flags) {
     SDL_Delay(1);
   }
   wnd_params.min_delay = (uint32_t)((SDL_GetTicks() - t0) / c);
-  /* keep timeBeginPeriod active for the whole window lifetime for accurate
-   * per-frame delays; it is balanced by timeEndPeriod in delete_window */
+
+#if defined WIN32
   timer_period_active = true;
+#endif
 
   /* capture actual monitor fps */
   SDL_Renderer *temp_renderer = SDL_CreateRenderer(window, NULL);
