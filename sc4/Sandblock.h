@@ -42,6 +42,7 @@ void SandblockTasks(int xworld);
  */
 /** Read-only snapshot of a sandblock used for external collision queries. */
 typedef struct {
+  int index; /* slot index, for SandblockMarkStood() */
   bool falling;
   int world_x;
   int world_y;
@@ -62,5 +63,13 @@ bool SandblockGet(int index, SandblockState *out);
  * advance its crumble counter.  Call when Simon's floor check hits a block.
  */
 void SandblockMarkStood(int index);
+
+/**
+ * Fills \p out with states of all active, non-falling sandblocks.
+ * Returns the number of entries written (0 .. MAX_SANDBLOCKS).
+ * Use this to build a per-frame snapshot and avoid re-scanning the pool
+ * in every collision function.
+ */
+int SandblockSnapshot(SandblockState out[]);
 
 #endif

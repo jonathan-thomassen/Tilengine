@@ -54,6 +54,24 @@ static const float baked_sin[DB_STEPS] = {
     0.99609375f, 0.99609375f, 0.99609375f, 0.99609375f, 1.0f,
     1.0f,        1.0f,        1.0f,        1.0f,        1.0f};
 
+/* Q8 fixed-point tangent table: baked_tan[i] = round(sin[i]/cos[i] * 256).
+ * Entry 134 is 0 (sentinel; cos==0 is caught by the guard in DrawbridgeSurfaceY
+ * before the table is ever indexed). */
+static const int baked_tan[DB_STEPS] = {
+    0,     3,     6,    9,    12,   15,   18,   21,   24,   27,   30,   33,
+    36,    39,    42,   46,   49,   52,   55,   58,   61,   64,   67,   70,
+    74,    77,    81,   84,   88,   90,   94,   97,   101,  105,  107,  111,
+    115,   119,   122,  126,  130,  133,  137,  142,  145,  149,  152,  157,
+    162,   166,   171,  174,  179,  183,  188,  192,  197,  203,  207,  212,
+    218,   223,   228,  233,  240,  245,  250,  256,  262,  268,  274,  281,
+    288,   294,   301,  309,  316,  324,  333,  341,  349,  357,  366,  377,
+    384,   396,   405,  416,  430,  439,  453,  462,  478,  492,  503,  521,
+    538,   550,   571,  590,  610,  625,  648,  672,  698,  726,  746,  778,
+    811,   848,   887,  930,  977,  1024, 1080, 1123, 1185, 1260, 1344, 1434,
+    1542,  1661,  1799, 1970, 2167, 2418, 2720, 3109, 3627, 4369, 5461, 7282,
+    10923, 21845, 0,
+};
+
 /* Chain-sprite anchor — screen x and world y for the chain's bottom-left
  * corner at each animation step (triggered hinge = 221,175).
  * x: screen x; add xpos to get world x.
@@ -132,12 +150,11 @@ bool DrawbridgeTick(void) {
 
 int DrawbridgeSurfaceY(int screen_x) {
   int d = db.hinge_x - screen_x; /* distance left of hinge */
-  float c = TRIG_COS(db.progress);
-  float s = baked_sin[db.progress];
-  /* tan = s/c; the DB_TRIG_ONE factors cancel: d*s/c (integer division). */
-  if (c == 0)
-    return db.hinge_y; /* bridge fully vertical */
-  return (int)((float)db.hinge_y - ((float)d * s) / c);
+  int p = db.progress;
+  if (p >= DB_STEPS - 1)
+    return db.hinge_y; /* bridge fully vertical (cos == 0) */
+  /* Q8 fixed-point: tan*256 is baked_tan[p].  +128 rounds to nearest. */
+  return db.hinge_y - ((d * baked_tan[p] + 128) >> 8);
 }
 
 int DrawbridgeHingeX(void) {

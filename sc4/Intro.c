@@ -94,7 +94,6 @@ static void update_layer_positions(int scroll_x, bool db_triggered,
   TLN_SetLayerPosition(MAIN_LAYER, scroll_x + main_x_off, main_y_off);
   TLN_SetLayerPosition(WATER_LAYER, scroll_x, 0);
   TLN_SetLayerPosition(BACKGROUND_LAYER, scroll_x * 2 / 5, 0);
-  TLN_SetLayerPosition(COLLISION_LAYER, scroll_x, 0);
   *p_prev_xpos = scroll_x;
 }
 

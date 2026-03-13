@@ -33,6 +33,11 @@ static bool camera_frozen = false;
 static int
     layer_width; /* cached TLN_GetLayerWidth(1) — set once in SimonInit */
 
+/* Per-frame snapshot of active, non-falling sandblocks — built once at the
+ * top of SimonTasks() and consumed by all three collision functions. */
+static SandblockState sb_cache[MAX_SANDBLOCKS];
+static int sb_count;
+
 static Direction air_dir = DIR_NONE;
 static int dir_change_timer = 0;
 static Direction prev_input = DIR_NONE;
@@ -121,19 +126,17 @@ static bool check_wall_right(int sprite_x, int world_x, int sprite_y) {
       return true;
   }
   int wall_x = sprite_x + world_x + 24;
-  SandblockState sb;
-  for (int i = 0; i < MAX_SANDBLOCKS; i++) {
-    if (!SandblockGet(i, &sb) || sb.falling)
-      continue;
-    if (wall_x < sb.world_x || wall_x >= sb.world_x + SANDBLOCK_WIDTH)
+  for (int i = 0; i < sb_count; i++) {
+    const SandblockState *sb = &sb_cache[i];
+    if (wall_x < sb->world_x || wall_x >= sb->world_x + SANDBLOCK_WIDTH)
       continue;
     /* cull blocks entirely above or below the sampled y range */
-    if (sprite_y + 4 >= sb.world_y + SANDBLOCK_HEIGHT ||
-        sprite_y + 36 < sb.world_y)
+    if (sprite_y + 4 >= sb->world_y + SANDBLOCK_HEIGHT ||
+        sprite_y + 36 < sb->world_y)
       continue;
     for (int c = 4; c < 44; c += 16) {
-      if (sprite_y + c >= sb.world_y &&
-          sprite_y + c < sb.world_y + SANDBLOCK_HEIGHT)
+      if (sprite_y + c >= sb->world_y &&
+          sprite_y + c < sb->world_y + SANDBLOCK_HEIGHT)
         return true;
     }
   }
@@ -157,19 +160,17 @@ static bool check_wall_left(int sprite_x, int world_x, int sprite_y) {
       return true;
   }
   int wall_x = sprite_x + world_x + 8;
-  SandblockState sb;
-  for (int i = 0; i < MAX_SANDBLOCKS; i++) {
-    if (!SandblockGet(i, &sb) || sb.falling)
-      continue;
-    if (wall_x < sb.world_x || wall_x >= sb.world_x + SANDBLOCK_WIDTH)
+  for (int i = 0; i < sb_count; i++) {
+    const SandblockState *sb = &sb_cache[i];
+    if (wall_x < sb->world_x || wall_x >= sb->world_x + SANDBLOCK_WIDTH)
       continue;
     /* cull blocks entirely above or below the sampled y range */
-    if (sprite_y + 4 >= sb.world_y + SANDBLOCK_HEIGHT ||
-        sprite_y + 36 < sb.world_y)
+    if (sprite_y + 4 >= sb->world_y + SANDBLOCK_HEIGHT ||
+        sprite_y + 36 < sb->world_y)
       continue;
     for (int c = 4; c < 44; c += 16) {
-      if (sprite_y + c >= sb.world_y &&
-          sprite_y + c < sb.world_y + SANDBLOCK_HEIGHT)
+      if (sprite_y + c >= sb->world_y &&
+          sprite_y + c < sb->world_y + SANDBLOCK_HEIGHT)
         return true;
     }
   }
@@ -254,21 +255,19 @@ static void check_floor(int sprite_x, int world_x, int *inout_y,
     }
   }
   int foot_y = *inout_y + 46;
-  SandblockState sb;
-  for (int i = 0; i < MAX_SANDBLOCKS; i++) {
-    if (!SandblockGet(i, &sb) || sb.falling)
-      continue;
+  for (int i = 0; i < sb_count; i++) {
+    const SandblockState *sb = &sb_cache[i];
     /* cull blocks whose x range can't contain either foot sample */
-    if (sprite_x + 16 + world_x < sb.world_x ||
-        sprite_x + 8 + world_x >= sb.world_x + SANDBLOCK_WIDTH)
+    if (sprite_x + 16 + world_x < sb->world_x ||
+        sprite_x + 8 + world_x >= sb->world_x + SANDBLOCK_WIDTH)
       continue;
     for (int c = 8; c < 24; c += 8) {
       int foot_x = sprite_x + c + world_x;
-      if (foot_x >= sb.world_x && foot_x < sb.world_x + SANDBLOCK_WIDTH &&
-          foot_y >= sb.world_y && foot_y < sb.world_y + SANDBLOCK_HEIGHT) {
+      if (foot_x >= sb->world_x && foot_x < sb->world_x + SANDBLOCK_WIDTH &&
+          foot_y >= sb->world_y && foot_y < sb->world_y + SANDBLOCK_HEIGHT) {
         *inout_vy = 0;
-        *inout_y = sb.world_y - 46;
-        SandblockMarkStood(i);
+        *inout_y = sb->world_y - 46;
+        SandblockMarkStood(sb->index);
         return;
       }
     }
@@ -398,6 +397,8 @@ static void apply_collisions(int s0) {
 }
 
 void SimonTasks(void) {
+  sb_count = SandblockSnapshot(sb_cache);
+
   Direction input = DIR_NONE;
   bool jump = false;
 

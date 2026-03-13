@@ -36,6 +36,9 @@ static SDL_FRect dstrect;
 
 static bool init;
 static bool done;
+#if defined WIN32
+static bool timer_period_active = false;
+#endif
 static int wnd_width;
 static int wnd_height;
 static int instances = 0;
@@ -199,6 +202,9 @@ static void calibrate_timing(WindowFlags flags) {
     SDL_Delay(1);
   }
   wnd_params.min_delay = (uint32_t)((SDL_GetTicks() - t0) / c);
+  /* keep timeBeginPeriod active for the whole window lifetime for accurate
+   * per-frame delays; it is balanced by timeEndPeriod in delete_window */
+  timer_period_active = true;
 
   /* capture actual monitor fps */
   SDL_Renderer *temp_renderer = SDL_CreateRenderer(window, NULL);
@@ -221,10 +227,6 @@ static void calibrate_timing(WindowFlags flags) {
     }
     engine->timing.target_fps = target_fps;
   }
-
-#if defined WIN32
-  timeEndPeriod(1);
-#endif
 }
 
 /* create window delegate */
@@ -299,6 +301,12 @@ static void resize_window(int new_factor) {
 
 /* destroy window delegate */
 static void delete_window(void) {
+#if defined WIN32
+  if (timer_period_active) {
+    timeEndPeriod(1);
+    timer_period_active = false;
+  }
+#endif
   /* close all player joysticks */
   for (int i = 0; i < MAX_PLAYERS; i++) {
     if (player_inputs[i].joy != NULL) {
@@ -964,9 +972,6 @@ static void EndWindowFrame(void) {
 
   /* no vsync: timed sync */
   if (flags.novsync) {
-#if defined WIN32
-    timeBeginPeriod(1);
-#endif
     Engine const *context = TLN_GetContext();
     const int fps = context->timing.target_fps;
     /* sub-millisecond accumulator: tracks the fractional ms remainder so the
@@ -984,13 +989,11 @@ static void EndWindowFrame(void) {
     uint32_t due_time = wnd_params.t0 + delay_ms;
     uint32_t now = (uint32_t)SDL_GetTicks();
     while (now < due_time) {
-      if (due_time - now > wnd_params.min_delay)
-        SDL_Delay(wnd_params.min_delay);
+      uint32_t remaining = due_time - now;
+      if (remaining > wnd_params.min_delay)
+        SDL_Delay(remaining - wnd_params.min_delay);
       now = (uint32_t)SDL_GetTicks();
     }
-#if defined WIN32
-    timeEndPeriod(1);
-#endif
   }
 
   SDL_RenderPresent(renderer);

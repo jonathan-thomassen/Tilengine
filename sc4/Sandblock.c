@@ -115,6 +115,7 @@ void SandblockTasks(int xworld) {
 bool SandblockGet(int index, SandblockState *out) {
   if (index < 0 || index >= MAX_SANDBLOCKS || !blocks[index].active)
     return false;
+  out->index = index;
   out->falling = blocks[index].falling;
   out->world_x = blocks[index].world_x;
   out->world_y = blocks[index].world_y;
@@ -124,4 +125,18 @@ bool SandblockGet(int index, SandblockState *out) {
 void SandblockMarkStood(int index) {
   if (index >= 0 && index < MAX_SANDBLOCKS)
     blocks[index].stood_this_frame = true;
+}
+
+int SandblockSnapshot(SandblockState out[]) {
+  int n = 0;
+  for (int i = 0; i < MAX_SANDBLOCKS; i++) {
+    if (!blocks[i].active || blocks[i].falling)
+      continue;
+    out[n].index = i;
+    out[n].falling = false;
+    out[n].world_x = blocks[i].world_x;
+    out[n].world_y = blocks[i].world_y;
+    n++;
+  }
+  return n;
 }
