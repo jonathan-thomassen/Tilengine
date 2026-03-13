@@ -6,15 +6,12 @@ on:
   pull_request:
     branches: ["**"]
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Install system dependencies
         run: |
@@ -29,7 +26,7 @@ jobs:
 
       - name: Cache SDL3
         id: cache_sdl3
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: /opt/sdl3
           key: sdl3-3.2.8-${{ runner.os }}
