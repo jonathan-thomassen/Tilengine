@@ -853,7 +853,6 @@ bool TLN_SetLayerTransformMatrix(int nlayer, float a, float b, float c, float d,
                                  int x0, int y0) {
   Layer *layer;
   float det;
-  float inv_det;
 
   if (nlayer >= engine->numlayers) {
     TLN_SetLastError(TLN_ERR_IDX_LAYER);
@@ -872,6 +871,7 @@ bool TLN_SetLayerTransformMatrix(int nlayer, float a, float b, float c, float d,
     float px = (float)layer->hstart + (float)x0;
     float py = (float)layer->vstart + (float)y0;
     float inv_data[9];
+    float inv_det;
 
     inv_det = 1.0f / det;
     /* Inverse of [[a,b],[c,d]], row-major {m11,m12,m13, m21,m22,m23,
