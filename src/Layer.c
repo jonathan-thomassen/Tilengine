@@ -25,8 +25,7 @@
 #include "Tileset.h"
 
 static void SetBlitter(Layer *layer);
-static void apply_priority_attributes(struct Tileset const *tileset,
-                                      TLN_Tilemap tilemap);
+static void apply_priority_attributes(struct Tileset const *tileset, TLN_Tilemap tilemap);
 
 /*!
  * \brief Configures a tiled background layer with the specified tilemap
@@ -36,64 +35,67 @@ static void apply_priority_attributes(struct Tileset const *tileset,
  * \see TLN_LoadTilemap()
  */
 bool TLN_SetLayerTilemap(int nlayer, TLN_Tilemap tilemap) {
-  Layer *layer;
-  TLN_Tileset tileset;
+    Layer *layer;
+    TLN_Tileset tileset;
 
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
-
-  layer = &engine->layers[nlayer];
-  layer->flags.ok = false;
-  if (!CheckBaseObject(tilemap, OT_TILEMAP))
-    return false;
-
-  /* select tilemap's own tileset */
-  tileset = tilemap->tilesets[0];
-
-  if (!CheckBaseObject(tileset, OT_TILESET))
-    return false;
-
-  layer->tilemap = tilemap;
-  layer->width = tilemap->cols * tileset->width;
-  layer->height = tilemap->rows * tileset->height;
-  layer->bitmap = NULL;
-  layer->objects = NULL;
-  layer->type = LAYER_TILE;
-
-  /* common operations per tileset */
-  for (int ts = 0; ts < MAX_TILESETS; ts += 1) {
-    tileset = tilemap->tilesets[ts];
-    if (tileset == NULL)
-      break;
-
-    /* apply priority attribute */
-    apply_priority_attributes(tileset, tilemap);
-
-    /* start animations */
-    if (tileset->sp != NULL) {
-      int c;
-      TLN_Sequence sequence;
-
-      c = 0;
-      sequence = tileset->sp->sequences;
-      while (sequence != NULL) {
-        SetTilesetAnimation(tileset, c, sequence);
-        sequence = sequence->next;
-        c += 1;
-      }
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
     }
-  }
 
-  if (tilemap->visible) {
-    layer->flags.ok = true;
-    layer->render.draw = GetLayerDraw(layer);
-    SetBlitter(layer);
-  }
+    layer = &engine->layers[nlayer];
+    layer->flags.ok = false;
+    if (!CheckBaseObject(tilemap, OT_TILEMAP)) {
+        return false;
+    }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    /* select tilemap's own tileset */
+    tileset = tilemap->tilesets[0];
+
+    if (!CheckBaseObject(tileset, OT_TILESET)) {
+        return false;
+    }
+
+    layer->tilemap = tilemap;
+    layer->width = tilemap->cols * tileset->width;
+    layer->height = tilemap->rows * tileset->height;
+    layer->bitmap = NULL;
+    layer->objects = NULL;
+    layer->type = LAYER_TILE;
+
+    /* common operations per tileset */
+    for (int ts = 0; ts < MAX_TILESETS; ts += 1) {
+        tileset = tilemap->tilesets[ts];
+        if (tileset == NULL) {
+            break;
+        }
+
+        /* apply priority attribute */
+        apply_priority_attributes(tileset, tilemap);
+
+        /* start animations */
+        if (tileset->sp != NULL) {
+            int c;
+            TLN_Sequence sequence;
+
+            c = 0;
+            sequence = tileset->sp->sequences;
+            while (sequence != NULL) {
+                SetTilesetAnimation(tileset, c, sequence);
+                sequence = sequence->next;
+                c += 1;
+            }
+        }
+    }
+
+    if (tilemap->visible) {
+        layer->flags.ok = true;
+        layer->render.draw = GetLayerDraw(layer);
+        SetBlitter(layer);
+    }
+
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -114,36 +116,36 @@ bool TLN_SetLayerTilemap(int nlayer, TLN_Tilemap tilemap) {
  * TLN_LoadBitmap() TLN_DisableLayer()
  */
 bool TLN_SetLayerBitmap(int nlayer, TLN_Bitmap bitmap) {
-  Layer *layer;
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    Layer *layer;
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  layer = &engine->layers[nlayer];
-  layer->flags.ok = false;
-  if (!CheckBaseObject(bitmap, OT_BITMAP))
-    return false;
+    layer = &engine->layers[nlayer];
+    layer->flags.ok = false;
+    if (!CheckBaseObject(bitmap, OT_BITMAP)) {
+        return false;
+    }
 
-  layer->tilemap = NULL;
-  layer->bitmap = bitmap;
-  layer->objects = NULL;
-  layer->width = bitmap->width;
-  layer->height = bitmap->height;
+    layer->tilemap = NULL;
+    layer->bitmap = bitmap;
+    layer->objects = NULL;
+    layer->width = bitmap->width;
+    layer->height = bitmap->height;
 
-  /* require palette */
-  if (bitmap->palette != NULL) {
-    layer->type = LAYER_BITMAP;
-    layer->flags.ok = true;
-    layer->render.draw = GetLayerDraw(layer);
-    SetBlitter(layer);
-    TLN_SetLastError(TLN_ERR_OK);
-    return true;
-  } else {
+    /* require palette */
+    if (bitmap->palette != NULL) {
+        layer->type = LAYER_BITMAP;
+        layer->flags.ok = true;
+        layer->render.draw = GetLayerDraw(layer);
+        SetBlitter(layer);
+        TLN_SetLastError(TLN_ERR_OK);
+        return true;
+    }
     layer->flags.ok = false;
     TLN_SetLastError(TLN_ERR_REF_PALETTE);
     return false;
-  }
 }
 
 /*!
@@ -156,58 +158,57 @@ bool TLN_SetLayerBitmap(int nlayer, TLN_Bitmap bitmap) {
  * object list must have an attached tileset
  * \see TLN_LoadObjectList()
  */
-bool TLN_SetLayerObjects(int nlayer, TLN_ObjectList objects,
-                         TLN_Tileset tileset) {
-  Layer *layer = NULL;
-  TLN_Object *item = NULL;
+bool TLN_SetLayerObjects(int nlayer, TLN_ObjectList objects, TLN_Tileset tileset) {
+    Layer *layer = NULL;
+    TLN_Object *item = NULL;
 
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
-  layer = &engine->layers[nlayer];
-  layer->flags.ok = false;
-
-  if (!CheckBaseObject(objects, OT_OBJECTLIST)) {
-    TLN_SetLastError(TLN_ERR_REF_LIST);
-    return false;
-  }
-
-  if (tileset == NULL)
-    tileset = objects->tileset;
-  if (!CheckBaseObject(tileset, OT_TILESET) ||
-      tileset->tstype != TILESET_IMAGES) {
-    TLN_SetLastError(TLN_ERR_REF_TILESET);
-    return false;
-  }
-
-  layer->tilemap = NULL;
-  layer->bitmap = NULL;
-  layer->objects = objects;
-  layer->width = objects->width;
-  layer->height = objects->height;
-  layer->type = LAYER_OBJECT;
-
-  /* link objects to actual bitmaps */
-  item = objects->list;
-  while (item) {
-    if (item->visible && item->has_gid) {
-      item->bitmap = GetTilesetBitmap(tileset, item->gid);
-      if (item->bitmap) {
-        item->width = item->bitmap->width;
-        item->height = item->bitmap->height;
-      }
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
     }
-    item = item->next;
-  }
+    layer = &engine->layers[nlayer];
+    layer->flags.ok = false;
 
-  if (objects->visible) {
-    layer->flags.ok = true;
-    layer->render.draw = GetLayerDraw(layer);
-    SetBlitter(layer);
-  }
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    if (!CheckBaseObject(objects, OT_OBJECTLIST)) {
+        TLN_SetLastError(TLN_ERR_REF_LIST);
+        return false;
+    }
+
+    if (tileset == NULL) {
+        tileset = objects->tileset;
+    }
+    if (!CheckBaseObject(tileset, OT_TILESET) || tileset->tstype != TILESET_IMAGES) {
+        TLN_SetLastError(TLN_ERR_REF_TILESET);
+        return false;
+    }
+
+    layer->tilemap = NULL;
+    layer->bitmap = NULL;
+    layer->objects = objects;
+    layer->width = objects->width;
+    layer->height = objects->height;
+    layer->type = LAYER_OBJECT;
+
+    /* link objects to actual bitmaps */
+    item = objects->list;
+    while (item) {
+        if ((int)item->visible && (int)item->has_gid) {
+            item->bitmap = GetTilesetBitmap(tileset, item->gid);
+            if (item->bitmap) {
+                item->width = item->bitmap->width;
+                item->height = item->bitmap->height;
+            }
+        }
+        item = item->next;
+    }
+
+    if (objects->visible) {
+        layer->flags.ok = true;
+        layer->render.draw = GetLayerDraw(layer);
+        SetBlitter(layer);
+    }
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -217,15 +218,15 @@ bool TLN_SetLayerObjects(int nlayer, TLN_ObjectList objects,
  * \param enable Enable (true) or dsiable (false) full priority
  */
 bool TLN_SetLayerPriority(int nlayer, bool enable) {
-  Layer *layer;
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    Layer *layer;
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  layer = &engine->layers[nlayer];
-  layer->flags.priority = enable;
-  return true;
+    layer = &engine->layers[nlayer];
+    layer->flags.priority = enable;
+    return true;
 }
 
 /*!
@@ -238,13 +239,13 @@ bool TLN_SetLayerPriority(int nlayer, bool enable) {
  * \see TLN_SetLayer(), TLN_GetLayerHeight()
  */
 int TLN_GetLayerWidth(int nlayer) {
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return 0;
+    }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return engine->layers[nlayer].width;
+    TLN_SetLastError(TLN_ERR_OK);
+    return engine->layers[nlayer].width;
 }
 
 /*!
@@ -257,13 +258,13 @@ int TLN_GetLayerWidth(int nlayer) {
  * \see TLN_SetLayer(), TLN_GetLayerWidth()
  */
 int TLN_GetLayerHeight(int nlayer) {
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return 0;
+    }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return engine->layers[nlayer].height;
+    TLN_SetLastError(TLN_ERR_OK);
+    return engine->layers[nlayer].height;
 }
 
 /*!
@@ -286,21 +287,21 @@ int TLN_GetLayerHeight(int nlayer) {
  * effect" in a pseudo 3d background
  */
 bool TLN_SetLayerPalette(int nlayer, TLN_Palette palette) {
-  Layer *layer;
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    Layer *layer;
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  layer = &engine->layers[nlayer];
-  if (!CheckBaseObject(palette, OT_PALETTE)) {
-    layer->flags.ok = false;
-    return false;
-  }
+    layer = &engine->layers[nlayer];
+    if (!CheckBaseObject(palette, OT_PALETTE)) {
+        layer->flags.ok = false;
+        return false;
+    }
 
-  layer->palette = palette;
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    layer->palette = palette;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -312,24 +313,25 @@ bool TLN_SetLayerPalette(int nlayer, TLN_Palette palette) {
  * \see TLN_SetLayerPalette()
  */
 TLN_Palette TLN_GetLayerPalette(int nlayer) {
-  if (nlayer < engine->numlayers) {
-    Layer *layer = &engine->layers[nlayer];
-    TLN_SetLastError(TLN_ERR_OK);
+    if (nlayer < engine->numlayers) {
+        Layer *layer = &engine->layers[nlayer];
+        TLN_SetLastError(TLN_ERR_OK);
 
-    if (layer->palette != NULL)
-      return layer->palette;
-    else if (layer->bitmap != NULL && layer->bitmap->palette != NULL)
-      return layer->bitmap->palette;
-    else if (layer->tilemap != NULL && layer->tilemap->tilesets[0] != NULL &&
-             layer->tilemap->tilesets[0]->palette != NULL)
-      return layer->tilemap->tilesets[0]->palette;
+        if (layer->palette != NULL) {
+            return layer->palette;
+        }
+        if (layer->bitmap != NULL && layer->bitmap->palette != NULL)
+            return layer->bitmap->palette;
+        else if (layer->tilemap != NULL && layer->tilemap->tilesets[0] != NULL &&
+                 layer->tilemap->tilesets[0]->palette != NULL)
+            return layer->tilemap->tilesets[0]->palette;
 
-    TLN_SetLastError(TLN_ERR_REF_PALETTE);
+        TLN_SetLastError(TLN_ERR_REF_PALETTE);
+        return NULL;
+    }
+
+    TLN_SetLastError(TLN_ERR_IDX_LAYER);
     return NULL;
-  }
-
-  TLN_SetLastError(TLN_ERR_IDX_LAYER);
-  return NULL;
 }
 
 /*!
@@ -339,13 +341,13 @@ TLN_Palette TLN_GetLayerPalette(int nlayer) {
  * \see TLN_SetLayerTilemap(), TLN_SetLayerObjects(), TLN_SetLayerBitmap()
  */
 TLN_LayerType TLN_GetLayerType(int nlayer) {
-  if (nlayer < engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return engine->layers[nlayer].type;
-  }
+    if (nlayer < engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return engine->layers[nlayer].type;
+    }
 
-  TLN_SetLastError(TLN_ERR_IDX_LAYER);
-  return LAYER_NONE;
+    TLN_SetLastError(TLN_ERR_IDX_LAYER);
+    return LAYER_NONE;
 }
 
 /*!
@@ -355,13 +357,13 @@ TLN_LayerType TLN_GetLayerType(int nlayer) {
  * \see TLN_SetLayerTilemap()
  */
 TLN_Tilemap TLN_GetLayerTilemap(int nlayer) {
-  if (nlayer < engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return engine->layers[nlayer].tilemap;
-  }
+    if (nlayer < engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return engine->layers[nlayer].tilemap;
+    }
 
-  TLN_SetLastError(TLN_ERR_IDX_LAYER);
-  return NULL;
+    TLN_SetLastError(TLN_ERR_IDX_LAYER);
+    return NULL;
 }
 
 /*!
@@ -371,13 +373,13 @@ TLN_Tilemap TLN_GetLayerTilemap(int nlayer) {
  * \see TLN_SetLayerBitmap()
  */
 TLN_Bitmap TLN_GetLayerBitmap(int nlayer) {
-  if (nlayer < engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return engine->layers[nlayer].bitmap;
-  }
+    if (nlayer < engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return engine->layers[nlayer].bitmap;
+    }
 
-  TLN_SetLastError(TLN_ERR_IDX_LAYER);
-  return NULL;
+    TLN_SetLastError(TLN_ERR_IDX_LAYER);
+    return NULL;
 }
 
 /*!
@@ -387,13 +389,13 @@ TLN_Bitmap TLN_GetLayerBitmap(int nlayer) {
  * \see TLN_SetLayerObjects(), TLN_GetListObject()
  */
 TLN_ObjectList TLN_GetLayerObjects(int nlayer) {
-  if (nlayer < engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return engine->layers[nlayer].objects;
-  }
+    if (nlayer < engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return engine->layers[nlayer].objects;
+    }
 
-  TLN_SetLastError(TLN_ERR_IDX_LAYER);
-  return NULL;
+    TLN_SetLastError(TLN_ERR_IDX_LAYER);
+    return NULL;
 }
 
 /*!
@@ -422,31 +424,34 @@ TLN_ObjectList TLN_GetLayerObjects(int nlayer) {
  * simualte a pseudo 3d floor, or many racing games to simulate a 3D road.
  */
 bool TLN_SetLayerPosition(int nlayer, int hstart, int vstart) {
-  Layer *layer;
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    Layer *layer;
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  layer = &engine->layers[nlayer];
-  if (layer->width == 0 || layer->height == 0) {
-    TLN_SetLastError(TLN_ERR_REF_TILEMAP);
-    return false;
-  }
+    layer = &engine->layers[nlayer];
+    if (layer->width == 0 || layer->height == 0) {
+        TLN_SetLastError(TLN_ERR_REF_TILEMAP);
+        return false;
+    }
 
-  /* wrapping */
-  layer->hstart = hstart % layer->width;
-  layer->vstart = vstart % layer->height;
-  if (layer->hstart < 0)
-    layer->hstart += layer->width;
-  if (layer->vstart < 0)
-    layer->vstart += layer->height;
+    /* wrapping */
+    layer->hstart = hstart % layer->width;
+    layer->vstart = vstart % layer->height;
+    if (layer->hstart < 0) {
+        layer->hstart += layer->width;
+    }
+    if (layer->vstart < 0) {
+        layer->vstart += layer->height;
+    }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  if ((layer->tilemap && layer->tilemap->visible) ||
-      (layer->objects && layer->objects->visible))
-    layer->flags.ok = true;
-  return true;
+    TLN_SetLastError(TLN_ERR_OK);
+    if ((layer->tilemap && (int)layer->tilemap->visible) ||
+        (layer->objects && (int)layer->objects->visible)) {
+        layer->flags.ok = true;
+    }
+    return true;
 }
 
 /*
@@ -456,13 +461,13 @@ bool TLN_SetLayerPosition(int nlayer, int hstart, int vstart) {
  * \see TLN_SetLayerPosition()
  */
 int TLN_GetLayerX(int nlayer) {
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return 0;
-  }
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return 0;
+    }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return engine->layers[nlayer].hstart;
+    TLN_SetLastError(TLN_ERR_OK);
+    return engine->layers[nlayer].hstart;
 }
 
 /*
@@ -472,13 +477,13 @@ int TLN_GetLayerX(int nlayer) {
  * \see TLN_SetLayerPosition()
  */
 int TLN_GetLayerY(int nlayer) {
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return 0;
-  }
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return 0;
+    }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return engine->layers[nlayer].vstart;
+    TLN_SetLastError(TLN_ERR_OK);
+    return engine->layers[nlayer].vstart;
 }
 
 /*!
@@ -509,72 +514,77 @@ int TLN_GetLayerY(int nlayer) {
  * TLN_TileInfo
  */
 bool TLN_GetLayerTile(int nlayer, int x, int y, TLN_TileInfo *info) {
-  Layer *layer;
-  struct Tileset const *tileset;
-  struct Tilemap const *tilemap;
-  union Tile const *tile;
-  int xpos;
-  int ypos;
-  int xtile;
-  int ytile;
-  int srcx;
-  int srcy;
-  int column_offset = 0;
+    Layer *layer;
+    struct Tileset const *tileset;
+    struct Tilemap const *tilemap;
+    union Tile const *tile;
+    int xpos;
+    int ypos;
+    int xtile;
+    int ytile;
+    int srcx;
+    int srcy;
+    int column_offset = 0;
 
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
-  if (!info) {
-    TLN_SetLastError(TLN_ERR_NULL_POINTER);
-    return false;
-  }
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
+    if (!info) {
+        TLN_SetLastError(TLN_ERR_NULL_POINTER);
+        return false;
+    }
 
-  layer = &engine->layers[nlayer];
-  if (!CheckBaseObject(layer->tilemap, OT_TILEMAP) ||
-      !CheckBaseObject(layer->tilemap->tilesets[0], OT_TILESET))
-    return false;
+    layer = &engine->layers[nlayer];
+    if (!CheckBaseObject(layer->tilemap, OT_TILEMAP) ||
+        !CheckBaseObject(layer->tilemap->tilesets[0], OT_TILESET)) {
+        return false;
+    }
 
-  tilemap = layer->tilemap;
-  tileset = tilemap->tilesets[0];
+    tilemap = layer->tilemap;
+    tileset = tilemap->tilesets[0];
 
-  xpos = x % layer->width;
-  if (xpos < 0)
-    xpos += layer->width;
-  xtile = xpos >> tileset->hshift;
-  srcx = xpos & GetTilesetHMask(tileset);
+    xpos = x % layer->width;
+    if (xpos < 0) {
+        xpos += layer->width;
+    }
+    xtile = xpos >> tileset->hshift;
+    srcx = xpos & GetTilesetHMask(tileset);
 
-  if (layer->column) {
-    int column = x / tileset->width;
-    if (xpos != 0 && x > xpos)
-      column++;
-    column_offset = layer->column[column];
-  }
+    if (layer->column) {
+        int column = x / tileset->width;
+        if (xpos != 0 && x > xpos) {
+            column++;
+        }
+        column_offset = layer->column[column];
+    }
 
-  ypos = (y + column_offset) % layer->height;
-  if (ypos < 0)
-    ypos += layer->height;
-  srcy = ypos & GetTilesetVMask(tileset);
+    ypos = (y + column_offset) % layer->height;
+    if (ypos < 0) {
+        ypos += layer->height;
+    }
+    srcy = ypos & GetTilesetVMask(tileset);
 
-  ytile = ypos >> tileset->vshift;
-  tile = &tilemap->tiles[ytile * tilemap->cols + xtile];
+    ytile = ypos >> tileset->vshift;
+    tile = &tilemap->tiles[(ytile * tilemap->cols) + xtile];
 
-  memset(info, 0, sizeof(TLN_TileInfo));
-  info->col = xtile;
-  info->row = ytile;
-  info->xoffset = srcx;
-  info->yoffset = srcy;
-  if (tile->index != 0) {
-    tileset = tilemap->tilesets[tile->tileset];
-    info->index = tile->index - 1;
-    info->flags = tile->flags;
-    info->color = GetTilesetPixel(tileset, tile->index, srcx, srcy);
-    info->type = tileset->attributes[info->index].type;
-  } else
-    info->empty = true;
+    memset(info, 0, sizeof(TLN_TileInfo));
+    info->col = xtile;
+    info->row = ytile;
+    info->xoffset = srcx;
+    info->yoffset = srcy;
+    if (tile->index != 0) {
+        tileset = tilemap->tilesets[tile->tileset];
+        info->index = tile->index - 1;
+        info->flags = tile->flags;
+        info->color = GetTilesetPixel(tileset, tile->index, srcx, srcy);
+        info->type = tileset->attributes[info->index].type;
+    } else {
+        info->empty = true;
+    }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -598,14 +608,14 @@ bool TLN_GetLayerTile(int nlayer, int x, int y, TLN_TileInfo *info) {
  * used this trick to simulate partially rotating backgrounds
  */
 bool TLN_SetLayerColumnOffset(int nlayer, int *offset) {
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  engine->layers[nlayer].column = offset;
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    engine->layers[nlayer].column = offset;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*! \brief Enables a layer previously disabled with \ref TLN_DisableLayer
@@ -614,38 +624,38 @@ bool TLN_SetLayerColumnOffset(int nlayer, int *offset) {
  * prior configuration can't be enabled
  */
 bool TLN_EnableLayer(int nlayer) {
-  Layer *layer = NULL;
+    Layer *layer = NULL;
 
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  layer = &engine->layers[nlayer];
+    layer = &engine->layers[nlayer];
 
-  /* check proper config */
-  bool configured = false;
-  switch (layer->type) {
+    /* check proper config */
+    bool configured = false;
+    switch (layer->type) {
     case LAYER_TILE:
-      configured = layer->tilemap != NULL;
-      break;
+        configured = layer->tilemap != NULL;
+        break;
     case LAYER_BITMAP:
-      configured = layer->bitmap != NULL;
-      break;
+        configured = layer->bitmap != NULL;
+        break;
     case LAYER_OBJECT:
-      configured = layer->objects != NULL;
-      break;
+        configured = layer->objects != NULL;
+        break;
     default:
-      break;
-  }
-  if (configured) {
-    layer->flags.ok = true;
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return true;
-  }
+        break;
+    }
+    if (configured) {
+        layer->flags.ok = true;
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return true;
+    }
 
-  TLN_SetLastError(TLN_ERR_NULL_POINTER);
-  return false;
+    TLN_SetLastError(TLN_ERR_NULL_POINTER);
+    return false;
 }
 
 /*!
@@ -663,14 +673,14 @@ bool TLN_EnableLayer(int nlayer) {
  * TLN_SetLayer()
  */
 bool TLN_DisableLayer(int nlayer) {
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  engine->layers[nlayer].flags.ok = false;
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    engine->layers[nlayer].flags.ok = false;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -699,35 +709,35 @@ bool TLN_DisableLayer(int nlayer) {
  * TLN_SetLayerTransform()
  */
 bool TLN_SetLayerAffineTransform(int nlayer, TLN_Affine const *affine) {
-  Layer *layer;
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    Layer *layer;
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  layer = &engine->layers[nlayer];
-  if (affine) {
-    Matrix3 transform;
-    math2d_t dx = (float)layer->hstart + affine->dx;
-    math2d_t dy = (float)layer->vstart + affine->dy;
+    layer = &engine->layers[nlayer];
+    if (affine) {
+        Matrix3 transform;
+        math2d_t dx = (float)layer->hstart + affine->dx;
+        math2d_t dy = (float)layer->vstart + affine->dy;
 
-    Matrix3SetIdentity(&layer->transform);
-    Matrix3SetTranslation(&transform, -dx, -dy);
-    Matrix3Multiply(&layer->transform, &transform);
-    Matrix3SetRotation(&transform, fmodf(-affine->angle, 360.0f));
-    Matrix3Multiply(&layer->transform, &transform);
-    Matrix3SetScale(&transform, 1 / affine->sx, 1 / affine->sy);
-    Matrix3Multiply(&layer->transform, &transform);
-    Matrix3SetTranslation(&transform, dx, dy);
-    Matrix3Multiply(&layer->transform, &transform);
+        Matrix3SetIdentity(&layer->transform);
+        Matrix3SetTranslation(&transform, -dx, -dy);
+        Matrix3Multiply(&layer->transform, &transform);
+        Matrix3SetRotation(&transform, fmodf(-affine->angle, 360.0F));
+        Matrix3Multiply(&layer->transform, &transform);
+        Matrix3SetScale(&transform, 1 / affine->sx, 1 / affine->sy);
+        Matrix3Multiply(&layer->transform, &transform);
+        Matrix3SetTranslation(&transform, dx, dy);
+        Matrix3Multiply(&layer->transform, &transform);
 
-    layer->render.mode = MODE_TRANSFORM;
-    layer->render.draw = GetLayerDraw(layer);
-    SetBlitter(layer);
+        layer->render.mode = MODE_TRANSFORM;
+        layer->render.draw = GetLayerDraw(layer);
+        SetBlitter(layer);
 
-    TLN_SetLastError(TLN_ERR_OK);
-    return true;
-  } else
+        TLN_SetLastError(TLN_ERR_OK);
+        return true;
+    }
     return TLN_ResetLayerMode(nlayer);
 }
 
@@ -760,17 +770,16 @@ bool TLN_SetLayerAffineTransform(int nlayer, TLN_Affine const *affine) {
  * \see
  * TLN_SetLayerAffineTransform()
  */
-bool TLN_SetLayerTransform(int layer, float angle, float dx, float dy, float sx,
-                           float sy) {
-  TLN_Affine affine;
+bool TLN_SetLayerTransform(int layer, float angle, float dx, float dy, float sx, float sy) {
+    TLN_Affine affine;
 
-  affine.angle = angle;
-  affine.dx = dx;
-  affine.dy = dy;
-  affine.sx = sx;
-  affine.sy = sy;
+    affine.angle = angle;
+    affine.dx = dx;
+    affine.dy = dy;
+    affine.sx = sx;
+    affine.sy = sy;
 
-  return TLN_SetLayerAffineTransform(layer, &affine);
+    return TLN_SetLayerAffineTransform(layer, &affine);
 }
 
 /*!
@@ -784,35 +793,35 @@ bool TLN_SetLayerTransform(int layer, float angle, float dx, float dy, float sx,
  *
  * \see TLN_SetLayerTransform(), TLN_SetLayerAffineTransform()
  */
-bool TLN_SetLayerTransformSC(int nlayer, float cos_a, float sin_a, float dx,
-                             float dy, float sx, float sy) {
-  Layer *layer;
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
-  layer = &engine->layers[nlayer];
-  {
-    Matrix3 transform;
-    math2d_t pdx = (float)layer->hstart + dx;
-    math2d_t pdy = (float)layer->vstart + dy;
+bool TLN_SetLayerTransformSC(int nlayer, float cos_a, float sin_a, float dx, float dy, float sx,
+                             float sy) {
+    Layer *layer;
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
+    layer = &engine->layers[nlayer];
+    {
+        Matrix3 transform;
+        math2d_t pdx = (float)layer->hstart + dx;
+        math2d_t pdy = (float)layer->vstart + dy;
 
-    Matrix3SetIdentity(&layer->transform);
-    Matrix3SetTranslation(&transform, -pdx, -pdy);
-    Matrix3Multiply(&layer->transform, &transform);
-    Matrix3SetRotationSC(&transform, cos_a, sin_a);
-    Matrix3Multiply(&layer->transform, &transform);
-    Matrix3SetScale(&transform, 1.0f / sx, 1.0f / sy);
-    Matrix3Multiply(&layer->transform, &transform);
-    Matrix3SetTranslation(&transform, pdx, pdy);
-    Matrix3Multiply(&layer->transform, &transform);
+        Matrix3SetIdentity(&layer->transform);
+        Matrix3SetTranslation(&transform, -pdx, -pdy);
+        Matrix3Multiply(&layer->transform, &transform);
+        Matrix3SetRotationSC(&transform, cos_a, sin_a);
+        Matrix3Multiply(&layer->transform, &transform);
+        Matrix3SetScale(&transform, 1.0F / sx, 1.0F / sy);
+        Matrix3Multiply(&layer->transform, &transform);
+        Matrix3SetTranslation(&transform, pdx, pdy);
+        Matrix3Multiply(&layer->transform, &transform);
 
-    layer->render.mode = MODE_TRANSFORM;
-    layer->render.draw = GetLayerDraw(layer);
-    SetBlitter(layer);
-  }
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+        layer->render.mode = MODE_TRANSFORM;
+        layer->render.draw = GetLayerDraw(layer);
+        SetBlitter(layer);
+    }
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -849,57 +858,56 @@ bool TLN_SetLayerTransformSC(int nlayer, float cos_a, float sin_a, float dx,
  *
  * \see TLN_SetLayerTransformSC(), TLN_SetLayerAffineTransform()
  */
-bool TLN_SetLayerTransformMatrix(int nlayer, float a, float b, float c, float d,
-                                 int x0, int y0) {
-  Layer *layer;
-  float det;
+bool TLN_SetLayerTransformMatrix(int nlayer, float a, float b, float c, float d, int x0, int y0) {
+    Layer *layer;
+    float det;
 
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  det = a * d - b * c;
-  if (fabsf(det) < 1e-6f) {
-    TLN_SetLastError(TLN_ERR_WRONG_FORMAT);
-    return false;
-  }
+    det = (a * d) - (b * c);
+    if (fabsf(det) < 1e-6F) {
+        TLN_SetLastError(TLN_ERR_WRONG_FORMAT);
+        return false;
+    }
 
-  layer = &engine->layers[nlayer];
-  {
-    Matrix3 transform;
-    float px = (float)layer->hstart + (float)x0;
-    float py = (float)layer->vstart + (float)y0;
-    float inv_data[9];
-    float inv_det;
+    layer = &engine->layers[nlayer];
+    {
+        Matrix3 transform;
+        float px = (float)layer->hstart + (float)x0;
+        float py = (float)layer->vstart + (float)y0;
+        float inv_data[9];
+        float inv_det;
 
-    inv_det = 1.0f / det;
-    /* Inverse of [[a,b],[c,d]], row-major {m11,m12,m13, m21,m22,m23,
-     * m31,m32,m33}. */
-    inv_data[0] = d * inv_det;
-    inv_data[1] = -b * inv_det;
-    inv_data[2] = 0.0f;
-    inv_data[3] = -c * inv_det;
-    inv_data[4] = a * inv_det;
-    inv_data[5] = 0.0f;
-    inv_data[6] = 0.0f;
-    inv_data[7] = 0.0f;
-    inv_data[8] = 1.0f;
+        inv_det = 1.0F / det;
+        /* Inverse of [[a,b],[c,d]], row-major {m11,m12,m13, m21,m22,m23,
+         * m31,m32,m33}. */
+        inv_data[0] = d * inv_det;
+        inv_data[1] = -b * inv_det;
+        inv_data[2] = 0.0F;
+        inv_data[3] = -c * inv_det;
+        inv_data[4] = a * inv_det;
+        inv_data[5] = 0.0F;
+        inv_data[6] = 0.0F;
+        inv_data[7] = 0.0F;
+        inv_data[8] = 1.0F;
 
-    Matrix3SetIdentity(&layer->transform);
-    Matrix3SetTranslation(&transform, -px, -py);
-    Matrix3Multiply(&layer->transform, &transform);
-    Matrix3Set(&transform, inv_data);
-    Matrix3Multiply(&layer->transform, &transform);
-    Matrix3SetTranslation(&transform, px, py);
-    Matrix3Multiply(&layer->transform, &transform);
+        Matrix3SetIdentity(&layer->transform);
+        Matrix3SetTranslation(&transform, -px, -py);
+        Matrix3Multiply(&layer->transform, &transform);
+        Matrix3Set(&transform, inv_data);
+        Matrix3Multiply(&layer->transform, &transform);
+        Matrix3SetTranslation(&transform, px, py);
+        Matrix3Multiply(&layer->transform, &transform);
 
-    layer->render.mode = MODE_TRANSFORM;
-    layer->render.draw = GetLayerDraw(layer);
-    SetBlitter(layer);
-  }
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+        layer->render.mode = MODE_TRANSFORM;
+        layer->render.draw = GetLayerDraw(layer);
+        SetBlitter(layer);
+    }
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -925,21 +933,21 @@ bool TLN_SetLayerTransformMatrix(int nlayer, float a, float b, float c, float d,
  *
  */
 bool TLN_SetLayerScaling(int nlayer, float sx, float sy) {
-  Layer *layer;
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    Layer *layer;
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  layer = &engine->layers[nlayer];
-  layer->scale.xfactor = float2fix(sx);
-  layer->scale.dx = float2fix((1.0f / sx));
-  layer->scale.dy = float2fix((1.0f / sy));
-  layer->render.mode = MODE_SCALING;
-  layer->render.draw = GetLayerDraw(layer);
-  SetBlitter(layer);
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    layer = &engine->layers[nlayer];
+    layer->scale.xfactor = float2fix(sx);
+    layer->scale.dx = float2fix((1.0F / sx));
+    layer->scale.dy = float2fix((1.0F / sy));
+    layer->render.mode = MODE_SCALING;
+    layer->render.draw = GetLayerDraw(layer);
+    SetBlitter(layer);
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -955,20 +963,21 @@ bool TLN_SetLayerScaling(int nlayer, float sx, float sy) {
  * TLN_SetLayerScaling(), TLN_SetLayerAffineTransform()
  */
 bool TLN_SetLayerPixelMapping(int nlayer, TLN_PixelMap *table) {
-  Layer *layer;
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    Layer *layer;
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  layer = &engine->layers[nlayer];
-  layer->pixel_map = table;
-  if (table != NULL)
-    layer->render.mode = MODE_PIXEL_MAP;
-  else
-    layer->render.mode = MODE_NORMAL;
-  layer->render.draw = GetLayerDraw(layer);
-  return true;
+    layer = &engine->layers[nlayer];
+    layer->pixel_map = table;
+    if (table != NULL) {
+        layer->render.mode = MODE_PIXEL_MAP;
+    } else {
+        layer->render.mode = MODE_NORMAL;
+    }
+    layer->render.draw = GetLayerDraw(layer);
+    return true;
 }
 
 /*!
@@ -984,18 +993,18 @@ bool TLN_SetLayerPixelMapping(int nlayer, TLN_PixelMap *table) {
  * TLN_SetLayerScaling(), TLN_SetLayerAffineTransform()
  */
 bool TLN_ResetLayerMode(int nlayer) {
-  Layer *layer;
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    Layer *layer;
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  layer = &engine->layers[nlayer];
-  layer->render.mode = MODE_NORMAL;
-  layer->render.draw = GetLayerDraw(layer);
-  SetBlitter(layer);
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    layer = &engine->layers[nlayer];
+    layer->render.mode = MODE_NORMAL;
+    layer->render.draw = GetLayerDraw(layer);
+    SetBlitter(layer);
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -1005,16 +1014,16 @@ bool TLN_ResetLayerMode(int nlayer) {
  * \see TLN_ResetLayerMode()
  */
 bool TLN_SetLayerBlendMode(int nlayer, TLN_Blend blend) {
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  Layer *layer = &engine->layers[nlayer];
-  layer->render.blend = SelectBlendTable(blend);
-  SetBlitter(layer);
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    Layer *layer = &engine->layers[nlayer];
+    layer->render.blend = SelectBlendTable(blend);
+    SetBlitter(layer);
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -1026,13 +1035,13 @@ bool TLN_SetLayerBlendMode(int nlayer, TLN_Blend blend) {
  * \see TLN_ClearLayerBlendMask(), TLN_SetLayerBlendMode()
  */
 bool TLN_SetLayerBlendMask(int nlayer, int nmask) {
-  if (nlayer >= engine->numlayers || nmask >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
-  engine->layers[nlayer].blend_mask_layer = nmask;
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    if (nlayer >= engine->numlayers || nmask >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
+    engine->layers[nlayer].blend_mask_layer = nmask;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -1042,13 +1051,13 @@ bool TLN_SetLayerBlendMask(int nlayer, int nmask) {
  * \see TLN_SetLayerBlendMask()
  */
 bool TLN_ClearLayerBlendMask(int nlayer) {
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
-  engine->layers[nlayer].blend_mask_layer = -1;
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
+    engine->layers[nlayer].blend_mask_layer = -1;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -1063,25 +1072,20 @@ bool TLN_ClearLayerBlendMask(int nlayer) {
  *
  * \see TLN_SetLayerWindowColor(), TLN_DisableLayerWindow()
  */
-bool TLN_SetLayerWindow(int nlayer, int x1, int y1, int x2, int y2,
-                        bool invert) {
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+bool TLN_SetLayerWindow(int nlayer, int x1, int y1, int x2, int y2, bool invert) {
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  LayerWindow *window = &engine->layers[nlayer].window;
-  window->x1 = x1 >= 0 && x1 <= engine->framebuffer.width ? x1 : 0;
-  window->x2 = x2 >= 0 && x2 <= engine->framebuffer.width
-                   ? x2
-                   : engine->framebuffer.width;
-  window->y1 = y1 >= 0 && y1 <= engine->framebuffer.height ? y1 : 0;
-  window->y2 = y2 >= 0 && y2 <= engine->framebuffer.height
-                   ? y2
-                   : engine->framebuffer.height;
-  window->invert = invert;
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    LayerWindow *window = &engine->layers[nlayer].window;
+    window->x1 = x1 >= 0 && x1 <= engine->framebuffer.width ? x1 : 0;
+    window->x2 = x2 >= 0 && x2 <= engine->framebuffer.width ? x2 : engine->framebuffer.width;
+    window->y1 = y1 >= 0 && y1 <= engine->framebuffer.height ? y1 : 0;
+    window->y2 = y2 >= 0 && y2 <= engine->framebuffer.height ? y2 : engine->framebuffer.height;
+    window->invert = invert;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -1096,18 +1100,17 @@ bool TLN_SetLayerWindow(int nlayer, int x1, int y1, int x2, int y2,
  * performed with underlying layer
  * \see TLN_SetLayerWindow(), TLN_DisableLayerWindowColor()
  */
-bool TLN_SetLayerWindowColor(int nlayer, uint8_t r, uint8_t g, uint8_t b,
-                             TLN_Blend blend) {
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+bool TLN_SetLayerWindowColor(int nlayer, uint8_t r, uint8_t g, uint8_t b, TLN_Blend blend) {
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  LayerWindow *window = &engine->layers[nlayer].window;
-  window->color = PackRGB32(r, g, b);
-  window->blend = SelectBlendTable(blend);
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    LayerWindow *window = &engine->layers[nlayer].window;
+    window->color = PackRGB32(r, g, b);
+    window->blend = SelectBlendTable(blend);
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -1116,19 +1119,19 @@ bool TLN_SetLayerWindowColor(int nlayer, uint8_t r, uint8_t g, uint8_t b,
  * \see TLN_SetLayerWindow()
  */
 bool TLN_DisableLayerWindow(int nlayer) {
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  LayerWindow *window = &engine->layers[nlayer].window;
-  window->x1 = 0;
-  window->x2 = engine->framebuffer.width;
-  window->y1 = 0;
-  window->y2 = engine->framebuffer.height;
-  window->invert = false;
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    LayerWindow *window = &engine->layers[nlayer].window;
+    window->x1 = 0;
+    window->x2 = engine->framebuffer.width;
+    window->y1 = 0;
+    window->y2 = engine->framebuffer.height;
+    window->invert = false;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -1137,15 +1140,15 @@ bool TLN_DisableLayerWindow(int nlayer) {
  * \see TLN_SetLayerWindowColor()
  */
 bool TLN_DisableLayerWindowColor(int nlayer) {
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  LayerWindow *window = &engine->layers[nlayer].window;
-  window->color = 0;
-  window->blend = NULL;
-  return true;
+    LayerWindow *window = &engine->layers[nlayer].window;
+    window->color = 0;
+    window->blend = NULL;
+    return true;
 }
 
 /*!
@@ -1165,18 +1168,18 @@ bool TLN_DisableLayerWindowColor(int nlayer) {
  * TLN_DisableLayerMosaic()
  */
 bool TLN_SetLayerMosaic(int nlayer, int width, int height) {
-  Layer *layer;
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    Layer *layer;
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  layer = &engine->layers[nlayer];
-  layer->mosaic.w = width;
-  layer->mosaic.h = height;
-  SetBlitter(layer);
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    layer = &engine->layers[nlayer];
+    layer->mosaic.w = width;
+    layer->mosaic.h = height;
+    SetBlitter(layer);
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -1190,43 +1193,42 @@ bool TLN_SetLayerMosaic(int nlayer, int width, int height) {
  * TLN_SetLayerMosaic()
  */
 bool TLN_DisableLayerMosaic(int nlayer) {
-  Layer *layer;
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
-
-  layer = &engine->layers[nlayer];
-  layer->mosaic.h = 0;
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
-}
-
-Layer *GetLayer(int index) {
-  return &engine->layers[index];
-}
-
-static void apply_priority_attributes(struct Tileset const *tileset,
-                                      TLN_Tilemap tilemap) {
-  if (tileset->attributes == NULL)
-    return;
-
-  const int num_tiles = tilemap->rows * tilemap->cols;
-  Tile *tile = tilemap->tiles;
-  for (int c = 0; c < num_tiles; c++, tile++) {
-    if (tile->index != 0 && tile->index < tileset->numtiles) {
-      if (tileset->attributes[tile->index - 1].priority)
-        tile->flags |= FLAG_PRIORITY;
-      else
-        tile->flags &= ~FLAG_PRIORITY;
+    Layer *layer;
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
     }
-  }
+
+    layer = &engine->layers[nlayer];
+    layer->mosaic.h = 0;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
+}
+
+Layer *GetLayer(int index) { return &engine->layers[index]; }
+
+static void apply_priority_attributes(struct Tileset const *tileset, TLN_Tilemap tilemap) {
+    if (tileset->attributes == NULL) {
+        return;
+    }
+
+    const int num_tiles = tilemap->rows * tilemap->cols;
+    Tile *tile = tilemap->tiles;
+    for (int c = 0; c < num_tiles; c++, tile++) {
+        if (tile->index != 0 && tile->index < tileset->numtiles) {
+            if (tileset->attributes[tile->index - 1].priority) {
+                tile->flags |= FLAG_PRIORITY;
+            } else {
+                tile->flags &= ~FLAG_PRIORITY;
+            }
+        }
+    }
 }
 
 static void SetBlitter(Layer *layer) {
-  bool scaling = layer->render.mode == MODE_SCALING;
-  bool blend = layer->render.blend != NULL && layer->mosaic.h == 0;
+    bool scaling = layer->render.mode == MODE_SCALING;
+    bool blend = (layer->render.blend != NULL && layer->mosaic.h == 0) != 0;
 
-  layer->render.blitters[0] = SelectBlitter(false, scaling, blend);
-  layer->render.blitters[1] = SelectBlitter(true, scaling, blend);
+    layer->render.blitters[0] = SelectBlitter(false, scaling, blend);
+    layer->render.blitters[1] = SelectBlitter(true, scaling, blend);
 }

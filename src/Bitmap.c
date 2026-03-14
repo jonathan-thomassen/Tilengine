@@ -39,21 +39,21 @@
  * TLN_SetBGBitmap()
  */
 TLN_Bitmap TLN_CreateBitmap(int width, int height, int bpp) {
-  TLN_Bitmap bitmap;
-  int pitch;
-  size_t size;
+    TLN_Bitmap bitmap;
+    int pitch;
+    size_t size;
 
-  pitch = (((width * bpp) >> 3) + 3) & ~0x03;
-  size = sizeof(struct Bitmap) + (size_t)pitch * height;
-  bitmap = (TLN_Bitmap)CreateBaseObject(OT_BITMAP, size);
-  if (bitmap) {
-    bitmap->width = width;
-    bitmap->height = height;
-    bitmap->bpp = bpp;
-    bitmap->pitch = pitch;
-    TLN_SetLastError(TLN_ERR_OK);
-    return bitmap;
-  } else
+    pitch = (((width * bpp) >> 3) + 3) & ~0x03;
+    size = sizeof(struct Bitmap) + ((size_t)pitch * height);
+    bitmap = (TLN_Bitmap)CreateBaseObject(OT_BITMAP, size);
+    if (bitmap) {
+        bitmap->width = width;
+        bitmap->height = height;
+        bitmap->bpp = bpp;
+        bitmap->pitch = pitch;
+        TLN_SetLastError(TLN_ERR_OK);
+        return bitmap;
+    }
     return NULL;
 }
 
@@ -71,16 +71,17 @@ TLN_Bitmap TLN_CreateBitmap(int width, int height, int bpp) {
  * TLN_SetBGBitmap()
  */
 TLN_Bitmap TLN_CloneBitmap(TLN_Bitmap src) {
-  TLN_Bitmap bitmap;
+    TLN_Bitmap bitmap;
 
-  if (!CheckBaseObject(src, OT_BITMAP))
-    return NULL;
+    if (!CheckBaseObject(src, OT_BITMAP)) {
+        return NULL;
+    }
 
-  bitmap = (TLN_Bitmap)CloneBaseObject(src);
-  if (bitmap) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return bitmap;
-  } else
+    bitmap = (TLN_Bitmap)CloneBaseObject(src);
+    if (bitmap) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return bitmap;
+    }
     return NULL;
 }
 
@@ -95,13 +96,14 @@ TLN_Bitmap TLN_CloneBitmap(TLN_Bitmap src) {
  * TLN_CreateBitmap89, TLN_CloneBitmap()
  */
 bool TLN_DeleteBitmap(TLN_Bitmap bitmap) {
-  if (CheckBaseObject(bitmap, OT_BITMAP)) {
-    if (ObjectOwner(bitmap) && bitmap->palette)
-      TLN_DeletePalette(bitmap->palette);
-    DeleteBaseObject(bitmap);
-    TLN_SetLastError(TLN_ERR_OK);
-    return true;
-  } else
+    if (CheckBaseObject(bitmap, OT_BITMAP)) {
+        if (ObjectOwner(bitmap) && bitmap->palette) {
+            TLN_DeletePalette(bitmap->palette);
+        }
+        DeleteBaseObject(bitmap);
+        TLN_SetLastError(TLN_ERR_OK);
+        return true;
+    }
     return false;
 }
 
@@ -126,19 +128,20 @@ bool TLN_DeleteBitmap(TLN_Bitmap bitmap) {
  * application
  */
 uint8_t *TLN_GetBitmapPtr(TLN_Bitmap bitmap, int x, int y) {
-  uint8_t *srcptr;
+    uint8_t *srcptr;
 
-  if (!CheckBaseObject(bitmap, OT_BITMAP))
-    return NULL;
+    if (!CheckBaseObject(bitmap, OT_BITMAP)) {
+        return NULL;
+    }
 
-  if (x >= bitmap->width || y >= bitmap->height) {
-    TLN_SetLastError(TLN_ERR_WRONG_SIZE);
-    return NULL;
-  }
+    if (x >= bitmap->width || y >= bitmap->height) {
+        TLN_SetLastError(TLN_ERR_WRONG_SIZE);
+        return NULL;
+    }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  srcptr = get_bitmap_ptr(bitmap, x, y);
-  return srcptr;
+    TLN_SetLastError(TLN_ERR_OK);
+    srcptr = get_bitmap_ptr(bitmap, x, y);
+    return srcptr;
 }
 
 /*!
@@ -155,10 +158,10 @@ uint8_t *TLN_GetBitmapPtr(TLN_Bitmap bitmap, int x, int y) {
  * TLN_SetBitmapPalette()
  */
 TLN_Palette TLN_GetBitmapPalette(TLN_Bitmap bitmap) {
-  if (CheckBaseObject(bitmap, OT_BITMAP)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return bitmap->palette;
-  } else
+    if (CheckBaseObject(bitmap, OT_BITMAP)) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return bitmap->palette;
+    }
     return NULL;
 }
 
@@ -176,13 +179,13 @@ TLN_Palette TLN_GetBitmapPalette(TLN_Bitmap bitmap) {
  * TLN_GetBitmapPalette()
  */
 bool TLN_SetBitmapPalette(TLN_Bitmap bitmap, TLN_Palette palette) {
-  if (!CheckBaseObject(bitmap, OT_BITMAP) ||
-      !CheckBaseObject(palette, OT_PALETTE))
-    return false;
+    if (!CheckBaseObject(bitmap, OT_BITMAP) || !CheckBaseObject(palette, OT_PALETTE)) {
+        return false;
+    }
 
-  bitmap->palette = palette;
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    bitmap->palette = palette;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -193,10 +196,10 @@ bool TLN_SetBitmapPalette(TLN_Bitmap bitmap, TLN_Palette palette) {
  * Reference to the bitmap
  */
 int TLN_GetBitmapWidth(TLN_Bitmap bitmap) {
-  if (CheckBaseObject(bitmap, OT_BITMAP)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return bitmap->width;
-  } else
+    if (CheckBaseObject(bitmap, OT_BITMAP)) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return bitmap->width;
+    }
     return 0;
 }
 
@@ -208,10 +211,10 @@ int TLN_GetBitmapWidth(TLN_Bitmap bitmap) {
  * Reference to the bitmap
  */
 int TLN_GetBitmapHeight(TLN_Bitmap bitmap) {
-  if (CheckBaseObject(bitmap, OT_BITMAP)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return bitmap->height;
-  } else
+    if (CheckBaseObject(bitmap, OT_BITMAP)) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return bitmap->height;
+    }
     return 0;
 }
 
@@ -223,10 +226,10 @@ int TLN_GetBitmapHeight(TLN_Bitmap bitmap) {
  * Reference to the bitmap
  */
 int TLN_GetBitmapDepth(TLN_Bitmap bitmap) {
-  if (CheckBaseObject(bitmap, OT_BITMAP)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return bitmap->bpp;
-  } else
+    if (CheckBaseObject(bitmap, OT_BITMAP)) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return bitmap->bpp;
+    }
     return 0;
 }
 
@@ -238,9 +241,9 @@ int TLN_GetBitmapDepth(TLN_Bitmap bitmap) {
  * Reference to the bitmap
  */
 int TLN_GetBitmapPitch(TLN_Bitmap bitmap) {
-  if (CheckBaseObject(bitmap, OT_BITMAP)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return bitmap->pitch;
-  } else
+    if (CheckBaseObject(bitmap, OT_BITMAP)) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return bitmap->pitch;
+    }
     return 0;
 }

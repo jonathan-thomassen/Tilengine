@@ -15,7 +15,7 @@
 #define LOAD_FILE_H
 
 /* win32 replacement for unix strcasecmp() */
-#if defined(_MSC_VER)
+#ifdef _MSC_VER
 #include <BaseTsd.h>
 #define strcasecmp _stricmp
 typedef SSIZE_T ssize_t;
@@ -27,9 +27,9 @@ typedef SSIZE_T ssize_t;
 #endif
 
 typedef struct {
-  char path[200];
-  char name[200];
-  char ext[16];
+    char path[200];
+    char name[200];
+    char ext[16];
 } FileInfo;
 
 #ifdef __cplusplus
@@ -41,8 +41,7 @@ void FileClose(FILE *pf);
 FILE *FileOpen(const char *filename);
 bool CheckFile(const char *filename);
 void SplitFilename(const char *filename, FileInfo *fileinfo);
-void BuildFilePath(char *full_path, int len, const char *path, const char *name,
-                   const char *ext);
+void BuildFilePath(char *full_path, int len, const char *path, const char *name, const char *ext);
 
 #ifdef __cplusplus
 }

@@ -17,13 +17,13 @@
 
 /* bitmap for sprite */
 struct Bitmap {
-  DEFINE_OBJECT;
-  int width;
-  int height;
-  int bpp;
-  int pitch;
-  TLN_Palette palette;
-  uint8_t data[];
+    DEFINE_OBJECT;
+    int width;
+    int height;
+    int bpp;
+    int pitch;
+    TLN_Palette palette;
+    uint8_t data[];
 };
 
 #define get_bitmap_ptr(bitmap, x, y) ((bitmap)->data + (ptrdiff_t)(y) * (bitmap)->pitch + (x))

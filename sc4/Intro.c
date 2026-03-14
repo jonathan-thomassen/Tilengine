@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../src/Draw.h" /* g_prof_linebuf/fillmask/blit_ticks */
 #include "Drawbridge.h"
 #include "Hud.h"
 #include "Prop.h"
@@ -11,21 +12,112 @@
 #include "Tilengine.h"
 #include "Torch.h"
 
+/* ------------------------------------------------------------------ */
+/* Lightweight frame profiler                                           */
+/* ------------------------------------------------------------------ */
+#define NUM_LAYERS 7
+typedef struct {
+    Uint64 freq;
+    Uint64 frame_start;
+    Uint64 logic_end;
+    Uint64 acc_logic;
+    Uint64 acc_render;
+    Uint64 acc_frame;
+    Uint64 acc_linebuf;
+    Uint64 acc_fillmask;
+    Uint64 acc_blit;
+    Uint64 acc_layers;
+    Uint64 acc_sprites;
+    Uint64 acc_per_layer[NUM_LAYERS];
+    int samples;
+    Uint64 report_t;
+} ProfState;
+
+static void prof_init(ProfState *p) {
+    p->freq = SDL_GetPerformanceFrequency();
+    p->acc_logic = 0;
+    p->acc_render = 0;
+    p->acc_frame = 0;
+    p->acc_linebuf = 0;
+    p->acc_fillmask = 0;
+    p->acc_blit = 0;
+    p->acc_layers = 0;
+    p->acc_sprites = 0;
+    for (int i = 0; i < NUM_LAYERS; i++)
+        p->acc_per_layer[i] = 0;
+    p->samples = 0;
+    p->report_t = SDL_GetTicks();
+}
+
+static void prof_frame_begin(ProfState *p) { p->frame_start = SDL_GetPerformanceCounter(); }
+
+static void prof_logic_end(ProfState *p) { p->logic_end = SDL_GetPerformanceCounter(); }
+
+/* Call after TLN_DrawFrame. Prints a report once per second. */
+static void prof_frame_end(ProfState *p, int xpos) {
+    Uint64 now = SDL_GetPerformanceCounter();
+    Uint64 t_logic = p->logic_end - p->frame_start;
+    Uint64 t_render = now - p->logic_end;
+    Uint64 t_frame = now - p->frame_start;
+    p->acc_logic += t_logic;
+    p->acc_render += t_render;
+    p->acc_frame += t_frame;
+    /* snapshot Draw.c sub-counters then reset them for the next frame */
+    p->acc_linebuf += g_prof_linebuf_ticks;
+    p->acc_fillmask += g_prof_fillmask_ticks;
+    p->acc_blit += g_prof_blit_ticks;
+    p->acc_layers += g_prof_layers_ticks;
+    p->acc_sprites += g_prof_sprites_ticks;
+    for (int i = 0; i < 7; i++)
+        p->acc_per_layer[i] += g_prof_per_layer_ticks[i];
+    g_prof_linebuf_ticks = 0;
+    g_prof_fillmask_ticks = 0;
+    g_prof_blit_ticks = 0;
+    g_prof_layers_ticks = 0;
+    g_prof_sprites_ticks = 0;
+    for (int i = 0; i < 7; i++)
+        g_prof_per_layer_ticks[i] = 0;
+    p->samples++;
+
+    Uint64 wall = SDL_GetTicks();
+    if (wall - p->report_t >= 1000 && p->samples > 0) {
+        Uint64 s = (Uint64)p->samples;
+        Uint64 us_render = p->acc_render * 1000000 / p->freq / s;
+        Uint64 us_layers = p->acc_layers * 1000000 / p->freq / s;
+        fprintf(stderr, "PROF xpos=%4d  render=%5llu us  layers=%5llu  [", xpos,
+                (unsigned long long)us_render, (unsigned long long)us_layers);
+        for (int i = 0; i < 7; i++) {
+            fprintf(stderr, "L%d=%4llu%s", i,
+                    (unsigned long long)(p->acc_per_layer[i] * 1000000 / p->freq / s),
+                    i < 6 ? "  " : "]\n");
+        }
+        p->acc_logic = 0;
+        p->acc_render = 0;
+        p->acc_frame = 0;
+        p->acc_linebuf = 0;
+        p->acc_fillmask = 0;
+        p->acc_blit = 0;
+        p->acc_layers = 0;
+        p->acc_sprites = 0;
+        for (int i = 0; i < 7; i++)
+            p->acc_per_layer[i] = 0;
+        p->samples = 0;
+        p->report_t = wall;
+    }
+}
+
 #define WIDTH 256
 #define HEIGHT 224
 #define HUD_LAYER 0
 #define MAIN_LAYER 1
 #define WATER_LAYER 2
 #define BACKGROUND_LAYER 3
-#define NUM_LAYERS 7
 
 #define TARGET_FPS 60
 
 #define HINGE_X 221
 #define HINGE_Y 183
-#define DB_TRIGGER_X 768 /* world-x where drawbridge animation starts */
-#define WATER_BLEND_THRESHOLD                                                                      \
-    (512 - WIDTH)            /* scroll_x at which water tiles first reach the screen's right edge */
+#define DB_TRIGGER_X 768     /* world-x where drawbridge animation starts */
 #define DB_LAYER_X_OFFSET 80 /* main-layer x shift once drawbridge triggers */
 #define DB_LAYER_Y_OFFSET 8  /* main-layer y shift once drawbridge triggers */
 #define DB_WINDOW_TOP 32     /* top clip row for the drawbridge tilemap */
@@ -216,10 +308,8 @@ int main(void) {
      * then bring the chain in front of Simon and in front of priority tiles. */
     setup_entity_priorities();
 
-    /* Blend mode and blend mask are both enabled lazily once water tiles come
-     * on screen (see main loop). Activating blend mode without a mask applies
-     * blending to the entire layer, which would make MAIN_LAYER semi-transparent
-     * for the whole level and waste blend work on non-water pixels. */
+    TLN_SetLayerBlendMask(MAIN_LAYER, WATER_LAYER);
+    TLN_SetLayerBlendMode(MAIN_LAYER, BLEND_MIX50);
 
     /* main loop */
     TLN_CreateWindow(CWF_NEAREST | CWF_S6 | CWF_NOVSYNC);
@@ -235,10 +325,12 @@ int main(void) {
     int rails_max = 0;
     int xpos = 0;
     bool db_triggered = false;
-    bool blend_mask_active = false;
     int prev_xpos = -1;
+    ProfState prof;
+    prof_init(&prof);
 
     while (TLN_ProcessWindow()) {
+        prof_frame_begin(&prof);
         if (process_pause(&paused, &esc_prev)) {
             SDL_Delay(1000 / TARGET_FPS); /* throttle loop; last frame stays visible */
             continue;
@@ -334,30 +426,17 @@ int main(void) {
 
         tick_chain_prop(db_triggered, xpos);
 
-        /* Enable the per-pixel water blend mask once water tiles are on screen.
-         * The water layer is empty for the first ~256 scroll pixels, so enabling
-         * it earlier wastes fill_blend_mask_scanline work on every scanline. */
-        if (!blend_mask_active && xpos >= WATER_BLEND_THRESHOLD) {
-            TLN_SetLayerBlendMode(MAIN_LAYER, BLEND_MIX50);
-            TLN_SetLayerBlendMask(MAIN_LAYER, WATER_LAYER);
-            blend_mask_active = true;
-        }
-
         SandblockTasks(xpos);
         TorchTasks(xpos);
         PropTasks(xpos);
-        /* Only apply the affine transform once the bridge is actually triggered.
-         * DrawbridgeInit sets affine_dirty=true, so calling DrawbridgeTasks()
-         * unconditionally would put MAIN_LAYER into MODE_TRANSFORM from frame 1,
-         * forcing the slow per-pixel render path for the entire level approach. */
-        if (db_triggered) {
-            DrawbridgeTasks();
-        }
+        DrawbridgeTasks();
         update_layer_positions(xpos, db_triggered, &prev_xpos);
 
         /* render to window */
         update_fps_title(&fps_t0, &fps_frames);
+        prof_logic_end(&prof);
         TLN_DrawFrame(0);
+        prof_frame_end(&prof, xpos);
     }
 
     PropDeinit();

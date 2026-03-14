@@ -17,27 +17,27 @@
 #define MAX_COLOR_STRIPS 64
 
 typedef enum {
-  TYPE_NONE,
-  TYPE_SPRITE,
-  TYPE_PALETTE,
-  TYPE_TILESET,
+    TYPE_NONE,
+    TYPE_SPRITE,
+    TYPE_PALETTE,
+    TYPE_TILESET,
 } animation_t;
 
 /* animation */
 typedef struct {
-  animation_t type;
-  TLN_Sequence sequence;
-  TLN_Tileset tileset; /* tileset for tileset animations */
-  bool enabled;
-  bool paused; /* animation paused */
-  int loop;
-  int pos;
-  int timer;
-  int nsprite; /* sprite number for sprite animation */
-  bool blend;
-  TLN_Palette palette;
-  TLN_Palette srcpalette;
-  ListNode list_node;
+    animation_t type;
+    TLN_Sequence sequence;
+    TLN_Tileset tileset; /* tileset for tileset animations */
+    bool enabled;
+    bool paused; /* animation paused */
+    int loop;
+    int pos;
+    int timer;
+    int nsprite; /* sprite number for sprite animation */
+    bool blend;
+    TLN_Palette palette;
+    TLN_Palette srcpalette;
+    ListNode list_node;
 } Animation;
 
 bool SetTilesetAnimation(TLN_Tileset tileset, int index, TLN_Sequence sequence);

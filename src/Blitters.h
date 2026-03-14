@@ -14,9 +14,8 @@
 #include "Tilengine.h"
 
 /* blitter callback signature */
-typedef void (*ScanBlitPtr)(const uint8_t *srcpixel, TLN_Palette palette,
-                            void *dstptr, int width, int dx, int offset,
-                            const uint8_t *blend);
+typedef void (*ScanBlitPtr)(const uint8_t *srcpixel, TLN_Palette palette, void *dstptr, int width,
+                            int dx, int offset, const uint8_t *blend);
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,12 +31,11 @@ void BlitColor(void *dstptr, uint32_t color, int width, const uint8_t *blend);
 void Blit32_32(uint32_t *src, uint32_t *dst, int width, const uint8_t *blend);
 
 /* per-pixel masked blit: blend applied only where mask[i] != 0 */
-void Blit32_32_Masked(uint32_t const *src, uint32_t *dst,
-                      uint8_t const *mask, const uint8_t *blend, int width);
+void Blit32_32_Masked(uint32_t const *src, uint32_t *dst, uint8_t const *mask, const uint8_t *blend,
+                      int width);
 
 /* performs mosaic blit */
-void BlitMosaic(uint32_t *src, uint32_t *dst, int width, int size,
-                const uint8_t *blend);
+void BlitMosaic(uint32_t *src, uint32_t *dst, int width, int size, const uint8_t *blend);
 
 #ifdef __cplusplus
 }

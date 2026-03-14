@@ -5,7 +5,7 @@
  */
 
 #ifndef __SIMPLE_XML
-#define __SIMPLE_XML
+#define SIMPLE_XML
 
 #ifdef __cplusplus
 extern "C" {

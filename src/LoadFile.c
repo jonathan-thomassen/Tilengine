@@ -24,8 +24,8 @@
 static char localpath[MAX_PATH] = ".";
 static ResPack respack = NULL;
 static struct {
-  ResAsset asset;
-  FILE *pf;
+    ResAsset asset;
+    FILE *pf;
 } assets[MAX_ASSETS] = {0};
 
 /*!
@@ -36,20 +36,21 @@ static struct {
  * Base path. Files will load at path/filename. Can be NULL
  */
 void TLN_SetLoadPath(const char *path) {
-  size_t trailing;
+    size_t trailing;
 
-  if (path)
-    strncpy(localpath, path, MAX_PATH);
-  else
-    strncpy(localpath, ".", MAX_PATH);
+    if (path) {
+        strncpy(localpath, path, MAX_PATH);
+    } else {
+        strncpy(localpath, ".", MAX_PATH);
+    }
 
-  localpath[MAX_PATH - 1] = '\0';
+    localpath[MAX_PATH - 1] = '\0';
 
-  /* cut trailing separator */
-  trailing = strlen(localpath) - 1;
-  if (trailing > 0 &&
-      (localpath[trailing] == SLASH || localpath[trailing] == BACKSLASH))
-    localpath[trailing] = 0;
+    /* cut trailing separator */
+    trailing = strlen(localpath) - 1;
+    if (trailing > 0 && (localpath[trailing] == SLASH || localpath[trailing] == BACKSLASH)) {
+        localpath[trailing] = 0;
+    }
 }
 
 /*!
@@ -67,8 +68,8 @@ void TLN_SetLoadPath(const char *path) {
  * \sa TLN_CloseResourcePack
  */
 bool TLN_OpenResourcePack(const char *filename, const char *key) {
-  respack = ResPack_Open(filename, key);
-  return respack != NULL;
+    respack = ResPack_Open(filename, key);
+    return respack != NULL;
 }
 
 /*!
@@ -76,189 +77,202 @@ bool TLN_OpenResourcePack(const char *filename, const char *key) {
  * \sa TLN_OpenResourcePack
  */
 void TLN_CloseResourcePack(void) {
-  if (respack != NULL)
-    ResPack_Close(respack);
-  respack = NULL;
+    if (respack != NULL) {
+        ResPack_Close(respack);
+    }
+    respack = NULL;
 }
 
 /* open file/packed asset */
 FILE *FileOpen(const char *filename) {
-  FILE *fp;
-  char path[MAX_PATH + 1];
-  char oldchar;
-  char newchar;
-  char *p;
-  ResAsset new_asset;
+    FILE *fp;
+    char path[MAX_PATH + 1];
+    char oldchar;
+    char newchar;
+    char *p;
+    ResAsset new_asset;
 
 #if (_MSC_VER) && (_MSC_VER < 1900)
-  sprintf(path, "%s/%s", localpath, filename);
+    sprintf(path, "%s/%s", localpath, filename);
 #else
-  snprintf(path, sizeof(path), "%s/%s", localpath, filename);
+    snprintf(path, sizeof(path), "%s/%s", localpath, filename);
 #endif
 
-  /* replace correct path separator */
-  p = path;
-#if defined(_MSC_VER)
-  oldchar = SLASH;
-  newchar = BACKSLASH;
+    /* replace correct path separator */
+    p = path;
+#ifdef _MSC_VER
+    oldchar = SLASH;
+    newchar = BACKSLASH;
 #else
-  oldchar = BACKSLASH;
-  newchar = SLASH;
+    oldchar = BACKSLASH;
+    newchar = SLASH;
 #endif
-  while (*p != 0) {
-    if (*p == oldchar)
-      *p = newchar;
-    p++;
-  }
-
-  /* asset pack active? */
-  if (respack != NULL) {
-    /* search free slot */
-    int c;
-    for (c = 0; c < MAX_ASSETS; c++) {
-      if (assets[c].asset == NULL)
-        break;
+    while (*p != 0) {
+        if (*p == oldchar) {
+            *p = newchar;
+        }
+        p++;
     }
-    if (c == MAX_ASSETS)
-      return NULL;
 
-    /* open */
-    new_asset = ResPack_OpenAsset(respack, path);
-    fp = ResPack_GetAssetFile(new_asset);
-    if (fp != NULL) {
-      assets[c].asset = new_asset;
-      assets[c].pf = fp;
+    /* asset pack active? */
+    if (respack != NULL) {
+        /* search free slot */
+        int c;
+        for (c = 0; c < MAX_ASSETS; c++) {
+            if (assets[c].asset == NULL) {
+                break;
+            }
+        }
+        if (c == MAX_ASSETS) {
+            return NULL;
+        }
+
+        /* open */
+        new_asset = ResPack_OpenAsset(respack, path);
+        fp = ResPack_GetAssetFile(new_asset);
+        if (fp != NULL) {
+            assets[c].asset = new_asset;
+            assets[c].pf = fp;
+        }
+    } else {
+        fp = fopen(path, "rb");
     }
-  } else
-    fp = fopen(path, "rb");
 
-  return fp;
+    return fp;
 }
 
 /* closes file/packed asset */
 void FileClose(FILE *pf) {
-  if (pf == NULL)
-    return;
-
-  /* asset pack active? */
-  if (respack != NULL) {
-    for (int c = 0; c < MAX_ASSETS; c++) {
-      if (assets[c].pf == pf) {
-        ResPack_CloseAsset(assets[c].asset);
-        assets[c].asset = NULL;
-        assets[c].pf = NULL;
+    if (pf == NULL) {
         return;
-      }
     }
-  } else
-    fclose(pf);
+
+    /* asset pack active? */
+    if (respack != NULL) {
+        for (int c = 0; c < MAX_ASSETS; c++) {
+            if (assets[c].pf == pf) {
+                ResPack_CloseAsset(assets[c].asset);
+                assets[c].asset = NULL;
+                assets[c].pf = NULL;
+                return;
+            }
+        }
+    } else {
+        fclose(pf);
+    }
 }
 
 /* generic load file into RAM buffer */
 void *LoadFile(const char *filename, ssize_t *out_size) {
-  long file_size;
-  FILE *fp;
-  uint8_t *data;
+    long file_size;
+    FILE *fp;
+    uint8_t *data;
 
-  /* abre */
-  fp = FileOpen(filename);
-  if (!fp) {
-    *out_size = 0;
-    return NULL;
-  }
+    /* abre */
+    fp = FileOpen(filename);
+    if (!fp) {
+        *out_size = 0;
+        return NULL;
+    }
 
-  /* load */
-  fseek(fp, 0, SEEK_END);
-  file_size = ftell(fp);
+    /* load */
+    fseek(fp, 0, SEEK_END);
+    file_size = ftell(fp);
 
-  /* check for ftell error or empty file */
-  if (file_size <= 0) {
+    /* check for ftell error or empty file */
+    if (file_size <= 0) {
+        FileClose(fp);
+        *out_size = 0;
+        return NULL;
+    }
+
+    fseek(fp, 0, SEEK_SET);
+    data = (uint8_t *)malloc((size_t)file_size + 1);
+    if (data) {
+        fread(data, (size_t)file_size, 1, fp);
+        data[file_size] = 0;
+        *out_size = file_size;
+    } else {
+        *out_size = -1;
+    }
+
     FileClose(fp);
-    *out_size = 0;
-    return NULL;
-  }
-
-  fseek(fp, 0, SEEK_SET);
-  data = (uint8_t *)malloc((size_t)file_size + 1);
-  if (data) {
-    fread(data, (size_t)file_size, 1, fp);
-    data[file_size] = 0;
-    *out_size = file_size;
-  } else
-    *out_size = -1;
-
-  FileClose(fp);
-  return (void *)data;
+    return (void *)data;
 }
 
 /* check if file exists */
 bool CheckFile(const char *filename) {
-  FILE *fp;
+    FILE *fp;
 
-  fp = FileOpen(filename);
-  if (!fp)
-    return false;
+    fp = FileOpen(filename);
+    if (!fp) {
+        return false;
+    }
 
-  FileClose(fp);
-  return true;
+    FileClose(fp);
+    return true;
 }
 
 /* returns file extension in lowercase */
 void SplitFilename(const char *filename, FileInfo *fileinfo) {
-  if (filename == NULL || fileinfo == NULL)
-    return;
+    if (filename == NULL || fileinfo == NULL) {
+        return;
+    }
 
-  int len;
-  char const *block1 = strrchr(filename, SLASH);
-  char const *block2 = strrchr(filename, '.');
-  if (block1 == NULL)
-    block1 = strrchr(filename, BACKSLASH);
+    int len;
+    char const *block1 = strrchr(filename, SLASH);
+    char const *block2 = strrchr(filename, '.');
+    if (block1 == NULL) {
+        block1 = strrchr(filename, BACKSLASH);
+    }
 
-  memset(fileinfo, 0, sizeof(FileInfo));
+    memset(fileinfo, 0, sizeof(FileInfo));
 
-  /* path */
-  if (block1) {
-    block1 += 1;
-    len = (int)(block1 - filename) - 1;
-    memcpy(fileinfo->path, filename, len);
-    fileinfo->path[len] = 0;
-  } else
-    block1 = filename;
+    /* path */
+    if (block1) {
+        block1 += 1;
+        len = (int)(block1 - filename) - 1;
+        memcpy(fileinfo->path, filename, len);
+        fileinfo->path[len] = 0;
+    } else {
+        block1 = filename;
+    }
 
-  /* name + ext */
-  if (block2 && block2 > block1) {
-    /* name */
-    len = (int)(block2 - block1);
-    if (block1 == NULL)
-      block1 = filename;
-    memcpy(fileinfo->name, block1, len);
-    fileinfo->name[len] = 0;
+    /* name + ext */
+    if (block2 && block2 > block1) {
+        /* name */
+        len = (int)(block2 - block1);
+        if (block1 == NULL) {
+            block1 = filename;
+        }
+        memcpy(fileinfo->name, block1, len);
+        fileinfo->name[len] = 0;
 
-    /* ext */
-    block2 += 1;
-    strncpy(fileinfo->ext, block2, sizeof(fileinfo->ext) - 1);
-    fileinfo->ext[sizeof(fileinfo->ext) - 1] = '\0';
-  }
+        /* ext */
+        block2 += 1;
+        strncpy(fileinfo->ext, block2, sizeof(fileinfo->ext) - 1);
+        fileinfo->ext[sizeof(fileinfo->ext) - 1] = '\0';
+    }
 
-  /* name only */
-  else {
-    strncpy(fileinfo->name, block1, sizeof(fileinfo->name) - 1);
-    fileinfo->name[sizeof(fileinfo->name) - 1] = '\0';
-  }
+    /* name only */
+    else {
+        strncpy(fileinfo->name, block1, sizeof(fileinfo->name) - 1);
+        fileinfo->name[sizeof(fileinfo->name) - 1] = '\0';
+    }
 }
 
 /* builds complete file path */
-void BuildFilePath(char *full_path, int len, const char *path, const char *name,
-                   const char *ext) {
-  bool valid_path = path != NULL && path[0] != 0;
-  bool valid_ext = ext != NULL && ext[0] != 0;
+void BuildFilePath(char *full_path, int len, const char *path, const char *name, const char *ext) {
+    bool valid_path = (path != NULL && path[0] != 0) != 0;
+    bool valid_ext = (ext != NULL && ext[0] != 0) != 0;
 
-  if (valid_path && valid_ext)
-    snprintf(full_path, len, "%s/%s.%s", path, name, ext);
-  else if (valid_path)
-    snprintf(full_path, len, "%s/%s", path, name);
-  else if (valid_ext)
-    snprintf(full_path, len, "%s.%s", name, ext);
-  else
-    snprintf(full_path, len, "%s", name);
+    if ((int)valid_path && (int)valid_ext) {
+        snprintf(full_path, len, "%s/%s.%s", path, name, ext);
+    } else if (valid_path) {
+        snprintf(full_path, len, "%s/%s", path, name);
+    } else if (valid_ext) {
+        snprintf(full_path, len, "%s.%s", name, ext);
+    } else {
+        snprintf(full_path, len, "%s", name);
+    }
 }

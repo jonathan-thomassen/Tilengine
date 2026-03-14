@@ -23,84 +23,83 @@
 
 /* background sub-struct */
 typedef struct {
-  uint32_t color;        /* background color */
-  TLN_Bitmap bitmap;     /* background bitmap */
-  TLN_Palette palette;   /* background bitmap palette */
-  ScanBlitPtr blit_fast; /* blitter for background bitmap */
-  uint8_t *blend_table;  /* current blending table */
+    uint32_t color;        /* background color */
+    TLN_Bitmap bitmap;     /* background bitmap */
+    TLN_Palette palette;   /* background bitmap palette */
+    ScanBlitPtr blit_fast; /* blitter for background bitmap */
+    uint8_t *blend_table;  /* current blending table */
 } EngineBackground;
 
 /* scanline/frame callback sub-struct */
 typedef struct {
-  void (*raster)(int); /* per-scanline raster callback */
-  void (*frame)(int);  /* per-frame callback */
+    void (*raster)(int); /* per-scanline raster callback */
+    void (*frame)(int);  /* per-frame callback */
 } EngineCallbacks;
 
 /* frame/line timing counters sub-struct */
 typedef struct {
-  int frame;      /* current frame number */
-  int line;       /* current scanline */
-  int target_fps; /* target frames per second */
+    int frame;      /* current frame number */
+    int line;       /* current scanline */
+    int target_fps; /* target frames per second */
 } EngineTiming;
 
 /* sprite mask scanline range sub-struct */
 typedef struct {
-  int top;    /* top scanline for sprite masking */
-  int bottom; /* bottom scanline for sprite masking */
+    int top;    /* top scanline for sprite masking */
+    int bottom; /* bottom scanline for sprite masking */
 } EngineSpriteMask;
 
 /* world-space scroll position sub-struct */
 typedef struct {
-  int x;      /* world x coordinate */
-  int y;      /* world y coordinate */
-  bool dirty; /* world position updated since last draw */
+    int x;      /* world x coordinate */
+    int y;      /* world y coordinate */
+    bool dirty; /* world position updated since last draw */
 } EngineWorld;
 
 /* animation collection sub-struct */
 typedef struct {
-  int num;          /* number of animations */
-  Animation *items; /* pointer to animation buffer */
-  List list;        /* linked list of active animations */
+    int num;          /* number of animations */
+    Animation *items; /* pointer to animation buffer */
+    List list;        /* linked list of active animations */
 } EngineAnimations;
 
 typedef struct Engine {
-  uint32_t header;    /* object signature to identify as engine context */
-  uint32_t *priority; /* buffer receiving tiles with priority */
-  uint16_t
-      *collision; /* buffer with sprite coverage IDs for per-pixel collision */
-  uint32_t *linebuffer;      /* buffer for intermediate scanline output */
-  uint8_t *blend_mask;        /* per-pixel blend mask: non-zero = apply blend */
-  uint8_t *blend_mask_blend;  /* blend table used with blend_mask (set per-scanline) */
-  int numsprites;       /* number of sprites */
-  Sprite *sprites;      /* pointer to sprite buffer */
-  int numlayers;        /* number of layers */
-  Layer *layers;        /* pointer to layer buffer */
-  EngineAnimations anim;
-  bool dopriority; /* there is some data in "priority" buffer that need blitting
-                    */
-  TLN_Error error; /* last error code */
-  TLN_LogLevel log_level; /* logging level */
-  EngineBackground bg;
-  TLN_Palette palettes[NUM_PALETTES]; /* optional global palettes */
-  EngineCallbacks callbacks;
-  EngineTiming timing;
-  List list_sprites; /* linked list of active sprites */
-  EngineSpriteMask sprite_mask;
-  EngineWorld world;
+    uint32_t header;           /* object signature to identify as engine context */
+    uint32_t *priority;        /* buffer receiving tiles with priority */
+    uint16_t *collision;       /* buffer with sprite coverage IDs for per-pixel collision */
+    uint32_t *linebuffer;      /* buffer for intermediate scanline output */
+    uint8_t *blend_mask;       /* per-pixel blend mask: non-zero = apply blend */
+    uint8_t *blend_mask_blend; /* blend table used with blend_mask (set per-scanline) */
+    int numsprites;            /* number of sprites */
+    Sprite *sprites;           /* pointer to sprite buffer */
+    int numlayers;             /* number of layers */
+    Layer *layers;             /* pointer to layer buffer */
+    EngineAnimations anim;
+    bool dopriority;        /* there is some data in "priority" buffer that need blitting
+                             */
+    TLN_Error error;        /* last error code */
+    TLN_LogLevel log_level; /* logging level */
+    EngineBackground bg;
+    TLN_Palette palettes[NUM_PALETTES]; /* optional global palettes */
+    EngineCallbacks callbacks;
+    EngineTiming timing;
+    List list_sprites; /* linked list of active sprites */
+    EngineSpriteMask sprite_mask;
+    EngineWorld world;
 
-  struct {
-    int width;
-    int height;
-    int pitch;
-    uint8_t *data;
-  } framebuffer;
+    struct {
+        int width;
+        int height;
+        int pitch;
+        uint8_t *data;
+    } framebuffer;
 } Engine;
 
 extern Engine *engine;
 
 extern void tln_trace(TLN_LogLevel log_level, const char *message);
 
-#define GetFramebufferLine(line)                                               \
-  (uint32_t *)(engine->framebuffer.data + ((ptrdiff_t)(line) * engine->framebuffer.pitch))
+#define GetFramebufferLine(line)                                                                   \
+    (uint32_t *)(engine->framebuffer.data + ((ptrdiff_t)(line) * engine->framebuffer.pitch))
 
 #endif

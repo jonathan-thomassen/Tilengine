@@ -13,15 +13,15 @@
 #include "LoadFile.h"
 #include "Tilengine.h"
 
-#define SWAP(w) ((w) & 0xFF) << 8 | ((w) >> 8)
+#define SWAP(w) (((w) & 0xFF) << 8 | ((w) >> 8))
 
 #define ACT_ENTRIES 256
 #define ACT_SIZE ((size_t)ACT_ENTRIES * 3 + sizeof(trailing))
 
 /* optional trailing bytes in an ACT file */
 struct {
-  short entries;     /* number of entries 1-255 */
-  short transparent; /* index of transparent color */
+    short entries;     /* number of entries 1-255 */
+    short transparent; /* index of transparent color */
 } trailing;
 
 /*!
@@ -43,40 +43,41 @@ struct {
  * TLN_GetTilesetPalette(), TLN_GetSpritesetPalette()
  */
 TLN_Palette TLN_LoadPalette(const char *filename) {
-  FILE *pf;
-  TLN_Palette palette = NULL;
-  long size;
+    FILE *pf;
+    TLN_Palette palette = NULL;
+    long size;
 
-  /* open file */
-  pf = FileOpen(filename);
-  if (!pf) {
-    TLN_SetLastError(TLN_ERR_FILE_NOT_FOUND);
-    return NULL;
-  }
+    /* open file */
+    pf = FileOpen(filename);
+    if (!pf) {
+        TLN_SetLastError(TLN_ERR_FILE_NOT_FOUND);
+        return NULL;
+    }
 
-  /* check size */
-  fseek(pf, 0, SEEK_END);
-  size = ftell(pf);
+    /* check size */
+    fseek(pf, 0, SEEK_END);
+    size = ftell(pf);
 
-  /* load trailing and get number of entries */
-  if (size > 0 && (size_t)size == ACT_SIZE) {
-    fseek(pf, -(int)sizeof(trailing), SEEK_END);
-    fread(&trailing, sizeof(trailing), 1, pf);
-    trailing.entries = (short)(SWAP(trailing.entries));
-    trailing.transparent = (short)(SWAP(trailing.transparent));
-  } else
-    trailing.entries = (short)(size / 3);
+    /* load trailing and get number of entries */
+    if (size > 0 && (size_t)size == ACT_SIZE) {
+        fseek(pf, -(int)sizeof(trailing), SEEK_END);
+        fread(&trailing, sizeof(trailing), 1, pf);
+        trailing.entries = (short)(SWAP(trailing.entries));
+        trailing.transparent = (short)(SWAP(trailing.transparent));
+    } else {
+        trailing.entries = (short)(size / 3);
+    }
 
-  /* create palette and load from file */
-  palette = TLN_CreatePalette(trailing.entries);
-  fseek(pf, 0, SEEK_SET);
-  for (int c = 0; c < trailing.entries; c++) {
-    uint8_t src[3];
-    fread(src, sizeof(src), 1, pf);
-    TLN_SetPaletteColor(palette, c, src[0], src[1], src[2]);
-  }
+    /* create palette and load from file */
+    palette = TLN_CreatePalette(trailing.entries);
+    fseek(pf, 0, SEEK_SET);
+    for (int c = 0; c < trailing.entries; c++) {
+        uint8_t src[3];
+        fread(src, sizeof(src), 1, pf);
+        TLN_SetPaletteColor(palette, c, src[0], src[1], src[2]);
+    }
 
-  FileClose(pf);
-  TLN_SetLastError(TLN_ERR_OK);
-  return palette;
+    FileClose(pf);
+    TLN_SetLastError(TLN_ERR_OK);
+    return palette;
 }

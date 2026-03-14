@@ -13,9 +13,8 @@
 #define WHITE 0xFF, 0xFF, 0xFF, 0xFF
 
 static const uint8_t pattern_slot[] = {
-    RED,   GREEN, BLUE,  RED,   GREEN, BLUE,  RED,   GREEN,
-    BLUE,  BLACK, BLACK, BLACK, RED,   GREEN, BLUE,  RED,
-    GREEN, BLUE,  BLACK, BLACK, BLACK, RED,   GREEN, BLUE,
+    RED, GREEN, BLUE, RED, GREEN, BLUE, RED,   GREEN, BLUE,  BLACK, BLACK, BLACK,
+    RED, GREEN, BLUE, RED, GREEN, BLUE, BLACK, BLACK, BLACK, RED,   GREEN, BLUE,
 };
 
 static const uint8_t pattern_aperture[] = {RED, GREEN, BLUE};
@@ -27,10 +26,10 @@ static const uint8_t pattern_shadow[] = {
 static const uint8_t pattern_scanline[] = {WHITE, SCAN, SCAN, SCAN, 0xFF};
 
 typedef struct {
-  const uint8_t *mask;
-  int width;
-  int height;
-  int glow;
+    const uint8_t *mask;
+    int width;
+    int height;
+    int glow;
 } Pattern;
 
 static Pattern patterns[] = {
@@ -40,170 +39,166 @@ static Pattern patterns[] = {
 };
 
 typedef struct {
-  int width;
-  int height;
+    int width;
+    int height;
 } Size2D;
 
 struct CRTHandler {
-  SDL_Renderer *renderer;
-  SDL_Texture *framebuffer;
-  SDL_Texture *overlay;
-  Size2D size_fb;
-  uint8_t glow;
-  bool blur;
+    SDL_Renderer *renderer;
+    SDL_Texture *framebuffer;
+    SDL_Texture *overlay;
+    Size2D size_fb;
+    uint8_t glow;
+    bool blur;
 };
 
 /* private prototypes */
 static void hblur(uint8_t *scan, int width, int height, int pitch);
-static SDL_Texture *create_tiled_texture(SDL_Renderer *renderer, int width,
-                                         int height, int tile_width,
-                                         int tile_height,
-                                         const uint8_t *tile_data);
+static SDL_Texture *create_tiled_texture(SDL_Renderer *renderer, int width, int height,
+                                         int tile_width, int tile_height, const uint8_t *tile_data);
 
 /* create CRT effect */
-CRTHandler CRTCreate(SDL_Renderer *renderer, SDL_Texture *framebuffer,
-                     CRTType type, int wnd_width, int wnd_height, bool blur) {
-  CRTHandler crt = (CRTHandler)calloc(1, sizeof(struct CRTHandler));
-  if (crt == NULL)
-    return NULL;
+CRTHandler CRTCreate(SDL_Renderer *renderer, SDL_Texture *framebuffer, CRTType type, int wnd_width,
+                     int wnd_height, bool blur) {
+    CRTHandler crt = (CRTHandler)calloc(1, sizeof(struct CRTHandler));
+    if (crt == NULL) {
+        return NULL;
+    }
 
-  crt->renderer = renderer;
-  crt->framebuffer = framebuffer;
-  crt->blur = blur;
+    crt->renderer = renderer;
+    crt->framebuffer = framebuffer;
+    crt->blur = blur;
 
-  /* get framebuffer size */
-  float fb_width;
-  float fb_height;
-  SDL_GetTextureSize(framebuffer, &fb_width, &fb_height);
-  crt->size_fb.width = (int)fb_width;
-  crt->size_fb.height = (int)fb_height;
+    /* get framebuffer size */
+    float fb_width;
+    float fb_height;
+    SDL_GetTextureSize(framebuffer, &fb_width, &fb_height);
+    crt->size_fb.width = (int)fb_width;
+    crt->size_fb.height = (int)fb_height;
 
-  /* build composed overlay with RGB mask + scanlines */
-  Pattern const *pattern = &patterns[type];
-  crt->glow = (uint8_t)pattern->glow;
-  SDL_Texture *tex_mask =
-      create_tiled_texture(renderer, wnd_width, wnd_height, pattern->width,
-                           pattern->height, pattern->mask);
-  SDL_Texture *tex_scan =
-      create_tiled_texture(renderer, crt->size_fb.width,
-                           crt->size_fb.height * 2, 1, 2, pattern_scanline);
-  SDL_SetTextureBlendMode(tex_scan, SDL_BLENDMODE_MOD);
+    /* build composed overlay with RGB mask + scanlines */
+    Pattern const *pattern = &patterns[type];
+    crt->glow = (uint8_t)pattern->glow;
+    SDL_Texture *tex_mask = create_tiled_texture(renderer, wnd_width, wnd_height, pattern->width,
+                                                 pattern->height, pattern->mask);
+    SDL_Texture *tex_scan = create_tiled_texture(renderer, crt->size_fb.width,
+                                                 crt->size_fb.height * 2, 1, 2, pattern_scanline);
+    SDL_SetTextureBlendMode(tex_scan, SDL_BLENDMODE_MOD);
 
-  crt->overlay =
-      SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
-                        SDL_TEXTUREACCESS_TARGET, wnd_width, wnd_height);
-  SDL_SetRenderTarget(renderer, crt->overlay);
-  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-  SDL_RenderClear(renderer);
-  SDL_RenderTexture(renderer, tex_mask, NULL, NULL);
-  if (type != CRT_SLOT)
-    SDL_RenderTexture(renderer, tex_scan, NULL, NULL);
-  SDL_SetRenderTarget(renderer, NULL);
-  SDL_SetTextureBlendMode(crt->overlay, SDL_BLENDMODE_MOD);
-  SDL_DestroyTexture(tex_scan);
-  SDL_DestroyTexture(tex_mask);
+    crt->overlay = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET,
+                                     wnd_width, wnd_height);
+    SDL_SetRenderTarget(renderer, crt->overlay);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);
+    SDL_RenderTexture(renderer, tex_mask, NULL, NULL);
+    if (type != CRT_SLOT) {
+        SDL_RenderTexture(renderer, tex_scan, NULL, NULL);
+    }
+    SDL_SetRenderTarget(renderer, NULL);
+    SDL_SetTextureBlendMode(crt->overlay, SDL_BLENDMODE_MOD);
+    SDL_DestroyTexture(tex_scan);
+    SDL_DestroyTexture(tex_mask);
 
-  return crt;
+    return crt;
 }
 
 /* draws effect, gets locked texture data */
-void CRTDraw(CRTHandler crt, void *pixels, int pitch,
-             const SDL_FRect *dstrect) {
-  /* RF blur */
-  if (crt->blur)
-    hblur((uint8_t *)pixels, crt->size_fb.width, crt->size_fb.height, pitch);
-  SDL_UnlockTexture(crt->framebuffer);
+void CRTDraw(CRTHandler crt, void *pixels, int pitch, const SDL_FRect *dstrect) {
+    /* RF blur */
+    if (crt->blur) {
+        hblur((uint8_t *)pixels, crt->size_fb.width, crt->size_fb.height, pitch);
+    }
+    SDL_UnlockTexture(crt->framebuffer);
 
-  /* base image */
-  SDL_SetTextureBlendMode(crt->framebuffer, SDL_BLENDMODE_NONE);
-  SDL_RenderTexture(crt->renderer, crt->framebuffer, NULL, dstrect);
-
-  /* rgb + scanline overlay */
-  SDL_RenderTexture(crt->renderer, crt->overlay, NULL, dstrect);
-
-  /* glow overlay */
-  if (crt->glow != 0) {
-    SDL_SetTextureBlendMode(crt->framebuffer, SDL_BLENDMODE_ADD);
-    SDL_SetTextureColorMod(crt->framebuffer, crt->glow, crt->glow, crt->glow);
+    /* base image */
+    SDL_SetTextureBlendMode(crt->framebuffer, SDL_BLENDMODE_NONE);
     SDL_RenderTexture(crt->renderer, crt->framebuffer, NULL, dstrect);
-  }
+
+    /* rgb + scanline overlay */
+    SDL_RenderTexture(crt->renderer, crt->overlay, NULL, dstrect);
+
+    /* glow overlay */
+    if (crt->glow != 0) {
+        SDL_SetTextureBlendMode(crt->framebuffer, SDL_BLENDMODE_ADD);
+        SDL_SetTextureColorMod(crt->framebuffer, crt->glow, crt->glow, crt->glow);
+        SDL_RenderTexture(crt->renderer, crt->framebuffer, NULL, dstrect);
+    }
 }
 
 void CRTSetRenderTarget(CRTHandler crt, SDL_Texture *framebuffer) {
-  if (crt != NULL && framebuffer != NULL)
-    crt->framebuffer = framebuffer;
+    if (crt != NULL && framebuffer != NULL) {
+        crt->framebuffer = framebuffer;
+    }
 }
 
 void CRTIncreaseGlow(CRTHandler crt) {
-  if (crt != NULL && crt->glow < 255)
-    crt->glow += 1;
+    if (crt != NULL && crt->glow < 255) {
+        crt->glow += 1;
+    }
 }
 
 void CRTDecreaseGlow(CRTHandler crt) {
-  if (crt != NULL && crt->glow > 0)
-    crt->glow -= 1;
+    if (crt != NULL && crt->glow > 0) {
+        crt->glow -= 1;
+    }
 }
 
 void CRTSetBlur(CRTHandler crt, bool blur) {
-  if (crt != NULL)
-    crt->blur = blur;
+    if (crt != NULL) {
+        crt->blur = blur;
+    }
 }
 
 void CRTDelete(CRTHandler crt) {
-  if (crt != NULL)
-    SDL_DestroyTexture(crt->overlay);
+    if (crt != NULL) {
+        SDL_DestroyTexture(crt->overlay);
+    }
 
-  free(crt);
+    free(crt);
 }
 
 /* basic horizontal blur emulating RF blurring */
 static void hblur(uint8_t *scan, int width, int height, int pitch) {
-  width -= 1;
-  for (int y = 0; y < height; y++) {
-    uint8_t *pixel = scan;
-    for (int x = 0; x < width; x++) {
-      pixel[0] = (pixel[0] + pixel[4]) >> 1;
-      pixel[1] = (pixel[1] + pixel[5]) >> 1;
-      pixel[2] = (pixel[2] + pixel[6]) >> 1;
-      pixel += 4;
+    width -= 1;
+    for (int y = 0; y < height; y++) {
+        uint8_t *pixel = scan;
+        for (int x = 0; x < width; x++) {
+            pixel[0] = (pixel[0] + pixel[4]) >> 1;
+            pixel[1] = (pixel[1] + pixel[5]) >> 1;
+            pixel[2] = (pixel[2] + pixel[6]) >> 1;
+            pixel += 4;
+        }
+        scan += pitch;
     }
-    scan += pitch;
-  }
 }
 
-static void blit(const uint8_t *srcptr, uint8_t *dstptr, int srcpitch,
-                 int lines, int dstpitch) {
-  for (int y = 0; y < lines; y += 1) {
-    memcpy(dstptr, srcptr, srcpitch);
-    srcptr += srcpitch;
-    dstptr += dstpitch;
-  }
+static void blit(const uint8_t *srcptr, uint8_t *dstptr, int srcpitch, int lines, int dstpitch) {
+    for (int y = 0; y < lines; y += 1) {
+        memcpy(dstptr, srcptr, srcpitch);
+        srcptr += srcpitch;
+        dstptr += dstpitch;
+    }
 }
 
-static SDL_Texture *create_tiled_texture(SDL_Renderer *renderer, int width,
-                                         int height, int tile_width,
-                                         int tile_height,
+static SDL_Texture *create_tiled_texture(SDL_Renderer *renderer, int width, int height,
+                                         int tile_width, int tile_height,
                                          const uint8_t *tile_data) {
-  SDL_Surface *surface =
-      SDL_CreateSurface(width, height, SDL_PIXELFORMAT_ARGB8888);
+    SDL_Surface *surface = SDL_CreateSurface(width, height, SDL_PIXELFORMAT_ARGB8888);
 
-  const int tile_pitch = tile_width * 4;
-  SDL_Rect dstrect = {0, 0, tile_width, tile_height};
-  for (dstrect.y = 0; dstrect.y <= height - tile_height;
-       dstrect.y += tile_height) {
-    uint8_t *dstptr =
-        (uint8_t *)surface->pixels + (ptrdiff_t)dstrect.y * surface->pitch;
-    for (dstrect.x = 0; dstrect.x <= width - tile_width;
-         dstrect.x += tile_width) {
-      blit(tile_data, dstptr, tile_pitch, tile_height, surface->pitch);
-      dstptr += tile_pitch;
+    const int tile_pitch = tile_width * 4;
+    SDL_Rect dstrect = {0, 0, tile_width, tile_height};
+    for (dstrect.y = 0; dstrect.y <= height - tile_height; dstrect.y += tile_height) {
+        uint8_t *dstptr = (uint8_t *)surface->pixels + ((ptrdiff_t)dstrect.y * surface->pitch);
+        for (dstrect.x = 0; dstrect.x <= width - tile_width; dstrect.x += tile_width) {
+            blit(tile_data, dstptr, tile_pitch, tile_height, surface->pitch);
+            dstptr += tile_pitch;
+        }
+        if (dstrect.x < width) {
+            blit(tile_data, dstptr, (width - dstrect.x) * 4, tile_height, surface->pitch);
+        }
     }
-    if (dstrect.x < width)
-      blit(tile_data, dstptr, (width - dstrect.x) * 4, tile_height,
-           surface->pitch);
-  }
 
-  SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-  SDL_DestroySurface(surface);
-  return texture;
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_DestroySurface(surface);
+    return texture;
 }

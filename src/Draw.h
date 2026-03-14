@@ -25,4 +25,14 @@ ScanDrawPtr GetSpriteDraw(draw_t mode);
 
 extern bool DrawScanline(void);
 
+/* Per-frame profiling accumulators for the blend-mask render path.
+ * Counted in SDL_GetPerformanceCounter ticks; reset to 0 each frame by
+ * the caller (see prof_draw_reset / prof_draw_read in Intro.c). */
+extern uint64_t g_prof_linebuf_ticks;      /* MAIN_LAYER → linebuffer          */
+extern uint64_t g_prof_fillmask_ticks;     /* fill_blend_mask_scanline          */
+extern uint64_t g_prof_blit_ticks;         /* Blit32_32_Masked composite        */
+extern uint64_t g_prof_layers_ticks;       /* entire draw_regular_layers pass   */
+extern uint64_t g_prof_sprites_ticks;      /* entire draw_regular_sprites pass  */
+extern uint64_t g_prof_per_layer_ticks[8]; /* per-layer breakdown            */
+
 #endif
