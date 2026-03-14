@@ -280,7 +280,7 @@ int main(void) {
     if (!db_triggered && xpos >= DB_TRIGGER_X) {
       db_triggered = true;
 
-      drawbridge_bridge = TLN_LoadTilemap("drawbridge_drawbridge.tmx", NULL);
+      drawbridge_bridge = TLN_LoadTilemap("drawbridge_bridge.tmx", NULL);
       TLN_SetLayerTilemap(MAIN_LAYER, drawbridge_bridge);
       TLN_SetLayerWindow(MAIN_LAYER, 0, DB_WINDOW_TOP, WIDTH, HEIGHT, false);
 
