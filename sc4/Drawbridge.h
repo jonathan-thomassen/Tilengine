@@ -3,15 +3,24 @@
 
 #include <stdbool.h>
 
+#define DB_STEPS 135
+#define DB_TICK_RATE 9
+
+typedef struct {
+  int x;
+  int y;
+} ChainPos;
+
 void DrawbridgeInit(int layer, int hinge_x, int hinge_y);
-void DrawbridgeSetProgress(int progress);
+/** Advance the animation by one step. Does nothing when already at the last frame. */
+void DrawbridgeAdvance(void);
 int DrawbridgeGetProgress(void);
 void DrawbridgeSetHinge(int hinge_x, int hinge_y);
 void DrawbridgeTasks(void);
 
 /**
  * Advance the drawbridge tick counter.
- * Returns true on the first call and then once every 9 calls, providing
+ * Returns true once every 9 calls, providing
  * a 9-frame rate divider for the animation progress.
  * Must be called exactly once per game frame while the animation is active.
  */
@@ -29,16 +38,9 @@ int DrawbridgeHingeX(void);
 
 /**
  * Returns the precomputed screen position of the chain-sprite anchor for the
- * current animation step.  Add xpos to *out_x to get the world x coordinate.
- * *out_y is the fully-baked world y (sprite height and drift already folded in).
+ * current animation step.  Add xpos to .x to get the world x coordinate.
+ * .y is the fully-baked world y (sprite height and drift already folded in).
  */
-void DrawbridgeChainPos(int *out_x, int *out_y);
-
-/**
- * Returns the minimum screen x at which a sprite's feet (at feet_y) no longer
- * overlap the rising bridge surface.  Returns 0 when progress is 0 or the
- * bridge angle is negligible.
- */
-int DrawbridgeMinX(int feet_y);
+ChainPos DrawbridgeChainPos(void);
 
 #endif

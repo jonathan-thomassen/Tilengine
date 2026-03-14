@@ -5,6 +5,13 @@
 #include "Sandblock.h"
 #include "Torch.h"
 
+typedef enum {
+  SIMON_IDLE,
+  SIMON_WALKING,
+  SIMON_JUMPING,
+  SIMON_TEETER
+} SimonState;
+
 #define COLLISION_LAYER 5
 
 /* Simon occupies the last sprite slot so he renders on top of all props. */
@@ -14,7 +21,7 @@ void SimonInit(void);
 void SimonDeinit(void);
 void SimonTasks(void);
 int SimonGetPosition(void);
-void SimonSetState(int s);
+void SimonSetState(SimonState s);
 void SimonSetPosition(int px, int py);
 
 /* Re-inserts Simon at the end of Tilengine's sprite render list so he

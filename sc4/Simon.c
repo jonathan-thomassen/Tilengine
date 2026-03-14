@@ -8,8 +8,6 @@
 #define AIR_TURN_DELAY 6
 #define SIMON_HEIGHT 48
 
-typedef enum { SIMON_IDLE, SIMON_WALKING, SIMON_JUMPING } SimonState;
-
 typedef enum {
   DIR_NONE,
   DIR_LEFT,
@@ -59,6 +57,9 @@ void SimonInit(void) {
   sp = TLN_LoadSequencePack("simon_walk.sqx");
   walk = TLN_FindSequence(sp, "walk");
 
+  x = 33;
+  y = 146;
+
   TLN_SetSpriteSet(SIMON_SPRITE, simon);
   TLN_SetSpritePosition(SIMON_SPRITE, x, y);
 
@@ -66,8 +67,6 @@ void SimonInit(void) {
 
   SimonSetState(SIMON_IDLE);
   direction = DIR_RIGHT;
-  x = 33;
-  y = 146;
 }
 
 void SimonDeinit(void) {
@@ -86,8 +85,8 @@ void SimonFreezeCamera(void) {
   camera_frozen = true;
 }
 
-void SimonSetState(int s) {
-  if ((int)state == s)
+void SimonSetState(SimonState s) {
+  if (state == s)
     return;
 
   state = s;
@@ -105,6 +104,11 @@ void SimonSetState(int s) {
       TLN_DisableSpriteAnimation(SIMON_SPRITE);
       TLN_SetSpritePicture(SIMON_SPRITE, 7);
       sy = -18;
+      break;
+
+    case SIMON_TEETER:
+      TLN_DisableSpriteAnimation(SIMON_SPRITE);
+      TLN_SetSpritePicture(SIMON_SPRITE, 8);
       break;
   }
 }
@@ -334,6 +338,7 @@ static void apply_movement(Direction input, int width) {
   prev_input = input;
 
   switch (state) {
+    case SIMON_TEETER:
     case SIMON_IDLE:
       if (input)
         SimonSetState(SIMON_WALKING);
@@ -424,6 +429,12 @@ void SimonTasks(void) {
   if (state == SIMON_IDLE && input != DIR_NONE)
     SimonSetState(SIMON_WALKING);
 
+  /* Teeter: idle on the bridge surface with no player input. */
+  if (state == SIMON_IDLE && bridge_floor != 32767 && input == DIR_NONE)
+    SimonSetState(SIMON_TEETER);
+  else if (state == SIMON_TEETER && bridge_floor == 32767)
+    SimonSetState(SIMON_IDLE);
+
   TLN_SetSpritePosition(SIMON_SPRITE, x, y);
 }
 
@@ -456,15 +467,12 @@ void SimonSetScreenX(int screen_x) {
 }
 
 void SimonSetFeetY(int feet_y) {
-  y = feet_y - SIMON_HEIGHT;
-  sy = 0; /* suppress gravity so physics doesn't fight the forced position */
-  apex_hang =
-      0; /* reset hang timer so gravity can't accumulate on no-tile surfaces */
+  SimonPinFeetY(feet_y);
+
   /* Pinning feet to a surface counts as landing: cancel any in-progress jump
    * so the jump sprite clears and the player can jump again next frame. */
   if (state == SIMON_JUMPING)
     SimonSetState(SIMON_IDLE);
-  TLN_SetSpritePosition(SIMON_SPRITE, x, y);
 }
 
 void SimonPinFeetY(int feet_y) {

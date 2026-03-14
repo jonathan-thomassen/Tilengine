@@ -8,6 +8,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Add cmake modules directory
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+# Set C standard early so it applies to all targets, including the library.
+set(CMAKE_C_STANDARD 23)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
 file(GLOB SOURCES
      "src/*.c"
 )
@@ -20,12 +24,17 @@ file(GLOB INCLUDE_SOURCES
 list(REMOVE_ITEM SOURCES "src/Test.c")
 add_library(${PROJECT_NAME} ${SOURCES} ${INCLUDE_SOURCES})
 
+# Architecture flags: apply on any x86-64 target with a GCC-compatible compiler.
+# CMAKE_SYSTEM_PROCESSOR is "x86_64" on Linux/macOS and "AMD64" on Windows.
+if (NOT MSVC AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64|amd64")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m64 -msse2")
+endif()
+
 if (UNIX AND NOT APPLE)
-	set(CMAKE_C_FLAGS "-m64 -msse2")
-	target_link_libraries(${PROJECT_NAME} PRIVATE "c")
+    target_link_libraries(${PROJECT_NAME} PRIVATE "c")
 elseif (UNIX AND APPLE)
     target_link_libraries(${PROJECT_NAME} PRIVATE "framework")
-	target_link_libraries(${PROJECT_NAME} PRIVATE "c")
+    target_link_libraries(${PROJECT_NAME} PRIVATE "c")
 endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE "z")
@@ -56,8 +65,6 @@ endif()
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 # Compiler-specific flags
-set(CMAKE_C_STANDARD 23)
-set(CMAKE_C_STANDARD_REQUIRED ON)
 if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /W3)
 else()
@@ -91,8 +98,9 @@ target_link_libraries(Test PRIVATE "png")
 
 # Copy required DLLs on MinGW after building
 if (MINGW)
-    # Find MSYS2 MinGW bin directory
-    if (EXISTS "C:/msys64/mingw64/bin")
+    # Allow users to override the MinGW bin directory; auto-detect as fallback.
+    set(MINGW_BIN_DIR "" CACHE PATH "Path to the MinGW/MSYS2 bin directory containing SDL3.dll etc.")
+    if (NOT MINGW_BIN_DIR AND EXISTS "C:/msys64/mingw64/bin")
         set(MINGW_BIN_DIR "C:/msys64/mingw64/bin")
     endif()
     

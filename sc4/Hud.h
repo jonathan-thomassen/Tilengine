@@ -4,7 +4,7 @@
 #include "Tilengine.h"
 
 /**
- * Initialises the HUD timer system, writes the initial value (500) to the
+ * Initialises the HUD timer system, writes the initial value (450) to the
  * tilemap, and stores the tilemap reference for subsequent updates.
  *
  * \param tilemap  The loaded HUD tilemap (from TLN_LoadTilemap / TLN_GetLayerTilemap).

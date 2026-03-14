@@ -22,7 +22,7 @@ static DrawbridgeState db;
 
 /* Single trig table — sin(θ[i]) for i = 0..134.
  * cos(θ[i]) == sin(θ[134-i]), so no second table is needed. */
-#define DB_STEPS 135
+
 #define TRIG_COS(i) baked_sin[(DB_STEPS - 1) - (i)]
 
 static const float baked_sin[DB_STEPS] = {
@@ -77,10 +77,6 @@ static const int baked_tan[DB_STEPS] = {
  * x: screen x; add xpos to get world x.
  * y: world y; sprite height (-128) and drift correction already folded in.
  * Struct layout keeps both fields in one cache-line load. */
-typedef struct {
-  int x;
-  int y;
-} ChainPos;
 static const ChainPos chain_pos[DB_STEPS] = {
     {80, 40},   {80, 38},   {80, 37},   {80, 35},   {80, 34},   {81, 32},
     {81, 30},   {81, 29},   {81, 27},   {82, 26},   {82, 24},   {82, 23},
@@ -113,18 +109,14 @@ void DrawbridgeInit(int layer, int hinge_x, int hinge_y) {
   db.hinge_x = hinge_x;
   db.hinge_y = hinge_y;
   db.progress = 0;
-  db.affine_dirty = false;
-  db.tick = 9;
+  db.affine_dirty = true;
+  db.tick = DB_TICK_RATE;
 }
 
-void DrawbridgeSetProgress(int progress) {
-  if (progress < 0)
-    progress = 0;
-  else if (progress > 134)
-    progress = 134;
-  if (progress == db.progress)
+void DrawbridgeAdvance(void) {
+  if (db.progress >= DB_STEPS - 1)
     return;
-  db.progress = progress;
+  db.progress++;
   db.affine_dirty = true;
 }
 
@@ -142,7 +134,7 @@ void DrawbridgeSetHinge(int hinge_x, int hinge_y) {
 
 bool DrawbridgeTick(void) {
   if (--db.tick <= 0) {
-    db.tick = 9;
+    db.tick = DB_TICK_RATE;
     return true;
   }
   return false;
@@ -161,10 +153,8 @@ int DrawbridgeHingeX(void) {
   return db.hinge_x;
 }
 
-void DrawbridgeChainPos(int *out_x, int *out_y) {
-  const ChainPos *p = &chain_pos[db.progress];
-  *out_x = p->x;
-  *out_y = p->y;
+ChainPos DrawbridgeChainPos(void) {
+  return chain_pos[db.progress];
 }
 
 void DrawbridgeTasks(void) {

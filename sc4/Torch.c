@@ -17,10 +17,12 @@ typedef struct {
 } Torch;
 
 static TLN_Spriteset spriteset;
+static TLN_SequencePack seq_pack;
 static Torch torches[MAX_TORCHES];
 
 void TorchInit(void) {
   spriteset = TLN_LoadSpriteset("torch");
+  seq_pack = TLN_LoadSequencePack("torch.sqx");
   for (int i = 0; i < MAX_TORCHES; i++) {
     torches[i].active = false;
     TLN_DisableSprite(SPRITE_BASE + i);
@@ -29,6 +31,9 @@ void TorchInit(void) {
 
 void TorchDeinit(void) {
   for (int i = 0; i < MAX_TORCHES; i++) TLN_DisableSprite(SPRITE_BASE + i);
+  if (seq_pack != NULL)
+    TLN_DeleteSequencePack(seq_pack);
+  seq_pack = NULL;
   if (spriteset != NULL)
     TLN_DeleteSpriteset(spriteset);
   spriteset = NULL;
@@ -42,7 +47,10 @@ int TorchSpawn(int world_x, int world_y) {
     torches[i].world_x = world_x;
     torches[i].world_y = world_y;
     TLN_SetSpriteSet(SPRITE_BASE + i, spriteset);
-    TLN_SetSpritePicture(SPRITE_BASE + i, 0);
+    if (seq_pack != NULL)
+      TLN_SetSpriteAnimation(SPRITE_BASE + i, TLN_GetSequence(seq_pack, 0), 0);
+    else
+      TLN_SetSpritePicture(SPRITE_BASE + i, 0);
     return i;
   }
   return -1; /* no free slot */
@@ -55,11 +63,4 @@ void TorchTasks(int xworld) {
     TLN_SetSpritePosition(SPRITE_BASE + i, torches[i].world_x - xworld,
                           torches[i].world_y);
   }
-}
-
-bool TorchGet(int index) {
-  if (index < 0 || index >= MAX_TORCHES || !torches[index].active)
-    return false;
-
-  return true;
 }

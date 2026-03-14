@@ -36,7 +36,4 @@ void TorchTasks(int xworld);
 #define TORCH_WIDTH 16
 #define TORCH_HEIGHT 16
 
-/** Returns true if slot \p index is active, false if empty. */
-bool TorchGet(int index);
-
 #endif

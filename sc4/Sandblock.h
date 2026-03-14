@@ -31,15 +31,13 @@ int SandblockSpawn(int world_x, int world_y);
 void SandblockTasks(int xworld);
 
 /**
- * Checks whether Simon's feet have landed on any active sandblock and
- * resolves the collision identically to a tilemap floor hit.
- *
  * \param sprite_x   Simon's screen x position
  * \param world_x    Horizontal world scroll offset
  * \param inout_y    Candidate new y; snapped to block top on hit
  * \param inout_vy   Vertical velocity; zeroed on landing
  * \return           true if a sandblock floor was hit
  */
+
 /** Read-only snapshot of a sandblock used for external collision queries. */
 typedef struct {
   int index; /* slot index, for SandblockMarkStood() */

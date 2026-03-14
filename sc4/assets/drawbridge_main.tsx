@@ -41,6 +41,21 @@
    <property name="priority" type="bool" value="true"/>
   </properties>
  </tile>
+ <tile id="38">
+  <properties>
+   <property name="priority" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="39">
+  <properties>
+   <property name="priority" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="41">
+  <properties>
+   <property name="priority" type="bool" value="true"/>
+  </properties>
+ </tile>
  <tile id="42">
   <properties>
    <property name="priority" type="bool" value="true"/>
@@ -52,6 +67,11 @@
   </properties>
  </tile>
  <tile id="45">
+  <properties>
+   <property name="priority" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="46">
   <properties>
    <property name="priority" type="bool" value="true"/>
   </properties>
