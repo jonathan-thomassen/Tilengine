@@ -23,7 +23,9 @@
 
 #define HINGE_X 221
 #define HINGE_Y 183
-#define DB_TRIGGER_X 768     /* world-x where drawbridge animation starts */
+#define DB_TRIGGER_X 768 /* world-x where drawbridge animation starts */
+#define WATER_BLEND_THRESHOLD                                                                      \
+    (512 - WIDTH)            /* scroll_x at which water tiles first reach the screen's right edge */
 #define DB_LAYER_X_OFFSET 80 /* main-layer x shift once drawbridge triggers */
 #define DB_LAYER_Y_OFFSET 8  /* main-layer y shift once drawbridge triggers */
 #define DB_WINDOW_TOP 32     /* top clip row for the drawbridge tilemap */
@@ -214,8 +216,10 @@ int main(void) {
      * then bring the chain in front of Simon and in front of priority tiles. */
     setup_entity_priorities();
 
-    TLN_SetLayerBlendMask(MAIN_LAYER, WATER_LAYER);
-    TLN_SetLayerBlendMode(MAIN_LAYER, BLEND_MIX50);
+    /* Blend mode and blend mask are both enabled lazily once water tiles come
+     * on screen (see main loop). Activating blend mode without a mask applies
+     * blending to the entire layer, which would make MAIN_LAYER semi-transparent
+     * for the whole level and waste blend work on non-water pixels. */
 
     /* main loop */
     TLN_CreateWindow(CWF_NEAREST | CWF_S6 | CWF_NOVSYNC);
@@ -231,6 +235,7 @@ int main(void) {
     int rails_max = 0;
     int xpos = 0;
     bool db_triggered = false;
+    bool blend_mask_active = false;
     int prev_xpos = -1;
 
     while (TLN_ProcessWindow()) {
@@ -329,10 +334,25 @@ int main(void) {
 
         tick_chain_prop(db_triggered, xpos);
 
+        /* Enable the per-pixel water blend mask once water tiles are on screen.
+         * The water layer is empty for the first ~256 scroll pixels, so enabling
+         * it earlier wastes fill_blend_mask_scanline work on every scanline. */
+        if (!blend_mask_active && xpos >= WATER_BLEND_THRESHOLD) {
+            TLN_SetLayerBlendMode(MAIN_LAYER, BLEND_MIX50);
+            TLN_SetLayerBlendMask(MAIN_LAYER, WATER_LAYER);
+            blend_mask_active = true;
+        }
+
         SandblockTasks(xpos);
         TorchTasks(xpos);
         PropTasks(xpos);
-        DrawbridgeTasks();
+        /* Only apply the affine transform once the bridge is actually triggered.
+         * DrawbridgeInit sets affine_dirty=true, so calling DrawbridgeTasks()
+         * unconditionally would put MAIN_LAYER into MODE_TRANSFORM from frame 1,
+         * forcing the slow per-pixel render path for the entire level approach. */
+        if (db_triggered) {
+            DrawbridgeTasks();
+        }
         update_layer_positions(xpos, db_triggered, &prev_xpos);
 
         /* render to window */
