@@ -7,8 +7,8 @@
 #define DB_TICK_RATE 9
 
 typedef struct {
-  int x;
-  int y;
+    int x;
+    int y;
 } ChainPos;
 
 void DrawbridgeInit(int layer, int hinge_x, int hinge_y);

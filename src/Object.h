@@ -17,26 +17,26 @@
 
 /* tipos de objeto */
 typedef enum {
-  OT_NONE,
-  OT_PALETTE,
-  OT_TILEMAP,
-  OT_TILESET,
-  OT_SPRITESET,
-  OT_BITMAP,
-  OT_SEQUENCE,
-  OT_SEQPACK,
-  OT_OBJECTLIST,
+    OT_NONE,
+    OT_PALETTE,
+    OT_TILEMAP,
+    OT_TILESET,
+    OT_SPRITESET,
+    OT_BITMAP,
+    OT_SEQUENCE,
+    OT_SEQPACK,
+    OT_OBJECTLIST,
 } ObjectType;
 
-#define DEFINE_OBJECT                                                          \
-  ObjectType type;                                                             \
-  uint32_t guid;                                                               \
-  size_t size;                                                                 \
-  int owner
+#define DEFINE_OBJECT                                                                              \
+    ObjectType type;                                                                               \
+    uint32_t guid;                                                                                 \
+    uint32_t size;                                                                                 \
+    int owner
 
 typedef struct {
-  DEFINE_OBJECT;
-  uint8_t data[0];
+    DEFINE_OBJECT;
+    uint8_t data[];
 } object_t;
 
 #define ObjectType(ptr) ((object_t *)(ptr))->type

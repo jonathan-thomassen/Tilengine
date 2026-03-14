@@ -14,22 +14,22 @@
 typedef float math2d_t;
 
 typedef struct {
-  math2d_t m11;
-  math2d_t m12;
-  math2d_t m13;
+    math2d_t m11;
+    math2d_t m12;
+    math2d_t m13;
 
-  math2d_t m21;
-  math2d_t m22;
-  math2d_t m23;
+    math2d_t m21;
+    math2d_t m22;
+    math2d_t m23;
 
-  math2d_t m31;
-  math2d_t m32;
-  math2d_t m33;
+    math2d_t m31;
+    math2d_t m32;
+    math2d_t m33;
 } Matrix3;
 
 typedef struct {
-  math2d_t x;
-  math2d_t y;
+    math2d_t x;
+    math2d_t y;
 } Point2D;
 
 /* fixed point helper */

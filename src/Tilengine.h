@@ -17,7 +17,7 @@
  * @{ */
 
 /* Tilengine shared */
-#if defined _MSC_VER
+#ifdef _MSC_VER
 #ifdef LIB_EXPORTS
 #define TLNAPI __declspec(dllexport)
 #else
@@ -673,7 +673,7 @@ TLNAPI bool TLN_DeleteSequencePack(TLN_SequencePack sp);
  * @{ */
 TLNAPI bool TLN_SetPaletteAnimation(int index, TLN_Palette palette,
                                     TLN_Sequence sequence, bool blend);
-TLNAPI bool TLN_SetPaletteAnimationSource(int index, TLN_Palette);
+TLNAPI bool TLN_SetPaletteAnimationSource(int index, TLN_Palette /*palette*/);
 TLNAPI bool TLN_GetAnimationState(int index);
 TLNAPI bool TLN_SetAnimationDelay(int index, int frame, int delay);
 TLNAPI int TLN_GetAvailableAnimation(void);

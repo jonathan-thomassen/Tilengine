@@ -32,73 +32,67 @@ static const TLN_Error object_errors[] = {
 
 /* crea objecto */
 void *CreateBaseObject(ObjectType type, size_t size) {
-  object_t *object = (object_t *)malloc(size);
-  if (object) {
-    char trace_msg[255];
-    numobjects++;
-    numbytes += (uint32_t)size;
-    memset(object, 0, size);
-    object->type = type;
-    object->guid = numobjects;
-    object->size = size;
-    object->owner = true;
-    sprintf(trace_msg, "%s created at %p, %zu size", object_types[type], object,
-            size);
-    tln_trace(TLN_LOG_VERBOSE, trace_msg);
-  } else {
-    char trace_msg[255];
-    TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
-    sprintf(trace_msg, "failed to create %s!", object_types[type]);
-    tln_trace(TLN_LOG_ERRORS, trace_msg);
-  }
-  return object;
+    object_t *object = (object_t *)malloc(size);
+    if (object) {
+        char trace_msg[255];
+        numobjects++;
+        numbytes += (uint32_t)size;
+        memset(object, 0, size);
+        object->type = type;
+        object->guid = numobjects;
+        object->size = (uint32_t)size;
+        object->owner = true;
+        sprintf(trace_msg, "%s created at %p, %zu size", object_types[type], (void *)object, size);
+        tln_trace(TLN_LOG_VERBOSE, trace_msg);
+    } else {
+        char trace_msg[255];
+        TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
+        sprintf(trace_msg, "failed to create %s!", object_types[type]);
+        tln_trace(TLN_LOG_ERRORS, trace_msg);
+    }
+    return object;
 }
 
 /* creates a copy of the object */
 void *CloneBaseObject(void *object) {
-  object_t const *src = (object_t *)object;
-  object_t *dst = (object_t *)CreateBaseObject(src->type, src->size);
-  if (dst) {
-    memcpy(dst->data, src->data, src->size - sizeof(object_t));
-    dst->owner = false;
-  }
-  return dst;
+    object_t const *src = (object_t *)object;
+    object_t *dst = (object_t *)CreateBaseObject(src->type, src->size);
+    if (dst) {
+        memcpy(dst->data, src->data, src->size - sizeof(object_t));
+        dst->owner = false;
+    }
+    return dst;
 }
 
 /* deletes object */
 void DeleteBaseObject(void *object) {
-  if (object) {
-    char trace_msg[255];
-    numobjects--;
-    numbytes -= ObjectSize(object);
-    sprintf(trace_msg, "%s %p deleted", object_types[ObjectType(object)],
-            object);
-    tln_trace(TLN_LOG_VERBOSE, trace_msg);
-    free(object);
-  }
+    if (object) {
+        char trace_msg[255];
+        numobjects--;
+        numbytes -= ObjectSize(object);
+        sprintf(trace_msg, "%s %p deleted", object_types[ObjectType(object)], object);
+        tln_trace(TLN_LOG_VERBOSE, trace_msg);
+        free(object);
+    }
 }
 
 /* checks object type */
 bool CheckBaseObject(void *object, ObjectType type) {
-  char trace_msg[255];
-  if (object != NULL && ObjectType(object) == type)
-    return true;
+    char trace_msg[255];
+    if (object != NULL && ObjectType(object) == type)
+        return true;
 
-  TLN_SetLastError(object_errors[type]);
-  sprintf(trace_msg, "Invalid object address is %p", object);
-  tln_trace(TLN_LOG_ERRORS, trace_msg);
-  return false;
+    TLN_SetLastError(object_errors[type]);
+    sprintf(trace_msg, "Invalid object address is %p", object);
+    tln_trace(TLN_LOG_ERRORS, trace_msg);
+    return false;
 }
 
-unsigned int GetNumObjects(void) {
-  return numobjects;
-}
+unsigned int GetNumObjects(void) { return numobjects; }
 
-unsigned int GetNumBytes(void) {
-  return numbytes;
-}
+unsigned int GetNumBytes(void) { return numbytes; }
 
 void CopyBaseObject(void *dstobject, const void *srcobject) {
-  if (srcobject && dstobject)
-    memcpy(dstobject, srcobject, ObjectSize(srcobject));
+    if (srcobject && dstobject)
+        memcpy(dstobject, srcobject, ObjectSize(srcobject));
 }

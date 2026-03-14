@@ -8,20 +8,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#ifndef _DRAW_H
-#define _DRAW_H
+#ifndef DRAW_H
+#define DRAW_H
 
 #include <stdbool.h>
 #include <stdint.h>
 
 /* render modes */
-typedef enum {
-  MODE_NORMAL,
-  MODE_SCALING,
-  MODE_TRANSFORM,
-  MODE_PIXEL_MAP,
-  MAX_DRAW_MODE
-} draw_t;
+typedef enum { MODE_NORMAL, MODE_SCALING, MODE_TRANSFORM, MODE_PIXEL_MAP, MAX_DRAW_MODE } draw_t;
 
 typedef bool (*ScanDrawPtr)(int, uint32_t *, int, int, int);
 typedef struct Layer Layer;

@@ -1,19 +1,11 @@
 Checks: >
+  -*,
   bugprone-*,
-  cert-*,
-  misc-*,
-  performance-*,
-  -bugprone-easily-swappable-parameters,
-  -cert-err33-c,
-  -cert-err34-c,
-  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
-  -misc-include-cleaner
+  clang-analyzer-*,
+  readability-*,
+  portability-*,
+  performance-*
 
-# Treat these as errors (empty = none forced to error)
 WarningsAsErrors: ''
-
-# Only emit diagnostics for files directly in samples/ — suppress noise from
-# engine headers (src/Tilengine.h etc.) when they're only included by targets.
-HeaderFilterRegex: '.*/samples/.*'
-
+HeaderFilterRegex: '.*'
 FormatStyle: none

@@ -7,7 +7,8 @@
  * Initialises the HUD timer system, writes the initial value (450) to the
  * tilemap, and stores the tilemap reference for subsequent updates.
  *
- * \param tilemap  The loaded HUD tilemap (from TLN_LoadTilemap / TLN_GetLayerTilemap).
+ * \param tilemap  The loaded HUD tilemap (from TLN_LoadTilemap /
+ * TLN_GetLayerTilemap).
  */
 void HudInit(TLN_Tilemap tilemap);
 

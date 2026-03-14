@@ -5,12 +5,13 @@
 #include "Sandblock.h"
 #include "Torch.h"
 
-typedef enum {
-  SIMON_IDLE,
-  SIMON_WALKING,
-  SIMON_JUMPING,
-  SIMON_TEETER
-} SimonState;
+typedef enum { SIMON_IDLE, SIMON_WALKING, SIMON_JUMPING, SIMON_TEETER } SimonState;
+
+typedef struct {
+    int x;
+    int y;
+    int scroll_x;
+} Coords2d;
 
 #define COLLISION_LAYER 5
 
@@ -21,8 +22,8 @@ void SimonInit(void);
 void SimonDeinit(void);
 void SimonTasks(void);
 int SimonGetPosition(void);
-void SimonSetState(SimonState s);
-void SimonSetPosition(int px, int py);
+void SimonSetState(SimonState new_state);
+void SimonSetPosition(Coords2d pos);
 
 /* Re-inserts Simon at the end of Tilengine's sprite render list so he
  * always draws on top of torches and props that were spawned after init. */
@@ -79,6 +80,6 @@ void SimonClearBridgeFloor(void);
  * after advancing the camera position so that collision queries stay in sync
  * with the layer scroll position.
  */
-void SimonSetWorldX(int wx);
+void SimonSetWorldX(int world_x);
 
 #endif

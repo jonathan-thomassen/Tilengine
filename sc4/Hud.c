@@ -30,38 +30,45 @@
 
 /* ------------------------------------------------------------------ */
 
+typedef struct {
+    int col;
+    int digit;
+} TimerCoords;
+
 static TLN_Tilemap hud_tilemap;
 static int timer_value;
 static int frame_count;
 
 /* Writes a single digit tile to the given tilemap column on TIMER_ROW. */
-static void write_digit(int col, int digit) {
-  union Tile t = {0};
-  t.index = (uint16_t)(DIGIT_TILE_0 + digit);
-  TLN_SetTilemapTile(hud_tilemap, TIMER_ROW, col, &t);
+static void write_digit(TimerCoords coords) {
+    union Tile tile = {0};
+    tile.index = (uint16_t)(DIGIT_TILE_0 + coords.digit);
+    TLN_SetTilemapTile(hud_tilemap, TIMER_ROW, coords.col, &tile);
 }
 
 /* Decomposes timer_value into three digits and writes them to the tilemap. */
 static void update_display(void) {
-  write_digit(TIMER_COL, timer_value / 100);
-  write_digit(TIMER_COL + 1, (timer_value / 10) % 10);
-  write_digit(TIMER_COL + 2, timer_value % 10);
+    write_digit((TimerCoords){TIMER_COL, timer_value / 100});
+    write_digit((TimerCoords){TIMER_COL + 1, (timer_value / 10) % 10});
+    write_digit((TimerCoords){TIMER_COL + 2, timer_value % 10});
 }
 
 void HudInit(TLN_Tilemap tilemap) {
-  hud_tilemap = tilemap;
-  timer_value = TIMER_START;
-  frame_count = 0;
-  update_display();
+    hud_tilemap = tilemap;
+    timer_value = TIMER_START;
+    frame_count = 0;
+    update_display();
 }
 
 void HudTasks(void) {
-  if (timer_value <= 0)
-    return;
-  frame_count++;
-  if (frame_count < FRAMES_PER_TICK)
-    return;
-  frame_count = 0;
-  timer_value--;
-  update_display();
+    if (timer_value <= 0) {
+        return;
+    }
+    frame_count++;
+    if (frame_count < FRAMES_PER_TICK) {
+        return;
+    }
+    frame_count = 0;
+    timer_value--;
+    update_display();
 }
