@@ -131,12 +131,17 @@ typedef struct {
     int srcy;
 } TileMaskParams;
 
-/* fills one tile-width's worth of blend_mask entries by per-pixel sampling */
+/* fills one tile-width's worth of blend_mask entries by per-pixel sampling,
+ * and simultaneously palette-expands those pixels into engine->water_render. */
 static void fill_mask_tile(uint8_t *mask, int x, int width, TileMaskParams const *p) {
+    uint32_t *wdst = engine->water_render + x;
+    uint32_t const *color = (uint32_t *)p->tileset->palette->data;
     for (int i = 0; i < width; i++) {
         int sx = (p->tile->flags & FLAG_FLIPX) ? p->tileset->width - 1 - p->srcx - i : p->srcx + i;
-        if (GetTilesetPixel(p->tileset, p->tile_index, sx, p->srcy) != 0) {
+        uint8_t pix = GetTilesetPixel(p->tileset, p->tile_index, sx, p->srcy);
+        if (pix != 0) {
             mask[x + i] = 1;
+            wdst[i] = color[pix];
         }
     }
 }
@@ -197,6 +202,13 @@ static void fill_blend_mask_scanline(int nmask, int nscan) {
 /* draw background scanline taking into account mosaic and windowing effects */
 static bool draw_background_scanline(int nlayer, int line) {
     Layer *layer = &engine->layers[nlayer];
+
+    /* blend-source layers supply their pixels via fill_blend_mask_scanline;
+     * skip the normal framebuffer render to avoid the expensive full-screen blit. */
+    if (layer->flags.is_blend_source) {
+        return false;
+    }
+
     LayerWindow const *window = &layer->window;
     uint32_t *mosaic = layer->mosaic.buffer;
     const bool inside = (line >= window->y1 && line <= window->y2) != 0;
@@ -232,7 +244,8 @@ static bool draw_background_scanline(int nlayer, int line) {
         engine->blend_mask_blend = saved_blend;
         fill_blend_mask_scanline(layer->blend_mask_layer, line);
         uint64_t t2 = SDL_GetPerformanceCounter();
-        Blit32_32_Masked(lb, fb, engine->blend_mask, saved_blend, framewidth);
+        Blit32_32_Masked_src(lb, engine->water_render, fb, engine->blend_mask, saved_blend,
+                             framewidth);
         uint64_t t3 = SDL_GetPerformanceCounter();
 
         g_prof_linebuf_ticks += t1 - t0;

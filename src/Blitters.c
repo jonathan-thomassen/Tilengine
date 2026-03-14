@@ -273,6 +273,49 @@ void Blit32_32_Masked(uint32_t const *src, uint32_t *dst, uint8_t const *mask, c
     }
 }
 
+void Blit32_32_Masked_src(uint32_t const *src, uint32_t const *src_blend, uint32_t *dst,
+                          uint8_t const *mask, const uint8_t *blend, int width) {
+    if (blend == SelectBlendTable(BLEND_MIX50)) {
+        while (width > 0) {
+            if ((*src & 0xFF000000u) != 0) {
+                if (*mask) {
+                    *dst = (((*src >> 1) & 0x007F7F7Fu) + ((*src_blend >> 1) & 0x007F7F7Fu) +
+                            (*src & *src_blend & 0x00010101u)) |
+                           (*dst & 0xFF000000u);
+                } else {
+                    *dst = *src;
+                }
+            }
+            src++;
+            src_blend++;
+            dst++;
+            mask++;
+            width--;
+        }
+        return;
+    }
+
+    Color const *srcpixel = (Color const *)src;
+    Color const *blendpixel = (Color const *)src_blend;
+    Color *dstpixel = (Color *)dst;
+    while (width > 0) {
+        if (srcpixel->a != 0) {
+            if (*mask && blend != NULL) {
+                dstpixel->r = blendfunc(blend, srcpixel->r, blendpixel->r);
+                dstpixel->g = blendfunc(blend, srcpixel->g, blendpixel->g);
+                dstpixel->b = blendfunc(blend, srcpixel->b, blendpixel->b);
+            } else {
+                dstpixel->value = srcpixel->value;
+            }
+        }
+        srcpixel++;
+        blendpixel++;
+        dstpixel++;
+        mask++;
+        width--;
+    }
+}
+
 /* helper: paint mosaic block with blending */
 static void PaintMosaicBlockBlend(Color const *srcpixel, Color *dstpixel, int block,
                                   const uint8_t *blend) {

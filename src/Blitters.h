@@ -34,6 +34,12 @@ void Blit32_32(uint32_t *src, uint32_t *dst, int width, const uint8_t *blend);
 void Blit32_32_Masked(uint32_t const *src, uint32_t *dst, uint8_t const *mask, const uint8_t *blend,
                       int width);
 
+/* per-pixel masked blit with separate blend-source buffer (e.g. water_render).
+ * At mask[i]!=0: dst[i] = blend(src[i], src_blend[i])
+ * At mask[i]==0: dst[i] = src[i] */
+void Blit32_32_Masked_src(uint32_t const *src, uint32_t const *src_blend, uint32_t *dst,
+                          uint8_t const *mask, const uint8_t *blend, int width);
+
 /* performs mosaic blit */
 void BlitMosaic(uint32_t *src, uint32_t *dst, int width, int size, const uint8_t *blend);
 
