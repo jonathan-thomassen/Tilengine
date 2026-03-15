@@ -123,28 +123,15 @@ static void blit_clipped_window(uint32_t *scan, LayerWindow const *window, bool 
     }
 }
 
-typedef struct {
-    struct Tileset const *tileset;
-    uint16_t tile_index;
-    union Tile const *tile;
-    int srcx;
-    int srcy;
-} TileMaskParams;
-
-/* fills one tile-width's worth of blend_mask entries by per-pixel sampling */
-static void fill_mask_tile(uint8_t *mask, int x, int width, TileMaskParams const *p) {
-    for (int i = 0; i < width; i++) {
-        int sx = (p->tile->flags & FLAG_FLIPX) ? p->tileset->width - 1 - p->srcx - i : p->srcx + i;
-        if (GetTilesetPixel(p->tileset, p->tile_index, sx, p->srcy) != 0) {
-            mask[x + i] = 1;
-        }
-    }
-}
-
 /* fills engine->blend_mask for the given scanline by sampling the actual
  * tileset pixel index of each screen column from layer nmask: positions where
  * the tileset pixel is non-zero (opaque) are set to 1, transparent pixels
- * (palette index 0) or empty tiles leave the mask at 0. */
+ * (palette index 0) or empty tiles leave the mask at 0.
+ *
+ * Optimization: compute a single row-pointer into the tileset pixel data once
+ * per tile (rather than recalculating the full index inside a per-pixel loop)
+ * and walk it forward (or backward for FLIPX), removing the multiply+shift
+ * from every inner-loop iteration. */
 static void fill_blend_mask_scanline(int nmask, int nscan) {
     Layer const *layer = &engine->layers[nmask];
     int framewidth = engine->framebuffer.width;
@@ -177,13 +164,27 @@ static void fill_blend_mask_scanline(int nmask, int nscan) {
         union Tile const *tile = &tilemap->tiles[((ptrdiff_t)ytile * tilemap->cols) + xtile];
 
         if (tile->index != 0) {
-            TileMaskParams p;
-            p.tileset = tilemap->tilesets[tile->tileset];
-            p.tile_index = p.tileset->tiles[tile->index] - 1;
-            p.tile = tile;
-            p.srcx = srcx;
-            p.srcy = (tile->flags & FLAG_FLIPY) ? p.tileset->height - srcy_base - 1 : srcy_base;
-            fill_mask_tile(engine->blend_mask, x, width, &p);
+            struct Tileset const *ts = tilemap->tilesets[tile->tileset];
+            int tile_index = ts->tiles[tile->index] - 1;
+            int srcy = (tile->flags & FLAG_FLIPY) ? ts->height - srcy_base - 1 : srcy_base;
+            /* pointer to the first pixel of this tile's row in the data array */
+            const uint8_t *row =
+                &ts->data[((((ptrdiff_t)tile_index << ts->vshift) + srcy) << ts->hshift)];
+            uint8_t *out = &engine->blend_mask[x];
+            if (tile->flags & FLAG_FLIPX) {
+                /* walk backward: first sample column is (width-1 - srcx_offset) from right */
+                const uint8_t *p = row + (ts->width - 1 - srcx);
+                for (int i = 0; i < width; i++) {
+                    if (*p-- != 0)
+                        out[i] = 1;
+                }
+            } else {
+                const uint8_t *p = row + srcx;
+                for (int i = 0; i < width; i++) {
+                    if (*p++ != 0)
+                        out[i] = 1;
+                }
+            }
         }
 
         x += width;

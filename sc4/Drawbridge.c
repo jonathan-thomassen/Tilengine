@@ -93,7 +93,7 @@ void DrawbridgeInit(int layer, int hinge_x, int hinge_y) {
     db_state.hinge_x = hinge_x;
     db_state.hinge_y = hinge_y;
     db_state.progress = 0;
-    db_state.affine_dirty = true;
+    db_state.affine_dirty = false; /* no transform needed at progress=0 */
     db_state.tick = DB_TICK_RATE;
 }
 
@@ -139,12 +139,17 @@ ChainPos DrawbridgeChainPos(void) { return chain_pos[db_state.progress]; }
 
 void DrawbridgeTasks(void) {
     if (db_state.affine_dirty) {
-        float cf = TRIG_COS(db_state.progress);
-        float sf = baked_sin[db_state.progress];
-        /* Standard 2-D rotation matrix [[cos,-sin],[sin,cos]].
-         * TLN_SetLayerTransformMatrix inverts it internally. */
-        TLN_SetLayerTransformMatrix(db_state.layer, cf, -sf, sf, cf, db_state.hinge_x,
-                                    db_state.hinge_y);
+        if (db_state.progress == 0) {
+            /* Bridge is flat — drop back to fast normal tile rendering. */
+            TLN_ResetLayerMode(db_state.layer);
+        } else {
+            float cf = TRIG_COS(db_state.progress);
+            float sf = baked_sin[db_state.progress];
+            /* Standard 2-D rotation matrix [[cos,-sin],[sin,cos]].
+             * TLN_SetLayerTransformMatrix inverts it internally. */
+            TLN_SetLayerTransformMatrix(db_state.layer, cf, -sf, sf, cf, db_state.hinge_x,
+                                        db_state.hinge_y);
+        }
         db_state.affine_dirty = false;
     }
 }

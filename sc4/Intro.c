@@ -43,8 +43,9 @@ static void prof_init(ProfState *p) {
     p->acc_blit = 0;
     p->acc_layers = 0;
     p->acc_sprites = 0;
-    for (int i = 0; i < NUM_LAYERS; i++)
+    for (int i = 0; i < NUM_LAYERS; i++) {
         p->acc_per_layer[i] = 0;
+    }
     p->samples = 0;
     p->report_t = SDL_GetTicks();
 }
@@ -68,15 +69,17 @@ static void prof_frame_end(ProfState *p, int xpos) {
     p->acc_blit += g_prof_blit_ticks;
     p->acc_layers += g_prof_layers_ticks;
     p->acc_sprites += g_prof_sprites_ticks;
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < 7; i++) {
         p->acc_per_layer[i] += g_prof_per_layer_ticks[i];
+    }
     g_prof_linebuf_ticks = 0;
     g_prof_fillmask_ticks = 0;
     g_prof_blit_ticks = 0;
     g_prof_layers_ticks = 0;
     g_prof_sprites_ticks = 0;
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < 7; i++) {
         g_prof_per_layer_ticks[i] = 0;
+    }
     p->samples++;
 
     Uint64 wall = SDL_GetTicks();
@@ -84,6 +87,9 @@ static void prof_frame_end(ProfState *p, int xpos) {
         Uint64 s = (Uint64)p->samples;
         Uint64 us_render = p->acc_render * 1000000 / p->freq / s;
         Uint64 us_layers = p->acc_layers * 1000000 / p->freq / s;
+        Uint64 us_linebuf = p->acc_linebuf * 1000000 / p->freq / s;
+        Uint64 us_fillmask = p->acc_fillmask * 1000000 / p->freq / s;
+        Uint64 us_blit = p->acc_blit * 1000000 / p->freq / s;
         fprintf(stderr, "PROF xpos=%4d  render=%5llu us  layers=%5llu  [", xpos,
                 (unsigned long long)us_render, (unsigned long long)us_layers);
         for (int i = 0; i < 7; i++) {
@@ -91,6 +97,9 @@ static void prof_frame_end(ProfState *p, int xpos) {
                     (unsigned long long)(p->acc_per_layer[i] * 1000000 / p->freq / s),
                     i < 6 ? "  " : "]\n");
         }
+        fprintf(stderr, "      L1 sub: linebuf=%4llu us  fillmask=%4llu us  blit=%4llu us\n",
+                (unsigned long long)us_linebuf, (unsigned long long)us_fillmask,
+                (unsigned long long)us_blit);
         p->acc_logic = 0;
         p->acc_render = 0;
         p->acc_frame = 0;
@@ -99,8 +108,9 @@ static void prof_frame_end(ProfState *p, int xpos) {
         p->acc_blit = 0;
         p->acc_layers = 0;
         p->acc_sprites = 0;
-        for (int i = 0; i < 7; i++)
+        for (int i = 0; i < 7; i++) {
             p->acc_per_layer[i] = 0;
+        }
         p->samples = 0;
         p->report_t = wall;
     }
@@ -175,10 +185,13 @@ static void step_simon_on_bridge(bool db_active) {
     if (SimonGetScreenX() + SIMON_X_OFFSET >= DrawbridgeHingeX()) {
         return;
     }
+    static int frame = 0;
+    frame++;
     int p = DrawbridgeGetProgress();
-    int push = p / 30 < 3 ? p / 30 : 3;
-    if (push > 0) {
-        SimonPushRight(push);
+    int stage = p / 30 < 3 ? p / 30 : 3;
+    static const int interval[4] = {8, 4, 2, 1};
+    if (frame % interval[stage] == 0) {
+        SimonPushRight(1);
     }
 }
 
@@ -255,9 +268,9 @@ static void update_fps_title(Uint64 *p_t0, int *p_frames) {
     Uint64 now = SDL_GetTicks();
     Uint64 elapsed = now - *p_t0;
     if (elapsed >= 1000) {
-        char title[32];
-        int actual_fps = (int)(*p_frames * 1000 / elapsed);
-        SDL_snprintf(title, sizeof(title), "sc4 - %d fps", actual_fps);
+        char title[48];
+        double actual_fps = *p_frames * 1000.0 / elapsed;
+        SDL_snprintf(title, sizeof(title), "sc4 - %.3f fps", actual_fps);
         TLN_SetWindowTitle(title);
         *p_frames = 0;
         *p_t0 = now;
@@ -265,7 +278,7 @@ static void update_fps_title(Uint64 *p_t0, int *p_frames) {
 }
 
 /* entry point */
-int main(void) {
+int main(int argc, char *argv[]) {
     TLN_Tilemap collision;
     TLN_Tilemap drawbridge_bg;
     TLN_Tilemap drawbridge_water;
@@ -326,11 +339,23 @@ int main(void) {
     int xpos = 0;
     bool db_triggered = false;
     int prev_xpos = -1;
+
+    /* Enable the frame profiler with --profile or -p. */
+    bool prof_enabled = false;
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "--profile") == 0 || strcmp(argv[i], "-p") == 0) {
+            prof_enabled = true;
+        }
+    }
     ProfState prof;
-    prof_init(&prof);
+    if (prof_enabled) {
+        prof_init(&prof);
+    }
 
     while (TLN_ProcessWindow()) {
-        prof_frame_begin(&prof);
+        if (prof_enabled) {
+            prof_frame_begin(&prof);
+        }
         if (process_pause(&paused, &esc_prev)) {
             SDL_Delay(1000 / TARGET_FPS); /* throttle loop; last frame stays visible */
             continue;
@@ -434,9 +459,13 @@ int main(void) {
 
         /* render to window */
         update_fps_title(&fps_t0, &fps_frames);
-        prof_logic_end(&prof);
+        if (prof_enabled) {
+            prof_logic_end(&prof);
+        }
         TLN_DrawFrame(0);
-        prof_frame_end(&prof, xpos);
+        if (prof_enabled) {
+            prof_frame_end(&prof, xpos);
+        }
     }
 
     PropDeinit();
