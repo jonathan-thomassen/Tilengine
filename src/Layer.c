@@ -1040,6 +1040,8 @@ bool TLN_SetLayerBlendMask(int nlayer, int nmask) {
         return false;
     }
     engine->layers[nlayer].blend_mask_layer = nmask;
+    engine->layers[nmask].flags.is_blend_source = true;
+    engine->blend_source_layer = nmask;
     TLN_SetLastError(TLN_ERR_OK);
     return true;
 }

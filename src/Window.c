@@ -265,6 +265,8 @@ static bool create_window(void) {
     }
     if (!(wnd_params.flags & CWF_NOVSYNC))
         SDL_SetRenderVSync(renderer, 1);
+    else
+        SDL_SetRenderVSync(renderer, 0);
 
     /* setup backbuffer & crt effect */
     SetupBackBuffer();
@@ -953,40 +955,47 @@ static void EndWindowFrame(void) {
         SDL_RenderTexture(renderer, backbuffer, NULL, &dstrect);
     }
 
-    /* no vsync: timed sync */
+    /* no vsync: present first, then sleep for leftover frame budget.
+     * All timing uses SDL_GetPerformanceCounter() (sub-µs on Windows) to avoid
+     * the 1ms resolution of SDL_GetTicks() which caused systematic overshoots.
+     * last_present_t tracks the actual sleep-end tick so any overshoot is
+     * automatically compensated in the next frame. */
     SDL_RenderPresent(renderer);
 
     if (flags.novsync) {
         Engine const *context = TLN_GetContext();
         const int fps = context->timing.target_fps;
-        /* Fixed-rate frame clock: advances by exactly delay_ms each period so
-         * that game-logic time between BeginWindowFrame and here does not eat
-         * into the frame budget and cause chronic under-speed. */
-        static uint32_t remainder = 0;
+        static uint64_t remainder = 0;
         static int last_fps = 0;
-        static uint32_t frame_clock = 0;
+        static uint64_t last_present_t = 0;
+
+        const uint64_t freq = SDL_GetPerformanceFrequency();
+
         if (fps != last_fps) {
             remainder = 0;
             last_fps = fps;
-            frame_clock = 0;
+            last_present_t = SDL_GetPerformanceCounter();
         }
-        if (frame_clock == 0)
-            frame_clock = wnd_params.t0;
-        remainder += 1000;
-        uint32_t delay_ms = fps > 0 ? remainder / (uint32_t)fps : 0;
-        remainder = fps > 0 ? remainder % (uint32_t)fps : 0;
-        frame_clock += delay_ms;
-        uint32_t now = (uint32_t)SDL_GetTicks();
-        /* If we have fallen more than one full frame behind (e.g. after a
-         * tab-away or long stall) reset the clock to avoid a burst of
-         * back-to-back frames trying to "catch up". */
-        if ((int32_t)(now - frame_clock) > (int32_t)delay_ms)
-            frame_clock = now;
-        while (now < frame_clock) {
-            uint32_t remaining = frame_clock - now;
-            if (remaining > wnd_params.min_delay)
-                SDL_Delay(remaining - wnd_params.min_delay);
-            now = (uint32_t)SDL_GetTicks();
+
+        if (fps > 0) {
+            /* accumulator keeps exact fractional ticks so average period = freq/fps */
+            remainder += freq;
+            uint64_t ticks_per_frame = remainder / (uint64_t)fps;
+            remainder %= (uint64_t)fps;
+            uint64_t due_t = last_present_t + ticks_per_frame;
+
+            /* coarse sleep for the bulk, then spin for the last 2 ms */
+            uint64_t now_t = SDL_GetPerformanceCounter();
+            const uint64_t spin_ticks = 2 * freq / 1000; /* 2 ms in ticks */
+            if (due_t > now_t + spin_ticks) {
+                uint32_t sleep_ms = (uint32_t)((due_t - now_t - spin_ticks) * 1000 / freq);
+                if (sleep_ms > 0)
+                    SDL_Delay(sleep_ms);
+            }
+            /* precision spin for final 2 ms */
+            while (SDL_GetPerformanceCounter() < due_t) {
+            }
+            last_present_t = SDL_GetPerformanceCounter();
         }
     }
 

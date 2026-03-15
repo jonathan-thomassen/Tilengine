@@ -136,6 +136,7 @@ static void fill_blend_mask_scanline(int nmask, int nscan) {
     Layer const *layer = &engine->layers[nmask];
     int framewidth = engine->framebuffer.width;
     memset(engine->blend_mask, 0, framewidth);
+    memset(engine->water_render, 0, framewidth * sizeof(uint32_t));
 
     if (!layer->flags.ok || layer->tilemap == NULL) {
         return;
@@ -171,18 +172,26 @@ static void fill_blend_mask_scanline(int nmask, int nscan) {
             const uint8_t *row =
                 &ts->data[((((ptrdiff_t)tile_index << ts->vshift) + srcy) << ts->hshift)];
             uint8_t *out = &engine->blend_mask[x];
+            uint32_t *wr = engine->water_render + x;
+            uint32_t const *color = (uint32_t *)ts->palette->data;
             if (tile->flags & FLAG_FLIPX) {
                 /* walk backward: first sample column is (width-1 - srcx_offset) from right */
                 const uint8_t *p = row + (ts->width - 1 - srcx);
                 for (int i = 0; i < width; i++) {
-                    if (*p-- != 0)
+                    uint8_t pix = *p--;
+                    if (pix != 0) {
                         out[i] = 1;
+                        wr[i] = color[pix];
+                    }
                 }
             } else {
                 const uint8_t *p = row + srcx;
                 for (int i = 0; i < width; i++) {
-                    if (*p++ != 0)
+                    uint8_t pix = *p++;
+                    if (pix != 0) {
                         out[i] = 1;
+                        wr[i] = color[pix];
+                    }
                 }
             }
         }
@@ -198,6 +207,13 @@ static void fill_blend_mask_scanline(int nmask, int nscan) {
 /* draw background scanline taking into account mosaic and windowing effects */
 static bool draw_background_scanline(int nlayer, int line) {
     Layer *layer = &engine->layers[nlayer];
+
+    /* blend-source layers supply their pixels via fill_blend_mask_scanline;
+     * skip the normal framebuffer render to avoid the expensive full-screen blit. */
+    if (layer->flags.is_blend_source) {
+        return false;
+    }
+
     LayerWindow const *window = &layer->window;
     uint32_t *mosaic = layer->mosaic.buffer;
     const bool inside = (line >= window->y1 && line <= window->y2) != 0;
@@ -233,7 +249,8 @@ static bool draw_background_scanline(int nlayer, int line) {
         engine->blend_mask_blend = saved_blend;
         fill_blend_mask_scanline(layer->blend_mask_layer, line);
         uint64_t t2 = SDL_GetPerformanceCounter();
-        Blit32_32_Masked(lb, fb, engine->blend_mask, saved_blend, framewidth);
+        Blit32_32_Masked_src(lb, engine->water_render, fb, engine->blend_mask, saved_blend,
+                             framewidth);
         uint64_t t3 = SDL_GetPerformanceCounter();
 
         g_prof_linebuf_ticks += t1 - t0;

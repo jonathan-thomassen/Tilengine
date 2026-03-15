@@ -68,8 +68,10 @@ typedef struct Engine {
     uint32_t *priority;        /* buffer receiving tiles with priority */
     uint16_t *collision;       /* buffer with sprite coverage IDs for per-pixel collision */
     uint32_t *linebuffer;      /* buffer for intermediate scanline output */
+    uint32_t *water_render;    /* per-scanline water tile pixels for blend-source layers */
     uint8_t *blend_mask;       /* per-pixel blend mask: non-zero = apply blend */
     uint8_t *blend_mask_blend; /* blend table used with blend_mask (set per-scanline) */
+    int blend_source_layer;    /* index of layer providing water_render pixels, or -1 */
     int numsprites;            /* number of sprites */
     Sprite *sprites;           /* pointer to sprite buffer */
     int numlayers;             /* number of layers */

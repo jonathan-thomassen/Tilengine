@@ -44,6 +44,7 @@ typedef struct {
 /* boolean state flags sub-struct */
 typedef struct {
     bool ok;
+    bool is_blend_source; /* true when another layer uses this as its blend-mask source */
     bool affine;
     bool priority; /* whole layer in front of regular sprites */
     bool dirty;    /* requires update before draw */

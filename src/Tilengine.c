@@ -106,6 +106,8 @@ static TLN_Engine create_context(int hres, int vres, int numlayers, int numsprit
 
         /* buffer for intermediate scanline output */
         context->linebuffer = (uint32_t *)calloc(hres, sizeof(uint32_t));
+        context->water_render = (uint32_t *)calloc(hres, sizeof(uint32_t));
+        context->blend_source_layer = -1;
         context->priority = (uint32_t *)malloc(hres * sizeof(uint32_t));
         context->blend_mask = (uint8_t *)calloc(hres, sizeof(uint8_t));
     }
@@ -123,7 +125,7 @@ static TLN_Engine create_context(int hres, int vres, int numlayers, int numsprit
             Sprite *sprite = &context->sprites[c];
             sprite->funcs.draw = GetSpriteDraw(MODE_NORMAL);
             sprite->funcs.blitter = SelectBlitter(true, false, false);
-            sprite->scale.x = sprite->scale.y = 1.0F;
+            sprite->scale.x = sprite->scale.y = 1.0f;
         }
         ListInit(&context->list_sprites, &context->sprites[0].list_node, sizeof(Sprite),
                  context->numsprites);
@@ -252,6 +254,10 @@ bool TLN_DeleteContext(TLN_Engine context) {
 
     if (context->blend_mask) {
         free(context->blend_mask);
+    }
+
+    if (context->water_render) {
+        free(context->water_render);
     }
 
     if (context->linebuffer) {
@@ -435,7 +441,7 @@ static void update_sprite_animations(int frame) {
         while (index != -1) {
             Sprite *sprite = &engine->sprites[index];
             SetSpriteFlag(sprite, SPRITE_FLAG_COLLISION, false);
-            if ((int)sprite->animation.enabled && !sprite->animation.paused) {
+            if (sprite->animation.enabled && !sprite->animation.paused) {
                 UpdateAnimation(&sprite->animation, frame);
             }
             index = sprite->list_node.next;
@@ -455,7 +461,7 @@ static void process_layer_tilesets(Layer const *layer, RefList *tilesets, int fr
             break;
         }
 
-        if (tileset->sp != NULL && (int)ref_add(tilesets, tileset)) {
+        if (tileset->sp != NULL && ref_add(tilesets, tileset)) {
             for (int c = 0; c < tileset->sp->num_sequences; c += 1) {
                 UpdateAnimation(&tileset->animations[c], frame);
             }

@@ -90,8 +90,13 @@ static void prof_frame_end(ProfState *p, int xpos) {
         Uint64 us_linebuf = p->acc_linebuf * 1000000 / p->freq / s;
         Uint64 us_fillmask = p->acc_fillmask * 1000000 / p->freq / s;
         Uint64 us_blit = p->acc_blit * 1000000 / p->freq / s;
-        fprintf(stderr, "PROF xpos=%4d  render=%5llu us  layers=%5llu  [", xpos,
-                (unsigned long long)us_render, (unsigned long long)us_layers);
+        Uint64 us_sprites = p->acc_sprites * 1000000 / p->freq / s;
+        /* everything inside TLN_DrawFrame that isn't layer/sprite CPU work */
+        Uint64 us_cpu = us_layers + us_sprites;
+        Uint64 us_sdl = us_render > us_cpu ? us_render - us_cpu : 0;
+        fprintf(stderr, "PROF xpos=%4d  render=%5llu us  layers=%5llu  sprites=%4llu  sdl=%5llu  [",
+                xpos, (unsigned long long)us_render, (unsigned long long)us_layers,
+                (unsigned long long)us_sprites, (unsigned long long)us_sdl);
         for (int i = 0; i < 7; i++) {
             fprintf(stderr, "L%d=%4llu%s", i,
                     (unsigned long long)(p->acc_per_layer[i] * 1000000 / p->freq / s),
@@ -123,7 +128,7 @@ static void prof_frame_end(ProfState *p, int xpos) {
 #define WATER_LAYER 2
 #define BACKGROUND_LAYER 3
 
-#define TARGET_FPS 60
+#define TARGET_FPS 120
 
 #define HINGE_X 221
 #define HINGE_Y 183
