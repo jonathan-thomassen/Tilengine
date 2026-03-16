@@ -15,20 +15,20 @@
 
 /* color definition */
 typedef union {
-  struct {
-    uint8_t b;
-    uint8_t g;
-    uint8_t r;
-    uint8_t a;
-  };
-  uint32_t value;
+    struct {
+        uint8_t b;
+        uint8_t g;
+        uint8_t r;
+        uint8_t a;
+    };
+    uint32_t value;
 } Color;
 
 /* palette object */
 struct Palette {
-  DEFINE_OBJECT;
-  int entries;      /* number of colors */
-  uint32_t data[0]; /* variable size Color array */
+    DEFINE_OBJECT;
+    int entries;      /* number of colors */
+    uint32_t data[0]; /* variable size Color array */
 };
 
 /* returns pointer to specified index color definition */

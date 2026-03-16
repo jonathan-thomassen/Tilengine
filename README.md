@@ -12,19 +12,19 @@ http://www.tilengine.org
 - [Contents](#contents)
 - [Features](#features)
 - [Getting binaries](#getting-binaries)
-	- [Download from itch.io](#download-from-itchio)
-	- [Build from source](#build-from-source)
-		- [Windows](#windows)
-		- [Debian-based linux](#debian-based-linux)
-		- [MacOS](#macos)
+  - [Download from itch.io](#download-from-itchio)
+  - [Build from source](#build-from-source)
+    - [Windows](#windows)
+    - [Debian-based linux](#debian-based-linux)
+    - [MacOS](#macos)
 - [Running the samples](#running-the-samples)
-	- [Windows](#windows-1)
-	- [Unix-like](#unix-like)
+  - [Windows](#windows-1)
+  - [Unix-like](#unix-like)
 - [The tilengine window](#the-tilengine-window)
 - [Creating your first program](#creating-your-first-program)
-	- [Windows](#windows-2)
-	- [Linux](#linux)
-	- [MacOS](#macos-1)
+  - [Windows](#windows-2)
+  - [Linux](#linux)
+  - [MacOS](#macos-1)
 - [Documentation](#documentation)
 - [Editing assets](#editing-assets)
 - [Creating packages](#creating-packages)
@@ -63,12 +63,12 @@ You must provide development libraries:
 * libpng: http://gnuwin32.sourceforge.net/packages/libpng.htm
 
 Put the following files inside the `src` directory:
-Path | Files
------|---------------------------------------
-`src\libpng`             | libpng headers
-`src\libpng\$(Platform)` | libpng.lib import library
-`src\sdl\SDL2`           | SDL2 headers
-`src\sdl\lib\$(Platform)`| SDL2.lib import library
+| Path                      | Files                     |
+| ------------------------- | ------------------------- |
+| `src\libpng`              | libpng headers            |
+| `src\libpng\$(Platform)`  | libpng.lib import library |
+| `src\sdl\SDL2`            | SDL2 headers              |
+| `src\sdl\lib\$(Platform)` | SDL2.lib import library   |
 
 **NOTE**: If you're having problems setting up these dependencies, you can download them already pre-packaged from [itch.io downloads](https://megamarc.itch.io/tilengine), file is `windows_libs.zip`. It contains headers and libraries for both 32 and 64 bit platforms.
 
@@ -172,25 +172,25 @@ To create a package with all the assets, the add-on tool [ResourcePacker](https:
 # Bindings
 There are bindings to use Tilengine from several programming languages:
 
-Language  |Binding
-----------|-----------------------------------------
-C/C++     | Native support, no binding required
-Python    | [PyTilengine](https://github.com/megamarc/PyTilengine)
-C#        | [CsTilengine](https://github.com/megamarc/CsTilengine)
-C#        | [CsTilenginePure](https://github.com/vonhoff/CsTilenginePure)
-Pascal    | [PascalTileEngine](https://github.com/turric4n/PascalTileEngine)
-FreeBasic | [FBTilengine](https://github.com/megamarc/FBTilengine)
-Java	    | [JTilengine](https://github.com/megamarc/JTilengine)
-Rust      | [tilengine-sys](https://crates.io/crates/tilengine-sys)
-LuaJIT    | [tilengine_libretro](https://github.com/megamarc/Tilengine/tree/libretro) ([libretro](https://www.libretro.com) core)
-Ring      | [RingTilengine](https://github.com/ring-lang/ring/tree/master/extensions/ringtilengine)
-Nim       | [nim-tilengine](https://sr.ht/~exelotl/nim-tilengine)
-V         | [V-Tilengine](https://github.com/system64MC/V-Tilengine)
-Go        | [gotilengine](https://github.com/thechampagne/gotilengine)
-Zig       | [zigtilengine](https://github.com/thechampagne/zigtilengine)
-D         | [dtilengine](https://github.com/thechampagne/dtilengine)
-Odin      | [odintilengine](https://github.com/thechampagne/odintilengine)
-Odin      | [odin-tilengine](https://github.com/akuspel/odin-tilengine)
+| Language  | Binding                                                                                                               |
+| --------- | --------------------------------------------------------------------------------------------------------------------- |
+| C/C++     | Native support, no binding required                                                                                   |
+| Python    | [PyTilengine](https://github.com/megamarc/PyTilengine)                                                                |
+| C#        | [CsTilengine](https://github.com/megamarc/CsTilengine)                                                                |
+| C#        | [CsTilenginePure](https://github.com/vonhoff/CsTilenginePure)                                                         |
+| Pascal    | [PascalTileEngine](https://github.com/turric4n/PascalTileEngine)                                                      |
+| FreeBasic | [FBTilengine](https://github.com/megamarc/FBTilengine)                                                                |
+| Java      | [JTilengine](https://github.com/megamarc/JTilengine)                                                                  |
+| Rust      | [tilengine-sys](https://crates.io/crates/tilengine-sys)                                                               |
+| LuaJIT    | [tilengine_libretro](https://github.com/megamarc/Tilengine/tree/libretro) ([libretro](https://www.libretro.com) core) |
+| Ring      | [RingTilengine](https://github.com/ring-lang/ring/tree/master/extensions/ringtilengine)                               |
+| Nim       | [nim-tilengine](https://sr.ht/~exelotl/nim-tilengine)                                                                 |
+| V         | [V-Tilengine](https://github.com/system64MC/V-Tilengine)                                                              |
+| Go        | [gotilengine](https://github.com/thechampagne/gotilengine)                                                            |
+| Zig       | [zigtilengine](https://github.com/thechampagne/zigtilengine)                                                          |
+| D         | [dtilengine](https://github.com/thechampagne/dtilengine)                                                              |
+| Odin      | [odintilengine](https://github.com/thechampagne/odintilengine)                                                        |
+| Odin      | [odin-tilengine](https://github.com/akuspel/odin-tilengine)                                                           |
 
 # Contributors
 These kind users contributed to tilengine:

@@ -41,7 +41,7 @@ void *CreateBaseObject(ObjectType type, size_t size) {
         object->type = type;
         object->guid = numobjects;
         object->size = (uint32_t)size;
-        object->owner = true;
+        object->owner = 1;
         sprintf(trace_msg, "%s created at %p, %zu size", object_types[type], (void *)object, size);
         tln_trace(TLN_LOG_VERBOSE, trace_msg);
     } else {
@@ -59,7 +59,7 @@ void *CloneBaseObject(void *object) {
     object_t *dst = (object_t *)CreateBaseObject(src->type, src->size);
     if (dst) {
         memcpy(dst->data, src->data, src->size - sizeof(object_t));
-        dst->owner = false;
+        dst->owner = 0;
     }
     return dst;
 }
@@ -79,8 +79,9 @@ void DeleteBaseObject(void *object) {
 /* checks object type */
 bool CheckBaseObject(void *object, ObjectType type) {
     char trace_msg[255];
-    if (object != NULL && ObjectType(object) == type)
+    if (object != NULL && ObjectType(object) == type) {
         return true;
+    }
 
     TLN_SetLastError(object_errors[type]);
     sprintf(trace_msg, "Invalid object address is %p", object);
@@ -93,6 +94,7 @@ unsigned int GetNumObjects(void) { return numobjects; }
 unsigned int GetNumBytes(void) { return numbytes; }
 
 void CopyBaseObject(void *dstobject, const void *srcobject) {
-    if (srcobject && dstobject)
+    if (srcobject && dstobject) {
         memcpy(dstobject, srcobject, ObjectSize(srcobject));
+    }
 }

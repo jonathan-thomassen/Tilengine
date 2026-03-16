@@ -15,24 +15,24 @@
 
 /* ciclo de color */
 struct Strip {
-  int delay;
-  int timer;
-  int t0;
-  uint8_t first;
-  uint8_t count;
-  uint8_t dir;
-  uint8_t pos;
+    int delay;
+    int timer;
+    int t0;
+    uint8_t first;
+    uint8_t count;
+    uint8_t dir;
+    uint8_t pos;
 };
 
 /* secuencia de sprites y tiles */
 struct Sequence {
-  DEFINE_OBJECT;
-  uint32_t hash;
-  int count;
-  int target;
-  char name[32];
-  struct Sequence *next;
-  uint8_t data[0]; /* array de Frame o Strip */
+    DEFINE_OBJECT;
+    uint32_t hash;
+    int count;
+    int target;
+    char name[32];
+    struct Sequence *next;
+    uint8_t data[0]; /* array de Frame o Strip */
 };
 
 #endif

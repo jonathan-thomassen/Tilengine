@@ -3,138 +3,30 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../src/Draw.h" /* g_prof_linebuf/fillmask/blit_ticks */
 #include "Drawbridge.h"
 #include "Hud.h"
+#include "Profiling.h"
 #include "Prop.h"
 #include "Sandblock.h"
 #include "Simon.h"
 #include "Tilengine.h"
 #include "Torch.h"
 
-/* ------------------------------------------------------------------ */
-/* Lightweight frame profiler                                           */
-/* ------------------------------------------------------------------ */
-#define NUM_LAYERS 7
-typedef struct {
-    Uint64 freq;
-    Uint64 frame_start;
-    Uint64 logic_end;
-    Uint64 acc_logic;
-    Uint64 acc_render;
-    Uint64 acc_frame;
-    Uint64 acc_linebuf;
-    Uint64 acc_fillmask;
-    Uint64 acc_blit;
-    Uint64 acc_layers;
-    Uint64 acc_sprites;
-    Uint64 acc_per_layer[NUM_LAYERS];
-    int samples;
-    Uint64 report_t;
-} ProfState;
-
-static void prof_init(ProfState *p) {
-    p->freq = SDL_GetPerformanceFrequency();
-    p->acc_logic = 0;
-    p->acc_render = 0;
-    p->acc_frame = 0;
-    p->acc_linebuf = 0;
-    p->acc_fillmask = 0;
-    p->acc_blit = 0;
-    p->acc_layers = 0;
-    p->acc_sprites = 0;
-    for (int i = 0; i < NUM_LAYERS; i++) {
-        p->acc_per_layer[i] = 0;
-    }
-    p->samples = 0;
-    p->report_t = SDL_GetTicks();
-}
-
-static void prof_frame_begin(ProfState *p) { p->frame_start = SDL_GetPerformanceCounter(); }
-
-static void prof_logic_end(ProfState *p) { p->logic_end = SDL_GetPerformanceCounter(); }
-
-/* Call after TLN_DrawFrame. Prints a report once per second. */
-static void prof_frame_end(ProfState *p, int xpos) {
-    Uint64 now = SDL_GetPerformanceCounter();
-    Uint64 t_logic = p->logic_end - p->frame_start;
-    Uint64 t_render = now - p->logic_end;
-    Uint64 t_frame = now - p->frame_start;
-    p->acc_logic += t_logic;
-    p->acc_render += t_render;
-    p->acc_frame += t_frame;
-    /* snapshot Draw.c sub-counters then reset them for the next frame */
-    p->acc_linebuf += g_prof_linebuf_ticks;
-    p->acc_fillmask += g_prof_fillmask_ticks;
-    p->acc_blit += g_prof_blit_ticks;
-    p->acc_layers += g_prof_layers_ticks;
-    p->acc_sprites += g_prof_sprites_ticks;
-    for (int i = 0; i < 7; i++) {
-        p->acc_per_layer[i] += g_prof_per_layer_ticks[i];
-    }
-    g_prof_linebuf_ticks = 0;
-    g_prof_fillmask_ticks = 0;
-    g_prof_blit_ticks = 0;
-    g_prof_layers_ticks = 0;
-    g_prof_sprites_ticks = 0;
-    for (int i = 0; i < 7; i++) {
-        g_prof_per_layer_ticks[i] = 0;
-    }
-    p->samples++;
-
-    Uint64 wall = SDL_GetTicks();
-    if (wall - p->report_t >= 1000 && p->samples > 0) {
-        Uint64 s = (Uint64)p->samples;
-        Uint64 us_render = p->acc_render * 1000000 / p->freq / s;
-        Uint64 us_layers = p->acc_layers * 1000000 / p->freq / s;
-        Uint64 us_linebuf = p->acc_linebuf * 1000000 / p->freq / s;
-        Uint64 us_fillmask = p->acc_fillmask * 1000000 / p->freq / s;
-        Uint64 us_blit = p->acc_blit * 1000000 / p->freq / s;
-        Uint64 us_sprites = p->acc_sprites * 1000000 / p->freq / s;
-        /* everything inside TLN_DrawFrame that isn't layer/sprite CPU work */
-        Uint64 us_cpu = us_layers + us_sprites;
-        Uint64 us_sdl = us_render > us_cpu ? us_render - us_cpu : 0;
-        fprintf(stderr, "PROF xpos=%4d  render=%5llu us  layers=%5llu  sprites=%4llu  sdl=%5llu  [",
-                xpos, (unsigned long long)us_render, (unsigned long long)us_layers,
-                (unsigned long long)us_sprites, (unsigned long long)us_sdl);
-        for (int i = 0; i < 7; i++) {
-            fprintf(stderr, "L%d=%4llu%s", i,
-                    (unsigned long long)(p->acc_per_layer[i] * 1000000 / p->freq / s),
-                    i < 6 ? "  " : "]\n");
-        }
-        fprintf(stderr, "      L1 sub: linebuf=%4llu us  fillmask=%4llu us  blit=%4llu us\n",
-                (unsigned long long)us_linebuf, (unsigned long long)us_fillmask,
-                (unsigned long long)us_blit);
-        p->acc_logic = 0;
-        p->acc_render = 0;
-        p->acc_frame = 0;
-        p->acc_linebuf = 0;
-        p->acc_fillmask = 0;
-        p->acc_blit = 0;
-        p->acc_layers = 0;
-        p->acc_sprites = 0;
-        for (int i = 0; i < 7; i++) {
-            p->acc_per_layer[i] = 0;
-        }
-        p->samples = 0;
-        p->report_t = wall;
-    }
-}
-
 #define WIDTH 256
 #define HEIGHT 224
 #define HUD_LAYER 0
 #define MAIN_LAYER 1
-#define WATER_LAYER 2
-#define BACKGROUND_LAYER 3
+#define DB_LAYER 2
+#define WATER_LAYER 3
+#define BACKGROUND_LAYER 4
 
-#define TARGET_FPS 120
+#define TARGET_FPS 60
 
 #define HINGE_X 221
 #define HINGE_Y 183
 #define DB_TRIGGER_X 768     /* world-x where drawbridge animation starts */
-#define DB_LAYER_X_OFFSET 80 /* main-layer x shift once drawbridge triggers */
-#define DB_LAYER_Y_OFFSET 8  /* main-layer y shift once drawbridge triggers */
+#define DB_LAYER_X_OFFSET 80 /* bridge-layer x shift once drawbridge triggers */
+#define DB_LAYER_Y_OFFSET 8  /* bridge-layer y shift once drawbridge triggers */
 #define DB_WINDOW_TOP 32     /* top clip row for the drawbridge tilemap */
 #define DB_WALL_MARGIN 32    /* pixels before the hinge that act as a wall */
 #define RAILS_STEP 3         /* on-rails camera scroll speed */
@@ -183,7 +75,7 @@ static void spawn_object(TLN_ObjectInfo const *info) {
  * Only active while the bridge is animating (db_active) and Simon is left
  * of the hinge.  The bridge floor itself is set before SimonTasks() via
  * SimonSetBridgeFloor() so physics handles the surface — no snap needed. */
-static void step_simon_on_bridge(bool db_active) {
+static void push_simon_on_bridge(bool db_active) {
     if (!db_active || DrawbridgeGetProgress() >= DB_STEPS - 1) {
         return;
     }
@@ -192,8 +84,8 @@ static void step_simon_on_bridge(bool db_active) {
     }
     static int frame = 0;
     frame++;
-    int p = DrawbridgeGetProgress();
-    int stage = p / 30 < 3 ? p / 30 : 3;
+    int progress = DrawbridgeGetProgress();
+    int stage = progress / 30 < 3 ? progress / 30 : 3;
     static const int interval[4] = {8, 4, 2, 1};
     if (frame % interval[stage] == 0) {
         SimonPushRight(1);
@@ -205,9 +97,10 @@ static void update_layer_positions(int scroll_x, bool db_triggered, int *p_prev_
     if (scroll_x == *p_prev_xpos) {
         return;
     }
-    int main_x_off = (int)db_triggered ? DB_LAYER_X_OFFSET : 0;
-    int main_y_off = (int)db_triggered ? DB_LAYER_Y_OFFSET : 0;
-    TLN_SetLayerPosition(MAIN_LAYER, scroll_x + main_x_off, main_y_off);
+    TLN_SetLayerPosition(MAIN_LAYER, scroll_x, 0);
+    if (db_triggered) {
+        TLN_SetLayerPosition(DB_LAYER, scroll_x + DB_LAYER_X_OFFSET, DB_LAYER_Y_OFFSET);
+    }
     TLN_SetLayerPosition(WATER_LAYER, scroll_x, 0);
     TLN_SetLayerPosition(BACKGROUND_LAYER, scroll_x * 2 / 5, 0);
     *p_prev_xpos = scroll_x;
@@ -308,7 +201,7 @@ int main(int argc, char *argv[]) {
     TLN_SetLayerTilemap(WATER_LAYER, drawbridge_water);
     TLN_SetLayerTilemap(MAIN_LAYER, drawbridge_main);
 
-    DrawbridgeInit(MAIN_LAYER, HINGE_X, HINGE_Y);
+    DrawbridgeInit(DB_LAYER, HINGE_X, HINGE_Y);
 
     TLN_SetLayerTilemap(HUD_LAYER, hud);
     TLN_SetLayerPriority(HUD_LAYER, true);
@@ -415,14 +308,19 @@ int main(int argc, char *argv[]) {
         if (!db_triggered && xpos >= DB_TRIGGER_X) {
             db_triggered = true;
 
-            TLN_SetLayerTilemap(MAIN_LAYER, drawbridge_bridge);
-            TLN_SetLayerWindow(MAIN_LAYER, 0, DB_WINDOW_TOP, WIDTH, HEIGHT, false);
+            /* Clip the main layer to its lowest 32 rows so only the ground strip
+             * remains visible once the bridge animation is active. */
+            TLN_SetLayerWindow(MAIN_LAYER, 0, HEIGHT - 32, WIDTH, HEIGHT, false);
 
-            /* The drawbridge layer is shifted up by main_y_off=DB_LAYER_Y_OFFSET when
-             * db_triggered. Update the hinge Y to a screen-space coordinate so
-             * DrawbridgeSurfaceY returns the correct screen Y for SimonSetFeetY
-             * (otherwise Simon sinks DB_LAYER_Y_OFFSET px into the bridge surface).
-             */
+            /* Put the bridge tilemap on its own layer and clip its top 32 rows
+             * (reserved for the HUD) so animation only fills rows 32..HEIGHT. */
+            TLN_SetLayerTilemap(DB_LAYER, drawbridge_bridge);
+            TLN_SetLayerWindow(DB_LAYER, 0, DB_WINDOW_TOP, WIDTH, HEIGHT, false);
+
+            /* The bridge layer is shifted up by DB_LAYER_Y_OFFSET. Update the hinge
+             * Y to a screen-space coordinate so DrawbridgeSurfaceY returns the
+             * correct screen Y for SimonSetFeetY (otherwise Simon sinks
+             * DB_LAYER_Y_OFFSET px into the bridge surface). */
             DrawbridgeSetHinge(DrawbridgeHingeX(), HINGE_Y - DB_LAYER_Y_OFFSET);
         }
 
@@ -452,7 +350,7 @@ int main(int argc, char *argv[]) {
 
         /* Camera is locked by SimonFreezeCamera(); xpos stays at its
          * frozen value for all layer positions. */
-        step_simon_on_bridge(db_triggered);
+        push_simon_on_bridge(db_triggered);
 
         tick_chain_prop(db_triggered, xpos);
 

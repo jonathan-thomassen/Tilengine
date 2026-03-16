@@ -16,16 +16,16 @@
 #include "Tilengine.h"
 #include "crc32.h"
 
-static void set_sprite_entry(TLN_Spriteset spriteset, int entry,
-                             TLN_SpriteData const *data) {
-  SpriteEntry *dst_data = &spriteset->data[entry];
-  dst_data->w = data->w;
-  dst_data->h = data->h;
-  dst_data->offset = data->y * spriteset->bitmap->pitch + data->x;
-  if (data->name[0] != 0)
-    dst_data->hash = _crc32(0, data->name, strlen(data->name));
-  else
-    dst_data->hash = 0;
+static void set_sprite_entry(TLN_Spriteset spriteset, int entry, TLN_SpriteData const *data) {
+    SpriteEntry *dst_data = &spriteset->data[entry];
+    dst_data->w = data->w;
+    dst_data->h = data->h;
+    dst_data->offset = (data->y * spriteset->bitmap->pitch) + data->x;
+    if (data->name[0] != 0) {
+        dst_data->hash = crc32(0, data->name, strlen(data->name));
+    } else {
+        dst_data->hash = 0;
+    }
 }
 
 /*!
@@ -47,30 +47,29 @@ static void set_sprite_entry(TLN_Spriteset spriteset, int entry,
  * \see
  * TLN_DeleteSpriteset()
  */
-TLN_Spriteset TLN_CreateSpriteset(TLN_Bitmap bitmap, TLN_SpriteData const *data,
-                                  int num_entries) {
-  TLN_Spriteset spriteset = NULL;
-  const size_t size =
-      sizeof(struct Spriteset) + sizeof(SpriteEntry) * (size_t)num_entries;
+TLN_Spriteset TLN_CreateSpriteset(TLN_Bitmap bitmap, TLN_SpriteData const *data, int num_entries) {
+    TLN_Spriteset spriteset = NULL;
+    const size_t size = sizeof(struct Spriteset) + (sizeof(SpriteEntry) * (size_t)num_entries);
 
-  /* create */
-  spriteset = (TLN_Spriteset)CreateBaseObject(OT_SPRITESET, size);
-  if (!spriteset)
-    return NULL;
-
-  /* copy data */
-  spriteset->bitmap = bitmap;
-  spriteset->palette = TLN_GetBitmapPalette(bitmap);
-  spriteset->entries = num_entries;
-  if (data != NULL) {
-    for (int c = 0; c < num_entries; c++) {
-      set_sprite_entry(spriteset, c, data);
-      data++;
+    /* create */
+    spriteset = (TLN_Spriteset)CreateBaseObject(OT_SPRITESET, size);
+    if (!spriteset) {
+        return NULL;
     }
-  }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return spriteset;
+    /* copy data */
+    spriteset->bitmap = bitmap;
+    spriteset->palette = TLN_GetBitmapPalette(bitmap);
+    spriteset->entries = num_entries;
+    if (data != NULL) {
+        for (int c = 0; c < num_entries; c++) {
+            set_sprite_entry(spriteset, c, data);
+            data++;
+        }
+    }
+
+    TLN_SetLastError(TLN_ERR_OK);
+    return spriteset;
 }
 
 /*!
@@ -95,28 +94,29 @@ TLN_Spriteset TLN_CreateSpriteset(TLN_Bitmap bitmap, TLN_SpriteData const *data,
  * \see
  * TLN_CreateSpriteset()
  */
-bool TLN_SetSpritesetData(TLN_Spriteset spriteset, int entry,
-                          TLN_SpriteData const *data, void *pixels, int pitch) {
-  if (!CheckBaseObject(spriteset, OT_SPRITESET))
-    return false;
-
-  if (entry >= spriteset->entries) {
-    TLN_SetLastError(TLN_ERR_IDX_SPRITE);
-    return false;
-  }
-
-  set_sprite_entry(spriteset, entry, data);
-  if (pixels != NULL && pitch != 0) {
-    uint8_t const *src = (uint8_t *)pixels;
-    uint8_t *dst = TLN_GetBitmapPtr(spriteset->bitmap, data->x, data->y);
-    for (int c = 0; c < data->h; c++) {
-      memcpy(dst, src, data->w);
-      src += pitch;
-      dst += spriteset->bitmap->pitch;
+bool TLN_SetSpritesetData(TLN_Spriteset spriteset, int entry, TLN_SpriteData const *data,
+                          void *pixels, int pitch) {
+    if (!CheckBaseObject(spriteset, OT_SPRITESET)) {
+        return false;
     }
-  }
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+
+    if (entry >= spriteset->entries) {
+        TLN_SetLastError(TLN_ERR_IDX_SPRITE);
+        return false;
+    }
+
+    set_sprite_entry(spriteset, entry, data);
+    if (pixels != NULL && pitch != 0) {
+        uint8_t const *src = (uint8_t *)pixels;
+        uint8_t *dst = TLN_GetBitmapPtr(spriteset->bitmap, data->x, data->y);
+        for (int c = 0; c < data->h; c++) {
+            memcpy(dst, src, data->w);
+            src += pitch;
+            dst += spriteset->bitmap->pitch;
+        }
+    }
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -132,16 +132,17 @@ bool TLN_SetSpritesetData(TLN_Spriteset spriteset, int entry,
  * TLN_LoadSpriteset()
  */
 TLN_Spriteset TLN_CloneSpriteset(TLN_Spriteset src) {
-  TLN_Spriteset spriteset;
+    TLN_Spriteset spriteset;
 
-  if (!CheckBaseObject(src, OT_SPRITESET))
-    return NULL;
+    if (!CheckBaseObject(src, OT_SPRITESET)) {
+        return NULL;
+    }
 
-  spriteset = (TLN_Spriteset)CloneBaseObject(src);
-  if (spriteset) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return spriteset;
-  } else
+    spriteset = (TLN_Spriteset)CloneBaseObject(src);
+    if (spriteset) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return spriteset;
+    }
     return NULL;
 }
 
@@ -159,13 +160,14 @@ TLN_Spriteset TLN_CloneSpriteset(TLN_Spriteset src) {
  * TLN_LoadSpriteset(), TLN_CloneSpriteset()
  */
 bool TLN_DeleteSpriteset(TLN_Spriteset spriteset) {
-  if (CheckBaseObject(spriteset, OT_SPRITESET)) {
-    if (ObjectOwner(spriteset))
-      TLN_DeleteBitmap(spriteset->bitmap);
-    DeleteBaseObject(spriteset);
-    TLN_SetLastError(TLN_ERR_OK);
-    return true;
-  } else
+    if (CheckBaseObject(spriteset, OT_SPRITESET)) {
+        if (ObjectOwner(spriteset)) {
+            TLN_DeleteBitmap(spriteset->bitmap);
+        }
+        DeleteBaseObject(spriteset);
+        TLN_SetLastError(TLN_ERR_OK);
+        return true;
+    }
     return false;
 }
 
@@ -186,15 +188,14 @@ bool TLN_DeleteSpriteset(TLN_Spriteset spriteset) {
  * \returns
  * true if success or false if error
  */
-bool TLN_GetSpriteInfo(TLN_Spriteset spriteset, int entry,
-                       TLN_SpriteInfo *info) {
-  if (CheckBaseObject(spriteset, OT_SPRITESET) && info) {
-    SpriteEntry const *sprite = (SpriteEntry *)spriteset->data;
-    info->w = sprite[entry].w;
-    info->h = sprite[entry].h;
-    TLN_SetLastError(TLN_ERR_OK);
-    return true;
-  } else
+bool TLN_GetSpriteInfo(TLN_Spriteset spriteset, int entry, TLN_SpriteInfo *info) {
+    if ((int)CheckBaseObject(spriteset, OT_SPRITESET) && info) {
+        SpriteEntry const *sprite = (SpriteEntry *)spriteset->data;
+        info->w = sprite[entry].w;
+        info->h = sprite[entry].h;
+        TLN_SetLastError(TLN_ERR_OK);
+        return true;
+    }
     return false;
 }
 
@@ -215,10 +216,10 @@ bool TLN_GetSpriteInfo(TLN_Spriteset spriteset, int entry,
  * TLN_SetSpritePalette()
  */
 TLN_Palette TLN_GetSpritesetPalette(TLN_Spriteset spriteset) {
-  if (CheckBaseObject(spriteset, OT_SPRITESET)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return spriteset->palette;
-  } else
+    if (CheckBaseObject(spriteset, OT_SPRITESET)) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return spriteset->palette;
+    }
     return NULL;
 }
 
@@ -236,20 +237,23 @@ TLN_Palette TLN_GetSpritesetPalette(TLN_Spriteset spriteset) {
  * sprite index (0 -> num_sprites - 1) if found, or -1 if not found
  */
 int TLN_FindSpritesetSprite(TLN_Spriteset spriteset, const char *name) {
-  uint32_t find;
+    uint32_t find;
 
-  if (!CheckBaseObject(spriteset, OT_SPRITESET))
-    return false;
+    if (!CheckBaseObject(spriteset, OT_SPRITESET)) {
+        return 0;
+    }
 
-  if (name == NULL)
-    return false;
+    if (name == NULL) {
+        return 0;
+    }
 
-  /* search by name hash */
-  find = _crc32(0, name, strlen(name));
-  for (int c = 0; c < spriteset->entries; c++) {
-    const SpriteEntry *info = &spriteset->data[c];
-    if (info->hash == find)
-      return c;
-  }
-  return -1;
+    /* search by name hash */
+    find = crc32(0, name, strlen(name));
+    for (int c = 0; c < spriteset->entries; c++) {
+        const SpriteEntry *info = &spriteset->data[c];
+        if (info->hash == find) {
+            return c;
+        }
+    }
+    return -1;
 }

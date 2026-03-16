@@ -27,13 +27,14 @@
  * TLN_AddSequenceToPack(), TLN_CreateSequence()
  */
 TLN_SequencePack TLN_CreateSequencePack(void) {
-  TLN_SequencePack sp;
-  size_t size = sizeof(struct SequencePack);
+    TLN_SequencePack sp;
+    size_t size = sizeof(struct SequencePack);
 
-  sp = (TLN_SequencePack)CreateBaseObject(OT_SEQPACK, size);
-  if (sp != NULL)
-    TLN_SetLastError(TLN_ERR_OK);
-  return sp;
+    sp = (TLN_SequencePack)CreateBaseObject(OT_SEQPACK, size);
+    if (sp != NULL) {
+        TLN_SetLastError(TLN_ERR_OK);
+    }
+    return sp;
 }
 
 /*!
@@ -53,21 +54,22 @@ TLN_SequencePack TLN_CreateSequencePack(void) {
  * TLN_CreateSequencePack(), TLN_CreateSequence()
  */
 bool TLN_AddSequenceToPack(TLN_SequencePack sp, TLN_Sequence sequence) {
-  if (!CheckBaseObject(sp, OT_SEQPACK) ||
-      !CheckBaseObject(sequence, OT_SEQUENCE))
-    return false;
+    if (!CheckBaseObject(sp, OT_SEQPACK) || !CheckBaseObject(sequence, OT_SEQUENCE)) {
+        return false;
+    }
 
-  /* add to linked list */
-  if (sp->sequences == NULL)
-    sp->sequences = sequence;
-  else
-    sp->last->next = sequence;
-  sp->last = sequence;
-  sp->last->next = NULL;
+    /* add to linked list */
+    if (sp->sequences == NULL) {
+        sp->sequences = sequence;
+    } else {
+        sp->last->next = sequence;
+    }
+    sp->last = sequence;
+    sp->last->next = NULL;
 
-  sp->num_sequences++;
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    sp->num_sequences++;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -78,11 +80,12 @@ bool TLN_AddSequenceToPack(TLN_SequencePack sp, TLN_Sequence sequence) {
  * Reference to the sequence pack to query
  */
 int TLN_GetSequencePackCount(TLN_SequencePack sp) {
-  if (!CheckBaseObject(sp, OT_SEQPACK))
-    return 0;
+    if (!CheckBaseObject(sp, OT_SEQPACK)) {
+        return 0;
+    }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return sp->num_sequences;
+    TLN_SetLastError(TLN_ERR_OK);
+    return sp->num_sequences;
 }
 
 /*!
@@ -99,21 +102,24 @@ int TLN_GetSequencePackCount(TLN_SequencePack sp) {
  * TLN_LoadSequencePack(), TLN_GetSequencePackCount()
  */
 TLN_Sequence TLN_GetSequence(TLN_SequencePack sp, int index) {
-  TLN_Sequence sequence;
+    TLN_Sequence sequence;
 
-  if (!CheckBaseObject(sp, OT_SEQPACK))
-    return NULL;
+    if (!CheckBaseObject(sp, OT_SEQPACK)) {
+        return NULL;
+    }
 
-  if (index >= sp->num_sequences) {
-    TLN_SetLastError(TLN_ERR_IDX_ANIMATION);
-    return NULL;
-  }
+    if (index >= sp->num_sequences) {
+        TLN_SetLastError(TLN_ERR_IDX_ANIMATION);
+        return NULL;
+    }
 
-  sequence = sp->sequences;
-  for (int c = 0; c < index; c++) sequence = sequence->next;
+    sequence = sp->sequences;
+    for (int c = 0; c < index; c++) {
+        sequence = sequence->next;
+    }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return sequence;
+    TLN_SetLastError(TLN_ERR_OK);
+    return sequence;
 }
 
 /*!
@@ -133,30 +139,31 @@ TLN_Sequence TLN_GetSequence(TLN_SequencePack sp, int index) {
  * TLN_LoadSequencePack()
  */
 TLN_Sequence TLN_FindSequence(TLN_SequencePack sp, const char *name) {
-  TLN_Sequence sequence;
-  uint32_t find;
+    TLN_Sequence sequence;
+    uint32_t find;
 
-  if (!CheckBaseObject(sp, OT_SEQPACK))
+    if (!CheckBaseObject(sp, OT_SEQPACK)) {
+        return NULL;
+    }
+
+    if (!name) {
+        TLN_SetLastError(TLN_ERR_NULL_POINTER);
+        return NULL;
+    }
+
+    /* traverse list */
+    find = crc32(0, name, strlen(name));
+    sequence = sp->sequences;
+    while (sequence != NULL) {
+        if (sequence->hash == find) {
+            TLN_SetLastError(TLN_ERR_OK);
+            return sequence;
+        }
+        sequence = sequence->next;
+    }
+
+    TLN_SetLastError(TLN_ERR_FILE_NOT_FOUND);
     return NULL;
-
-  if (!name) {
-    TLN_SetLastError(TLN_ERR_NULL_POINTER);
-    return NULL;
-  }
-
-  /* traverse list */
-  find = _crc32(0, name, strlen(name));
-  sequence = sp->sequences;
-  while (sequence != NULL) {
-    if (sequence->hash == find) {
-      TLN_SetLastError(TLN_ERR_OK);
-      return sequence;
-    } else
-      sequence = sequence->next;
-  }
-
-  TLN_SetLastError(TLN_ERR_FILE_NOT_FOUND);
-  return NULL;
 }
 
 /*!
@@ -175,19 +182,20 @@ TLN_Sequence TLN_FindSequence(TLN_SequencePack sp, const char *name) {
  * TLN_LoadSequencePack()
  */
 bool TLN_DeleteSequencePack(TLN_SequencePack sp) {
-  if (!CheckBaseObject(sp, OT_SEQPACK))
-    return false;
-
-  if (ObjectOwner(sp)) {
-    TLN_Sequence sequence = sp->sequences;
-    while (sequence != NULL) {
-      TLN_Sequence next = sequence->next;
-      TLN_DeleteSequence(sequence);
-      sequence = next;
+    if (!CheckBaseObject(sp, OT_SEQPACK)) {
+        return false;
     }
-  }
 
-  DeleteBaseObject(sp);
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    if (ObjectOwner(sp)) {
+        TLN_Sequence sequence = sp->sequences;
+        while (sequence != NULL) {
+            TLN_Sequence next = sequence->next;
+            TLN_DeleteSequence(sequence);
+            sequence = next;
+        }
+    }
+
+    DeleteBaseObject(sp);
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }

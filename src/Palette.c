@@ -27,17 +27,16 @@
  * Reference to the created palette or NULL if error
  */
 TLN_Palette TLN_CreatePalette(int entries) {
-  TLN_Palette palette;
-  size_t size = sizeof(struct Palette) +
-                1024;  // always alloc 256 colors, to avoid crash when tileset
-                       // uses more colors than the palette
+    TLN_Palette palette;
+    size_t size = sizeof(struct Palette) + 1024; // always alloc 256 colors, to avoid crash when
+                                                 // tileset uses more colors than the palette
 
-  palette = (TLN_Palette)CreateBaseObject(OT_PALETTE, size);
-  if (palette) {
-    palette->entries = entries;
-    TLN_SetLastError(TLN_ERR_OK);
-    return palette;
-  } else
+    palette = (TLN_Palette)CreateBaseObject(OT_PALETTE, size);
+    if (palette) {
+        palette->entries = entries;
+        TLN_SetLastError(TLN_ERR_OK);
+        return palette;
+    }
     return NULL;
 }
 
@@ -55,16 +54,17 @@ TLN_Palette TLN_CreatePalette(int entries) {
  * TLN_CreatePalette()
  */
 TLN_Palette TLN_ClonePalette(TLN_Palette src) {
-  TLN_Palette palette;
+    TLN_Palette palette;
 
-  if (!CheckBaseObject(src, OT_PALETTE))
-    return NULL;
+    if (!CheckBaseObject(src, OT_PALETTE)) {
+        return NULL;
+    }
 
-  palette = (TLN_Palette)CloneBaseObject(src);
-  if (palette) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return palette;
-  } else
+    palette = (TLN_Palette)CloneBaseObject(src);
+    if (palette) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return palette;
+    }
     return NULL;
 }
 
@@ -79,11 +79,11 @@ TLN_Palette TLN_ClonePalette(TLN_Palette src) {
  * Don't delete a palette currently attached to a layer or sprite!
  */
 bool TLN_DeletePalette(TLN_Palette palette) {
-  if (CheckBaseObject(palette, OT_PALETTE)) {
-    DeleteBaseObject(palette);
-    TLN_SetLastError(TLN_ERR_OK);
-    return true;
-  } else
+    if (CheckBaseObject(palette, OT_PALETTE)) {
+        DeleteBaseObject(palette);
+        TLN_SetLastError(TLN_ERR_OK);
+        return true;
+    }
     return false;
 }
 
@@ -106,21 +106,20 @@ bool TLN_DeletePalette(TLN_Palette palette) {
  * \param b
  * Blue component of the color (0-255)
  */
-bool TLN_SetPaletteColor(TLN_Palette palette, int index, uint8_t r, uint8_t g,
-                         uint8_t b) {
-  if (CheckBaseObject(palette, OT_PALETTE) && index < palette->entries) {
-    Color *color = (Color *)GetPaletteData(palette, index);
-    if (index == 0)
-      color->value = 0;
-    else {
-      color->r = r;
-      color->g = g;
-      color->b = b;
-      color->a = 255;
+bool TLN_SetPaletteColor(TLN_Palette palette, int index, uint8_t r, uint8_t g, uint8_t b) {
+    if ((int)CheckBaseObject(palette, OT_PALETTE) && index < palette->entries) {
+        Color *color = (Color *)GetPaletteData(palette, index);
+        if (index == 0) {
+            color->value = 0;
+        } else {
+            color->r = r;
+            color->g = g;
+            color->b = b;
+            color->a = 255;
+        }
+        TLN_SetLastError(TLN_ERR_OK);
+        return true;
     }
-    TLN_SetLastError(TLN_ERR_OK);
-    return true;
-  } else
     return false;
 }
 
@@ -138,15 +137,16 @@ bool TLN_SetPaletteColor(TLN_Palette palette, int index, uint8_t r, uint8_t g,
  * 32-bit integer with the packed color in internal pixel format RGBA
  */
 uint8_t *TLN_GetPaletteData(TLN_Palette palette, int index) {
-  if (!CheckBaseObject(palette, OT_PALETTE))
-    return NULL;
-  else if (index >= palette->entries) {
-    TLN_SetLastError(TLN_ERR_IDX_PICTURE);
-    return NULL;
-  } else {
-    TLN_SetLastError(TLN_ERR_OK);
-    return (uint8_t *)GetPaletteData(palette, index);
-  }
+    if (!CheckBaseObject(palette, OT_PALETTE)) {
+        return NULL;
+    }
+    if (index >= palette->entries) {
+        TLN_SetLastError(TLN_ERR_IDX_PICTURE);
+        return NULL;
+    } else {
+        TLN_SetLastError(TLN_ERR_OK);
+        return (uint8_t *)GetPaletteData(palette, index);
+    }
 }
 
 /*!
@@ -165,74 +165,76 @@ uint8_t *TLN_GetPaletteData(TLN_Palette palette, int index) {
  * \param factor
  * Integer with mixing factor. 0=100% src1, 255=100% src2, 128=50%/50%
  */
-bool TLN_MixPalettes(TLN_Palette src1, TLN_Palette src2, TLN_Palette dst,
-                     uint8_t factor) {
-  const uint8_t invfactor = 255 - factor;
-  const uint8_t *blend_table;
-  uint8_t const *src1ptr;
-  uint8_t const *src2ptr;
-  uint8_t *dstptr;
-  int count;
+bool TLN_MixPalettes(TLN_Palette src1, TLN_Palette src2, TLN_Palette dst, uint8_t factor) {
+    const uint8_t invfactor = 255 - factor;
+    const uint8_t *blend_table;
+    uint8_t const *src1ptr;
+    uint8_t const *src2ptr;
+    uint8_t *dstptr;
+    int count;
 
-  if (!CheckBaseObject(src1, OT_PALETTE) ||
-      !CheckBaseObject(src2, OT_PALETTE) || !CheckBaseObject(dst, OT_PALETTE))
-    return false;
+    if (!CheckBaseObject(src1, OT_PALETTE) || !CheckBaseObject(src2, OT_PALETTE) ||
+        !CheckBaseObject(dst, OT_PALETTE)) {
+        return false;
+    }
 
-  src1ptr = TLN_GetPaletteData(src1, 0);
-  src2ptr = TLN_GetPaletteData(src2, 0);
-  dstptr = TLN_GetPaletteData(dst, 0);
-  blend_table = SelectBlendTable(BLEND_MOD);
+    src1ptr = TLN_GetPaletteData(src1, 0);
+    src2ptr = TLN_GetPaletteData(src2, 0);
+    dstptr = TLN_GetPaletteData(dst, 0);
+    blend_table = SelectBlendTable(BLEND_MOD);
 
-  if (src1->entries > src2->entries)
-    count = src1->entries;
-  else
-    count = src2->entries;
+    if (src1->entries > src2->entries) {
+        count = src1->entries;
+    } else {
+        count = src2->entries;
+    }
 
-  for (int c = 0; c < count; c++) {
-    dstptr[0] = blendfunc(blend_table, src2ptr[0], factor) +
-                blendfunc(blend_table, src1ptr[0], invfactor);
-    dstptr[1] = blendfunc(blend_table, src2ptr[1], factor) +
-                blendfunc(blend_table, src1ptr[1], invfactor);
-    dstptr[2] = blendfunc(blend_table, src2ptr[2], factor) +
-                blendfunc(blend_table, src1ptr[2], invfactor);
-    src1ptr += sizeof(uint32_t);
-    src2ptr += sizeof(uint32_t);
-    dstptr += sizeof(uint32_t);
-  }
+    for (int c = 0; c < count; c++) {
+        dstptr[0] = blendfunc(blend_table, src2ptr[0], factor) +
+                    blendfunc(blend_table, src1ptr[0], invfactor);
+        dstptr[1] = blendfunc(blend_table, src2ptr[1], factor) +
+                    blendfunc(blend_table, src1ptr[1], invfactor);
+        dstptr[2] = blendfunc(blend_table, src2ptr[2], factor) +
+                    blendfunc(blend_table, src1ptr[2], invfactor);
+        src1ptr += sizeof(uint32_t);
+        src2ptr += sizeof(uint32_t);
+        dstptr += sizeof(uint32_t);
+    }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /* edits color range according to blend table */
-static bool EditPaletteColor(TLN_Palette palette, uint8_t const *blend_table,
-                             uint8_t r, uint8_t g, uint8_t b, uint8_t start,
-                             uint8_t num) {
-  int end;
-  uint8_t *color_ptr;
+static bool EditPaletteColor(TLN_Palette palette, uint8_t const *blend_table, uint8_t r, uint8_t g,
+                             uint8_t b, uint8_t start, uint8_t num) {
+    int end;
+    uint8_t *color_ptr;
 
-  if (!CheckBaseObject(palette, OT_PALETTE))
-    return false;
+    if (!CheckBaseObject(palette, OT_PALETTE)) {
+        return false;
+    }
 
-  if (start >= palette->entries) {
-    TLN_SetLastError(TLN_ERR_IDX_PICTURE);
-    return false;
-  }
+    if (start >= palette->entries) {
+        TLN_SetLastError(TLN_ERR_IDX_PICTURE);
+        return false;
+    }
 
-  end = start + num - 1;
-  if (end >= palette->entries)
-    end = palette->entries - 1;
+    end = start + num - 1;
+    if (end >= palette->entries) {
+        end = palette->entries - 1;
+    }
 
-  color_ptr = TLN_GetPaletteData(palette, start);
-  for (int c = start; c <= end; c++) {
-    color_ptr[0] = blendfunc(blend_table, color_ptr[0], r);
-    color_ptr[1] = blendfunc(blend_table, color_ptr[1], g);
-    color_ptr[2] = blendfunc(blend_table, color_ptr[2], b);
-    color_ptr += sizeof(uint32_t);
-  }
+    color_ptr = TLN_GetPaletteData(palette, start);
+    for (int c = start; c <= end; c++) {
+        color_ptr[0] = blendfunc(blend_table, color_ptr[0], r);
+        color_ptr[1] = blendfunc(blend_table, color_ptr[1], g);
+        color_ptr[2] = blendfunc(blend_table, color_ptr[2], b);
+        color_ptr += sizeof(uint32_t);
+    }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -258,10 +260,9 @@ static bool EditPaletteColor(TLN_Palette palette, uint8_t const *blend_table,
  * \param num
  * number of colors from start to modify
  */
-bool TLN_AddPaletteColor(TLN_Palette palette, uint8_t r, uint8_t g, uint8_t b,
-                         uint8_t start, uint8_t num) {
-  return EditPaletteColor(palette, SelectBlendTable(BLEND_ADD), r, g, b, start,
-                          num);
+bool TLN_AddPaletteColor(TLN_Palette palette, uint8_t r, uint8_t g, uint8_t b, uint8_t start,
+                         uint8_t num) {
+    return EditPaletteColor(palette, SelectBlendTable(BLEND_ADD), r, g, b, start, num);
 }
 
 /*!
@@ -287,10 +288,9 @@ bool TLN_AddPaletteColor(TLN_Palette palette, uint8_t r, uint8_t g, uint8_t b,
  * \param num
  * number of colors from start to modify
  */
-bool TLN_SubPaletteColor(TLN_Palette palette, uint8_t r, uint8_t g, uint8_t b,
-                         uint8_t start, uint8_t num) {
-  return EditPaletteColor(palette, SelectBlendTable(BLEND_SUB), r, g, b, start,
-                          num);
+bool TLN_SubPaletteColor(TLN_Palette palette, uint8_t r, uint8_t g, uint8_t b, uint8_t start,
+                         uint8_t num) {
+    return EditPaletteColor(palette, SelectBlendTable(BLEND_SUB), r, g, b, start, num);
 }
 
 /*!
@@ -316,10 +316,9 @@ bool TLN_SubPaletteColor(TLN_Palette palette, uint8_t r, uint8_t g, uint8_t b,
  * \param num
  * number of colors from start to modify
  */
-bool TLN_ModPaletteColor(TLN_Palette palette, uint8_t r, uint8_t g, uint8_t b,
-                         uint8_t start, uint8_t num) {
-  return EditPaletteColor(palette, SelectBlendTable(BLEND_MOD), r, g, b, start,
-                          num);
+bool TLN_ModPaletteColor(TLN_Palette palette, uint8_t r, uint8_t g, uint8_t b, uint8_t start,
+                         uint8_t num) {
+    return EditPaletteColor(palette, SelectBlendTable(BLEND_MOD), r, g, b, start, num);
 }
 
 /*!
@@ -328,10 +327,10 @@ bool TLN_ModPaletteColor(TLN_Palette palette, uint8_t r, uint8_t g, uint8_t b,
  * \returns number of color entries
  */
 int TLN_GetPaletteNumColors(TLN_Palette palette) {
-  if (!CheckBaseObject(palette, OT_PALETTE)) {
-    TLN_SetLastError(TLN_ERR_REF_PALETTE);
-    return 0;
-  }
-  TLN_SetLastError(TLN_ERR_OK);
-  return palette->entries;
+    if (!CheckBaseObject(palette, OT_PALETTE)) {
+        TLN_SetLastError(TLN_ERR_REF_PALETTE);
+        return 0;
+    }
+    TLN_SetLastError(TLN_ERR_OK);
+    return palette->entries;
 }

@@ -279,12 +279,17 @@ void Blit32_32_Masked_src(uint32_t const *src, uint32_t const *src_blend, uint32
         while (width > 0) {
             if ((*src & 0xFF000000u) != 0) {
                 if (*mask) {
+                    /* opaque top-layer pixel over water: blend them together */
                     *dst = (((*src >> 1) & 0x007F7F7Fu) + ((*src_blend >> 1) & 0x007F7F7Fu) +
                             (*src & *src_blend & 0x00010101u)) |
                            (*dst & 0xFF000000u);
                 } else {
+                    /* opaque top-layer pixel, no water beneath: copy as-is */
                     *dst = *src;
                 }
+            } else if (*mask && (*src_blend & 0xFF000000u) != 0) {
+                /* transparent top-layer pixel but water beneath: show water */
+                *dst = *src_blend;
             }
             src++;
             src_blend++;
@@ -301,12 +306,17 @@ void Blit32_32_Masked_src(uint32_t const *src, uint32_t const *src_blend, uint32
     while (width > 0) {
         if (srcpixel->a != 0) {
             if (*mask && blend != NULL) {
+                /* opaque top-layer pixel over water: blend them together */
                 dstpixel->r = blendfunc(blend, srcpixel->r, blendpixel->r);
                 dstpixel->g = blendfunc(blend, srcpixel->g, blendpixel->g);
                 dstpixel->b = blendfunc(blend, srcpixel->b, blendpixel->b);
             } else {
+                /* opaque top-layer pixel, no water: copy as-is */
                 dstpixel->value = srcpixel->value;
             }
+        } else if (*mask && blendpixel->a != 0) {
+            /* transparent top-layer pixel but water beneath: show water */
+            dstpixel->value = blendpixel->value;
         }
         srcpixel++;
         blendpixel++;

@@ -21,138 +21,133 @@
 #include "Tilengine.h"
 #include "simplexml.h"
 
-#define ODB(msg, ...)                                                  \
-  do {                                                                 \
-    char _odb_buf[256];                                                \
-    snprintf(_odb_buf, sizeof(_odb_buf), "[OBJ] " msg, ##__VA_ARGS__); \
-    tln_trace(TLN_LOG_VERBOSE, _odb_buf);                              \
-  } while (0)
+#define ODB(msg, ...)                                                                              \
+    do {                                                                                           \
+        char _odb_buf[256];                                                                        \
+        snprintf(_odb_buf, sizeof(_odb_buf), "[OBJ] " msg, ##__VA_ARGS__);                         \
+        tln_trace(TLN_LOG_VERBOSE, _odb_buf);                                                      \
+    } while (0)
 
 /* properties */
 typedef enum {
-  PROPERTY_NONE,
-  PROPERTY_TYPE,
-  PROPERTY_PRIORITY,
+    PROPERTY_NONE,
+    PROPERTY_TYPE,
+    PROPERTY_PRIORITY,
 } Property;
 
 /* load manager */
 static struct {
-  TMXLayer *layer;
-  bool state;
-  TLN_ObjectList objects;
-  TLN_Object object;
-  Property property; /* current property */
+    TMXLayer *layer;
+    bool state;
+    TLN_ObjectList objects;
+    TLN_Object object;
+    Property property; /* current property */
 } loader;
 
 static bool CloneObjectToList(TLN_ObjectList list, TLN_Object const *data);
 static void resolve_object_tilesets(TMXInfo *info);
-static void handle_add_attribute(const char *szName, const char *szAttribute,
-                                 const char *szValue);
+static void handle_add_attribute(const char *szName, const char *szAttribute, const char *szValue);
 static void handle_finish_attributes(const char *szName);
 static void handle_finish_tag(const char *szName);
 
 static void handle_object_gid_attribute(const char *szValue) {
-  Tile tile;
-  tile.value = strtoul(szValue, NULL, 0);
-  loader.object.has_gid = true;
-  loader.object.flags = tile.flags;
-  loader.object.gid = tile.index;
+    Tile tile;
+    tile.value = strtoul(szValue, NULL, 0);
+    loader.object.has_gid = true;
+    loader.object.flags = tile.flags;
+    loader.object.gid = tile.index;
 }
 
-static void handle_object_attribute(const char *szAttribute,
-                                    const char *szValue) {
-  int intvalue = (int)strtol(szValue, NULL, 10);
-  if (!strcasecmp(szAttribute, "id"))
-    loader.object.id = (uint16_t)intvalue;
-  else if (!strcasecmp(szAttribute, "gid"))
-    handle_object_gid_attribute(szValue);
-  else if (!strcasecmp(szAttribute, "x"))
-    loader.object.x = intvalue;
-  else if (!strcasecmp(szAttribute, "y"))
-    loader.object.y = intvalue;
-  else if (!strcasecmp(szAttribute, "width"))
-    loader.object.width = intvalue;
-  else if (!strcasecmp(szAttribute, "height"))
-    loader.object.height = intvalue;
-  else if (!strcasecmp(szAttribute, "type"))
-    loader.object.type = (uint8_t)intvalue;
-  else if (!strcasecmp(szAttribute, "visible"))
-    loader.object.visible = (bool)intvalue;
-  else if (!strcasecmp(szAttribute, "name")) {
-    strncpy(loader.object.name, szValue, sizeof(loader.object.name) - 1);
-    loader.object.name[sizeof(loader.object.name) - 1] = '\0';
-  }
+static void handle_object_attribute(const char *szAttribute, const char *szValue) {
+    int intvalue = (int)strtol(szValue, NULL, 10);
+    if (!strcasecmp(szAttribute, "id")) {
+        loader.object.id = (uint16_t)intvalue;
+    } else if (!strcasecmp(szAttribute, "gid")) {
+        handle_object_gid_attribute(szValue);
+    } else if (!strcasecmp(szAttribute, "x")) {
+        loader.object.x = intvalue;
+    } else if (!strcasecmp(szAttribute, "y")) {
+        loader.object.y = intvalue;
+    } else if (!strcasecmp(szAttribute, "width")) {
+        loader.object.width = intvalue;
+    } else if (!strcasecmp(szAttribute, "height")) {
+        loader.object.height = intvalue;
+    } else if (!strcasecmp(szAttribute, "type")) {
+        loader.object.type = (uint8_t)intvalue;
+    } else if (!strcasecmp(szAttribute, "visible")) {
+        loader.object.visible = (bool)intvalue;
+    } else if (!strcasecmp(szAttribute, "name")) {
+        strncpy(loader.object.name, szValue, sizeof(loader.object.name) - 1);
+        loader.object.name[sizeof(loader.object.name) - 1] = '\0';
+    }
 }
 
-static void handle_property_attribute(const char *szAttribute,
-                                      const char *szValue) {
-  if (!strcasecmp(szAttribute, "name")) {
-    loader.property =
-        !strcasecmp(szValue, "priority") ? PROPERTY_PRIORITY : PROPERTY_NONE;
-  } else if (!strcasecmp(szAttribute, "value") &&
-             loader.property == PROPERTY_PRIORITY &&
-             !strcasecmp(szValue, "true")) {
-    loader.object.flags += FLAG_PRIORITY;
-  }
+static void handle_property_attribute(const char *szAttribute, const char *szValue) {
+    if (!strcasecmp(szAttribute, "name")) {
+        loader.property = !strcasecmp(szValue, "priority") ? PROPERTY_PRIORITY : PROPERTY_NONE;
+    } else if (!strcasecmp(szAttribute, "value") && loader.property == PROPERTY_PRIORITY &&
+               !strcasecmp(szValue, "true")) {
+        loader.object.flags += FLAG_PRIORITY;
+    }
 }
 
-static void handle_add_attribute(const char *szName, const char *szAttribute,
-                                 const char *szValue) {
-  if (!strcasecmp(szName, "objectgroup") && !strcasecmp(szAttribute, "name")) {
-    loader.state = !strcasecmp(szValue, loader.layer->name);
-  } else if (!strcasecmp(szName, "object"))
-    handle_object_attribute(szAttribute, szValue);
-  else if (!strcasecmp(szName, "property"))
-    handle_property_attribute(szAttribute, szValue);
+static void handle_add_attribute(const char *szName, const char *szAttribute, const char *szValue) {
+    if (!strcasecmp(szName, "objectgroup") && !strcasecmp(szAttribute, "name")) {
+        loader.state = ((!strcasecmp(szValue, loader.layer->name)) != 0);
+    } else if (!strcasecmp(szName, "object")) {
+        handle_object_attribute(szAttribute, szValue);
+    } else if (!strcasecmp(szName, "property")) {
+        handle_property_attribute(szAttribute, szValue);
+    }
 }
 
 static void handle_finish_attributes(const char *szName) {
-  if (loader.state && !strcasecmp(szName, "objectgroup")) {
-    loader.objects = TLN_CreateObjectList();
-    loader.objects->id = loader.layer->id;
-    loader.objects->visible = loader.layer->visible;
-  }
+    if ((int)loader.state && !strcasecmp(szName, "objectgroup")) {
+        loader.objects = TLN_CreateObjectList();
+        loader.objects->id = loader.layer->id;
+        loader.objects->visible = loader.layer->visible;
+    }
 }
 
 static void handle_finish_tag(const char *szName) {
-  if (!loader.state)
-    return;
-  if (!strcasecmp(szName, "objectgroup")) {
-    loader.state = false;
-  } else if (!strcasecmp(szName, "object")) {
-    if (loader.object.has_gid)
-      loader.object.y -= loader.object.height;
-    CloneObjectToList(loader.objects, &loader.object);
-  }
+    if (!loader.state) {
+        return;
+    }
+    if (!strcasecmp(szName, "objectgroup")) {
+        loader.state = false;
+    } else if (!strcasecmp(szName, "object")) {
+        if (loader.object.has_gid) {
+            loader.object.y -= loader.object.height;
+        }
+        CloneObjectToList(loader.objects, &loader.object);
+    }
 }
 
 /* XML parser callback */
-static void *handler(SimpleXmlParser parser [[maybe_unused]],
-                     SimpleXmlEvent evt, const char *szName,
-                     const char *szAttribute, const char *szValue) {
-  ODB("handler evt=%d szName=%s szAttr=%s szVal=%s", evt,
-      szName ? szName : "(null)", szAttribute ? szAttribute : "(null)",
-      szValue ? szValue : "(null)");
-  switch (evt) {
+static void *handler(SimpleXmlParser parser [[maybe_unused]], SimpleXmlEvent evt,
+                     const char *szName, const char *szAttribute, const char *szValue) {
+    ODB("handler evt=%d szName=%s szAttr=%s szVal=%s", evt, szName ? szName : "(null)",
+        szAttribute ? szAttribute : "(null)", szValue ? szValue : "(null)");
+    switch (evt) {
     case ADD_SUBTAG:
-      if (!strcasecmp(szName, "object")) {
-        memset(&loader.object, 0, sizeof(struct Object));
-        loader.object.visible = true;
-      }
-      break;
+        if (!strcasecmp(szName, "object")) {
+            memset(&loader.object, 0, sizeof(struct Object));
+            loader.object.visible = true;
+        }
+        break;
     case ADD_ATTRIBUTE:
-      handle_add_attribute(szName, szAttribute, szValue);
-      break;
+        handle_add_attribute(szName, szAttribute, szValue);
+        break;
     case FINISH_ATTRIBUTES:
-      handle_finish_attributes(szName);
-      break;
+        handle_finish_attributes(szName);
+        break;
     case FINISH_TAG:
-      handle_finish_tag(szName);
-      break;
+        handle_finish_tag(szName);
+        break;
     default:
-      break;
-  }
-  return &handler;
+        break;
+    }
+    return &handler;
 }
 
 /*!
@@ -162,28 +157,30 @@ static void *handler(SimpleXmlParser parser [[maybe_unused]],
  * \return Reference to new object or NULL if error
  */
 TLN_ObjectList TLN_CreateObjectList(void) {
-  TLN_ObjectList list = NULL;
-  const size_t size = sizeof(struct ObjectList);
+    TLN_ObjectList list = NULL;
+    const size_t size = sizeof(struct ObjectList);
 
-  /* create */
-  list = (TLN_ObjectList)CreateBaseObject(OT_OBJECTLIST, size);
-  if (!list)
-    return NULL;
+    /* create */
+    list = (TLN_ObjectList)CreateBaseObject(OT_OBJECTLIST, size);
+    if (!list) {
+        return NULL;
+    }
 
-  list->visible = true;
-  TLN_SetLastError(TLN_ERR_OK);
-  return list;
+    list->visible = true;
+    TLN_SetLastError(TLN_ERR_OK);
+    return list;
 }
 
 /* adds entry to linked list */
 static void add_to_list(TLN_ObjectList list, struct Object *object) {
-  if (list->list == NULL)
-    list->list = object;
-  else
-    list->last->next = object;
-  list->last = object;
-  list->num_items += 1;
-  object->next = NULL;
+    if (list->list == NULL) {
+        list->list = object;
+    } else {
+        list->last->next = object;
+    }
+    list->last = object;
+    list->num_items += 1;
+    object->next = NULL;
 }
 
 /*!
@@ -195,18 +192,20 @@ static void add_to_list(TLN_ObjectList list, struct Object *object) {
  * \return true if success or false if error
  */
 static bool CloneObjectToList(TLN_ObjectList list, TLN_Object const *data) {
-  struct Object *obj_node;
+    struct Object *obj_node;
 
-  if (!CheckBaseObject(list, OT_OBJECTLIST))
-    return false;
+    if (!CheckBaseObject(list, OT_OBJECTLIST)) {
+        return false;
+    }
 
-  obj_node = (struct Object *)calloc(1, sizeof(struct Object));
-  if (obj_node == NULL)
-    return false;
+    obj_node = (struct Object *)calloc(1, sizeof(struct Object));
+    if (obj_node == NULL) {
+        return false;
+    }
 
-  memcpy(obj_node, data, sizeof(struct Object));
-  add_to_list(list, obj_node);
-  return true;
+    memcpy(obj_node, data, sizeof(struct Object));
+    add_to_list(list, obj_node);
+    return true;
 }
 /*!
  * \brief Adds an image-based tileset item to given TLN_ObjectList
@@ -219,24 +218,26 @@ static bool CloneObjectToList(TLN_ObjectList list, TLN_Object const *data) {
  * \param y Layer-space bertical coordinate of the top-left corner
  * \return true if success or false if error
  */
-bool TLN_AddTileObjectToList(TLN_ObjectList list, uint16_t id, uint16_t gid,
-                             uint16_t flags, int x, int y) {
-  struct Object *obj_node;
+bool TLN_AddTileObjectToList(TLN_ObjectList list, uint16_t id, uint16_t gid, uint16_t flags, int x,
+                             int y) {
+    struct Object *obj_node;
 
-  if (!CheckBaseObject(list, OT_OBJECTLIST))
-    return false;
+    if (!CheckBaseObject(list, OT_OBJECTLIST)) {
+        return false;
+    }
 
-  obj_node = (struct Object *)calloc(1, sizeof(struct Object));
-  if (obj_node == NULL)
-    return false;
+    obj_node = (struct Object *)calloc(1, sizeof(struct Object));
+    if (obj_node == NULL) {
+        return false;
+    }
 
-  obj_node->id = id;
-  obj_node->gid = gid;
-  obj_node->flags = flags;
-  obj_node->x = x;
-  obj_node->y = y;
-  add_to_list(list, obj_node);
-  return true;
+    obj_node->id = id;
+    obj_node->gid = gid;
+    obj_node->flags = flags;
+    obj_node->x = x;
+    obj_node->y = y;
+    add_to_list(list, obj_node);
+    return true;
 }
 
 /*!
@@ -247,115 +248,122 @@ bool TLN_AddTileObjectToList(TLN_ObjectList list, uint16_t id, uint16_t gid,
  * \return Reference to the loaded object or NULL if error
  */
 TLN_ObjectList TLN_LoadObjectList(const char *filename, const char *layername) {
-  SimpleXmlParser parser;
-  ssize_t size;
-  uint8_t *data;
-  TMXInfo tmxinfo = {0};
+    SimpleXmlParser parser;
+    ssize_t size;
+    uint8_t *data;
+    TMXInfo tmxinfo = {0};
 
-  ODB("LoadObjectList file=%s layer=%s", filename, layername);
+    ODB("LoadObjectList file=%s layer=%s", filename, layername);
 
-  /* load map info */
-  if (!TMXLoad(filename, &tmxinfo)) {
-    TLN_SetLastError(TLN_ERR_FILE_NOT_FOUND);
-    return NULL;
-  }
-  ODB("TMXLoad ok, num_layers=%d num_tilesets=%d", tmxinfo.num_layers,
-      tmxinfo.num_tilesets);
+    /* load map info */
+    if (!TMXLoad(filename, &tmxinfo)) {
+        TLN_SetLastError(TLN_ERR_FILE_NOT_FOUND);
+        return NULL;
+    }
+    ODB("TMXLoad ok, num_layers=%d num_tilesets=%d", tmxinfo.num_layers, tmxinfo.num_tilesets);
 
-  /* get target layer */
-  memset(&loader, 0, sizeof(loader));
-  if (layername)
-    loader.layer = TMXGetLayer(&tmxinfo, layername);
-  else
-    loader.layer = TMXGetFirstLayer(&tmxinfo, LAYER_OBJECT);
-  if (loader.layer == NULL) {
-    TLN_SetLastError(TLN_ERR_FILE_NOT_FOUND);
-    return NULL;
-  }
-  ODB("layer found: %s id=%d", loader.layer->name, loader.layer->id);
+    /* get target layer */
+    memset(&loader, 0, sizeof(loader));
+    if (layername) {
+        loader.layer = TMXGetLayer(&tmxinfo, layername);
+    } else {
+        loader.layer = TMXGetFirstLayer(&tmxinfo, LAYER_OBJECT);
+    }
+    if (loader.layer == NULL) {
+        TLN_SetLastError(TLN_ERR_FILE_NOT_FOUND);
+        return NULL;
+    }
+    ODB("layer found: %s id=%d", loader.layer->name, loader.layer->id);
 
-  /* parse */
-  data = (uint8_t *)LoadFile(filename, &size);
-  ODB("loaded file, size=%zd data=%p", size, (void *)data);
-  parser = simpleXmlCreateParser((char *)data, (long)size);
-  ODB("parser=%p, starting parse...", (void *)parser);
-  if (parser != NULL) {
-    if (simpleXmlParse(parser, handler) != 0) {
-      printf("parse error on line %li:\n%s\n", simpleXmlGetLineNumber(parser),
-             simpleXmlGetErrorDescription(parser));
-      TLN_SetLastError(TLN_ERR_WRONG_FORMAT);
-    } else
-      TLN_SetLastError(TLN_ERR_OK);
-  } else
-    TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
-  ODB("parse done, objects=%p", (void *)loader.objects);
+    /* parse */
+    data = (uint8_t *)LoadFile(filename, &size);
+    ODB("loaded file, size=%zd data=%p", size, (void *)data);
+    parser = simpleXmlCreateParser((char *)data, (long)size);
+    ODB("parser=%p, starting parse...", (void *)parser);
+    if (parser != NULL) {
+        if (simpleXmlParse(parser, handler) != 0) {
+            printf("parse error on line %li:\n%s\n", simpleXmlGetLineNumber(parser),
+                   simpleXmlGetErrorDescription(parser));
+            TLN_SetLastError(TLN_ERR_WRONG_FORMAT);
+        } else {
+            TLN_SetLastError(TLN_ERR_OK);
+        }
+    } else {
+        TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
+    }
+    ODB("parse done, objects=%p", (void *)loader.objects);
 
-  simpleXmlDestroyParser(parser);
-  free(data);
+    simpleXmlDestroyParser(parser);
+    free(data);
 
-  if (loader.objects != NULL)
-    resolve_object_tilesets(&tmxinfo);
+    if (loader.objects != NULL) {
+        resolve_object_tilesets(&tmxinfo);
+    }
 
-  return loader.objects;
+    return loader.objects;
 }
 
 static void resolve_object_tilesets(TMXInfo *info) {
-  struct Object *item;
-  int gid = 0;
-  int c;
+    struct Object *item;
+    int gid = 0;
+    int c;
 
-  /* find a gid to identify the suitable tileset */
-  item = loader.objects->list;
-  while (item != NULL && gid == 0) {
-    if (item->gid > 0)
-      gid = item->gid;
-    item = item->next;
-  }
+    /* find a gid to identify the suitable tileset */
+    item = loader.objects->list;
+    while (item != NULL && gid == 0) {
+        if (item->gid > 0) {
+            gid = item->gid;
+        }
+        item = item->next;
+    }
 
-  /* pure point/rect layer — no tile objects, no tileset resolution needed */
-  if (gid == 0) {
-    ODB("no gid objects found, skipping tileset resolution");
-    return;
-  }
+    /* pure point/rect layer — no tile objects, no tileset resolution needed */
+    if (gid == 0) {
+        ODB("no gid objects found, skipping tileset resolution");
+        return;
+    }
 
-  ODB("searching tilesets for gid=%d, num_tilesets=%d", gid,
-      info->num_tilesets);
+    ODB("searching tilesets for gid=%d, num_tilesets=%d", gid, info->num_tilesets);
 
-  /* load referenced tilesets */
-  TLN_Tileset tilesets[TMX_MAX_TILESET] = {0};
-  for (c = 0; c < info->num_tilesets; c += 1) {
-    ODB("  loading tileset[%d] source='%s'", c, info->tilesets[c].source);
-    tilesets[c] = TLN_LoadTileset(info->tilesets[c].source);
-    ODB("  tileset[%d]=%p", c, (void *)tilesets[c]);
-  }
+    /* load referenced tilesets */
+    TLN_Tileset tilesets[TMX_MAX_TILESET] = {0};
+    for (c = 0; c < info->num_tilesets; c += 1) {
+        ODB("  loading tileset[%d] source='%s'", c, info->tilesets[c].source);
+        tilesets[c] = TLN_LoadTileset(info->tilesets[c].source);
+        ODB("  tileset[%d]=%p", c, (void *)tilesets[c]);
+    }
 
-  int suitable = TMXGetSuitableTileset(info, gid, tilesets);
-  ODB("suitable=%d", suitable);
-  if (suitable < 0 || suitable >= info->num_tilesets) {
-    ODB("ERROR: suitable out of range! num_tilesets=%d", info->num_tilesets);
-    for (c = 0; c < info->num_tilesets; c += 1) TLN_DeleteTileset(tilesets[c]);
-    return;
-  }
+    int suitable = TMXGetSuitableTileset(info, gid, tilesets);
+    ODB("suitable=%d", suitable);
+    if (suitable < 0 || suitable >= info->num_tilesets) {
+        ODB("ERROR: suitable out of range! num_tilesets=%d", info->num_tilesets);
+        for (c = 0; c < info->num_tilesets; c += 1) {
+            TLN_DeleteTileset(tilesets[c]);
+        }
+        return;
+    }
 
-  TMXTileset const *tmxtileset = &info->tilesets[suitable];
+    TMXTileset const *tmxtileset = &info->tilesets[suitable];
 
-  /* correct gids with firstgid offset */
-  item = loader.objects->list;
-  while (item != NULL) {
-    if (item->gid > 0)
-      item->gid = (uint16_t)(item->gid - tmxtileset->firstgid);
-    item = item->next;
-  }
+    /* correct gids with firstgid offset */
+    item = loader.objects->list;
+    while (item != NULL) {
+        if (item->gid > 0) {
+            item->gid = (uint16_t)(item->gid - tmxtileset->firstgid);
+        }
+        item = item->next;
+    }
 
-  /* delete unused tilesets */
-  for (c = 0; c < info->num_tilesets; c += 1) {
-    if (c != suitable)
-      TLN_DeleteTileset(tilesets[c]);
-  }
+    /* delete unused tilesets */
+    for (c = 0; c < info->num_tilesets; c += 1) {
+        if (c != suitable) {
+            TLN_DeleteTileset(tilesets[c]);
+        }
+    }
 
-  loader.objects->tileset = tilesets[suitable];
-  loader.objects->width = info->width * info->tilewidth;
-  loader.objects->height = info->height * info->tileheight;
+    loader.objects->tileset = tilesets[suitable];
+    loader.objects->width = info->width * info->tilewidth;
+    loader.objects->height = info->height * info->tileheight;
 }
 
 /*!
@@ -364,20 +372,21 @@ static void resolve_object_tilesets(TMXInfo *info) {
  * \return A reference to the newly cloned object list, or NULL if error
  */
 TLN_ObjectList TLN_CloneObjectList(TLN_ObjectList src) {
-  TLN_ObjectList list;
-  struct Object *obj_node;
+    TLN_ObjectList list;
+    struct Object *obj_node;
 
-  if (!CheckBaseObject(src, OT_OBJECTLIST))
-    return NULL;
+    if (!CheckBaseObject(src, OT_OBJECTLIST)) {
+        return NULL;
+    }
 
-  list = (TLN_ObjectList)CloneBaseObject(src);
-  obj_node = src->list;
-  while (obj_node != NULL) {
-    CloneObjectToList(list, obj_node);
-    obj_node = obj_node->next;
-  }
-  list->iterator = NULL;
-  return list;
+    list = (TLN_ObjectList)CloneBaseObject(src);
+    obj_node = src->list;
+    while (obj_node != NULL) {
+        CloneObjectToList(list, obj_node);
+        obj_node = obj_node->next;
+    }
+    list->iterator = NULL;
+    return list;
 }
 
 /*!
@@ -386,13 +395,12 @@ TLN_ObjectList TLN_CloneObjectList(TLN_ObjectList src) {
  * \return number of items
  */
 int TLN_GetListNumObjects(TLN_ObjectList list) {
-  if (CheckBaseObject(list, OT_OBJECTLIST)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return list->num_items;
-  } else {
+    if (CheckBaseObject(list, OT_OBJECTLIST)) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return list->num_items;
+    }
     TLN_SetLastError(TLN_ERR_REF_LIST);
     return 0;
-  }
 }
 
 /*!
@@ -405,50 +413,48 @@ int TLN_GetListNumObjects(TLN_ObjectList list) {
  *  * If NULL, return the next item
  */
 bool TLN_GetListObject(TLN_ObjectList list, TLN_ObjectInfo *info) {
-  struct Object *item;
-  if (!CheckBaseObject(list, OT_OBJECTLIST)) {
-    TLN_SetLastError(TLN_ERR_REF_LIST);
-    return false;
-  }
+    struct Object *item;
+    if (!CheckBaseObject(list, OT_OBJECTLIST)) {
+        TLN_SetLastError(TLN_ERR_REF_LIST);
+        return false;
+    }
 
-  /* start iterator */
-  if (info != NULL) {
-    list->iterator = list->list;
-    list->info = info;
-  }
+    /* start iterator */
+    if (info != NULL) {
+        list->iterator = list->list;
+        list->info = info;
+    }
 
-  if (list->iterator == NULL)
-    return false;
+    if (list->iterator == NULL) {
+        return false;
+    }
 
-  /* copy info */
-  item = list->iterator;
-  info = list->info;
-  info->id = item->id;
-  info->gid = item->gid;
-  info->flags = item->flags;
-  info->x = item->x;
-  info->y = item->y;
-  info->width = item->width;
-  info->height = item->height;
-  info->type = item->type;
-  info->visible = item->visible;
-  if (item->name[0]) {
-    strncpy(info->name, item->name, sizeof(info->name) - 1);
-    info->name[sizeof(info->name) - 1] = '\0';
-  }
+    /* copy info */
+    item = list->iterator;
+    info = list->info;
+    info->id = item->id;
+    info->gid = item->gid;
+    info->flags = item->flags;
+    info->x = item->x;
+    info->y = item->y;
+    info->width = item->width;
+    info->height = item->height;
+    info->type = item->type;
+    info->visible = item->visible;
+    if (item->name[0]) {
+        strncpy(info->name, item->name, sizeof(info->name) - 1);
+        info->name[sizeof(info->name) - 1] = '\0';
+    }
 
-  /* advance */
-  list->iterator = item->next;
-  return true;
+    /* advance */
+    list->iterator = item->next;
+    return true;
 }
 
 bool IsObjectInLine(const struct Object *object, int x1, int x2, int y) {
-  rect_t rect;
-  MakeRect(&rect, object->x, object->y, object->width, object->height);
-  if (y >= rect.y1 && y < rect.y2 && !(x1 > rect.x2 || x2 < rect.x1))
-    return true;
-  else
-    return false;
+    rect_t rect;
+    MakeRect(&rect, object->x, object->y, object->width, object->height);
+    return (bool)(y >= rect.y1 && y < rect.y2 && !(x1 > rect.x2 || x2 < rect.x1));
 }
 
 /*!
@@ -458,19 +464,20 @@ bool IsObjectInLine(const struct Object *object, int x1, int x2, int y) {
  * \return true if success or false if error
  */
 bool TLN_DeleteObjectList(TLN_ObjectList list) {
-  struct Object *obj_node;
-  if (!CheckBaseObject(list, OT_OBJECTLIST))
-    return false;
+    struct Object *obj_node;
+    if (!CheckBaseObject(list, OT_OBJECTLIST)) {
+        return false;
+    }
 
-  /* delete nodes */
-  obj_node = list->list;
-  while (obj_node != NULL) {
-    struct Object *next;
-    next = obj_node->next;
-    free(obj_node);
-    obj_node = next;
-  }
+    /* delete nodes */
+    obj_node = list->list;
+    while (obj_node != NULL) {
+        struct Object *next;
+        next = obj_node->next;
+        free(obj_node);
+        obj_node = next;
+    }
 
-  DeleteBaseObject(list);
-  return true;
+    DeleteBaseObject(list);
+    return true;
 }

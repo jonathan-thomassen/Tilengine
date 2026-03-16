@@ -3,8 +3,8 @@
  *  code or tables extracted from it, as desired without restriction.
  */
 
-#ifndef _CRC32_H
-#define _CRC32_H
+#ifndef CRC32_H
+#define CRC32_H
 
 #include <stddef.h>
 
@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-unsigned int _crc32(unsigned int crc, const void *buf, size_t size);
+unsigned int crc32(unsigned int crc, const void *buf, size_t size);
 
 #ifdef __cplusplus
 }

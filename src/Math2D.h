@@ -44,18 +44,18 @@ typedef int fix_t;
 extern "C" {
 #endif
 
-void Matrix3SetIdentity(Matrix3 *);
-void Matrix3Set(Matrix3 *, const math2d_t *);
-void Matrix3Add(Matrix3 *, const Matrix3 *);
-void Matrix3Multiply(Matrix3 *, const Matrix3 *);
+void Matrix3SetIdentity(Matrix3 * /*matrix*/);
+void Matrix3Set(Matrix3 * /*matrix*/, const math2d_t * /*data*/);
+void Matrix3Add(Matrix3 * /*matrix*/, const Matrix3 * /*add*/);
+void Matrix3Multiply(Matrix3 * /*matrix*/, const Matrix3 * /*mul*/);
 void Matrix3SetRotation(Matrix3 *matrix, math2d_t angle);
 void Matrix3SetRotationSC(Matrix3 *matrix, math2d_t c, math2d_t s);
 void Matrix3SetTranslation(Matrix3 *matrix, math2d_t x, math2d_t y);
 void Matrix3SetScale(Matrix3 *matrix, math2d_t sx, math2d_t sy);
 
-void Point2DSet(Point2D *, math2d_t, math2d_t);
-void Point2DAdd(Point2D *, const Point2D *);
-void Point2DMultiply(Point2D *, const Matrix3 *);
+void Point2DSet(Point2D * /*point*/, math2d_t /*x*/, math2d_t /*y*/);
+void Point2DAdd(Point2D * /*point*/, const Point2D * /*add*/);
+void Point2DMultiply(Point2D * /*point*/, const Matrix3 * /*matrix*/);
 
 #if defined _MSC_VER && _MSC_VER < 1900
 int roundf(float fvalue);

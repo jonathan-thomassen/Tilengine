@@ -48,29 +48,29 @@
  */
 TLN_Sequence TLN_CreateSequence(const char *name, int target, int count,
                                 TLN_SequenceFrame const *frames) {
-  size_t size;
-  TLN_Sequence sequence;
-  TLN_SequenceFrame *frame;
+    size_t size;
+    TLN_Sequence sequence;
+    TLN_SequenceFrame *frame;
 
-  size = count * sizeof(TLN_SequenceFrame);
-  sequence = (TLN_Sequence)CreateBaseObject(OT_SEQUENCE,
-                                            sizeof(struct Sequence) + size);
-  if (!sequence)
-    return NULL;
+    size = count * sizeof(TLN_SequenceFrame);
+    sequence = (TLN_Sequence)CreateBaseObject(OT_SEQUENCE, sizeof(struct Sequence) + size);
+    if (!sequence) {
+        return NULL;
+    }
 
-  if (name) {
-    sequence->hash = _crc32(0, name, strlen(name));
-    strncpy(sequence->name, name, sizeof(sequence->name));
-    sequence->name[sizeof(sequence->name) - 1] = '\0';
-  }
-  sequence->target = target;
-  sequence->count = count;
+    if (name) {
+        sequence->hash = crc32(0, name, strlen(name));
+        strncpy(sequence->name, name, sizeof(sequence->name));
+        sequence->name[sizeof(sequence->name) - 1] = '\0';
+    }
+    sequence->target = target;
+    sequence->count = count;
 
-  frame = (TLN_SequenceFrame *)&sequence->data;
-  memcpy(frame, frames, sizeof(TLN_SequenceFrame) * count);
+    frame = (TLN_SequenceFrame *)&sequence->data;
+    memcpy(frame, frames, sizeof(TLN_SequenceFrame) * count);
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return sequence;
+    TLN_SetLastError(TLN_ERR_OK);
+    return sequence;
 }
 
 /*!
@@ -95,39 +95,38 @@ TLN_Sequence TLN_CreateSequence(const char *name, int target, int count,
  * \see
  * TLN_ColorStrip(), TLN_SetPaletteAnimation()
  */
-TLN_Sequence TLN_CreateCycle(const char *name, int count,
-                             TLN_ColorStrip const *strips) {
-  size_t size;
-  TLN_Sequence sequence;
-  TLN_ColorStrip const *srcstrip;
-  struct Strip *dststrip;
+TLN_Sequence TLN_CreateCycle(const char *name, int count, TLN_ColorStrip const *strips) {
+    size_t size;
+    TLN_Sequence sequence;
+    TLN_ColorStrip const *srcstrip;
+    struct Strip *dststrip;
 
-  size = count * sizeof(struct Strip);
-  sequence = (TLN_Sequence)CreateBaseObject(OT_SEQUENCE,
-                                            sizeof(struct Sequence) + size);
-  if (!sequence)
-    return NULL;
+    size = count * sizeof(struct Strip);
+    sequence = (TLN_Sequence)CreateBaseObject(OT_SEQUENCE, sizeof(struct Sequence) + size);
+    if (!sequence) {
+        return NULL;
+    }
 
-  if (name) {
-    sequence->hash = _crc32(0, name, strlen(name));
-    strncpy(sequence->name, name, sizeof(sequence->name));
-    sequence->name[sizeof(sequence->name) - 1] = '\0';
-  }
+    if (name) {
+        sequence->hash = crc32(0, name, strlen(name));
+        strncpy(sequence->name, name, sizeof(sequence->name));
+        sequence->name[sizeof(sequence->name) - 1] = '\0';
+    }
 
-  sequence->count = count;
-  srcstrip = strips;
-  dststrip = (struct Strip *)&sequence->data;
-  for (int c = 0; c < count; c++) {
-    dststrip->delay = srcstrip->delay;
-    dststrip->first = srcstrip->first;
-    dststrip->count = srcstrip->count;
-    dststrip->dir = srcstrip->dir;
-    srcstrip++;
-    dststrip++;
-  }
+    sequence->count = count;
+    srcstrip = strips;
+    dststrip = (struct Strip *)&sequence->data;
+    for (int c = 0; c < count; c++) {
+        dststrip->delay = srcstrip->delay;
+        dststrip->first = srcstrip->first;
+        dststrip->count = srcstrip->count;
+        dststrip->dir = srcstrip->dir;
+        srcstrip++;
+        dststrip++;
+    }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return sequence;
+    TLN_SetLastError(TLN_ERR_OK);
+    return sequence;
 }
 
 /*!
@@ -144,56 +143,57 @@ TLN_Sequence TLN_CreateCycle(const char *name, int count,
  */
 TLN_Sequence TLN_CreateSpriteSequence(const char *name, TLN_Spriteset spriteset,
                                       const char *basename, int delay) {
-  size_t size;
-  TLN_Sequence sequence;
-  TLN_SequenceFrame *frame;
-  int count = 0;
-  int index;
-  char framename[64];
+    size_t size;
+    TLN_Sequence sequence;
+    TLN_SequenceFrame *frame;
+    int count = 0;
+    int index;
+    char framename[64];
 
-  if (!CheckBaseObject(spriteset, OT_SPRITESET)) {
-    TLN_SetLastError(TLN_ERR_REF_SPRITESET);
-    return NULL;
-  }
+    if (!CheckBaseObject(spriteset, OT_SPRITESET)) {
+        TLN_SetLastError(TLN_ERR_REF_SPRITESET);
+        return NULL;
+    }
 
-  /* find number of frames */
-  do {
-    snprintf(framename, sizeof(framename), "%s%d", basename, count + 1);
-    index = TLN_FindSpritesetSprite(spriteset, framename);
-    if (index != -1)
-      count += 1;
-  } while (index != -1);
+    /* find number of frames */
+    do {
+        snprintf(framename, sizeof(framename), "%s%d", basename, count + 1);
+        index = TLN_FindSpritesetSprite(spriteset, framename);
+        if (index != -1) {
+            count += 1;
+        }
+    } while (index != -1);
 
-  /* noi matching frames found: exit */
-  if (count == 0) {
-    TLN_SetLastError(TLN_ERR_REF_SPRITESET);
-    return NULL;
-  }
+    /* noi matching frames found: exit */
+    if (count == 0) {
+        TLN_SetLastError(TLN_ERR_REF_SPRITESET);
+        return NULL;
+    }
 
-  size = count * sizeof(TLN_SequenceFrame);
-  sequence = (TLN_Sequence)CreateBaseObject(OT_SEQUENCE,
-                                            sizeof(struct Sequence) + size);
-  if (!sequence)
-    return NULL;
+    size = count * sizeof(TLN_SequenceFrame);
+    sequence = (TLN_Sequence)CreateBaseObject(OT_SEQUENCE, sizeof(struct Sequence) + size);
+    if (!sequence) {
+        return NULL;
+    }
 
-  if (name) {
-    sequence->hash = _crc32(0, name, strlen(name));
-    strncpy(sequence->name, name, sizeof(sequence->name));
-    sequence->name[sizeof(sequence->name) - 1] = '\0';
-  }
-  sequence->count = count;
+    if (name) {
+        sequence->hash = crc32(0, name, strlen(name));
+        strncpy(sequence->name, name, sizeof(sequence->name));
+        sequence->name[sizeof(sequence->name) - 1] = '\0';
+    }
+    sequence->count = count;
 
-  /* build frames from sprite name */
-  frame = (TLN_SequenceFrame *)&sequence->data;
-  for (int c = 0; c < count; c++) {
-    snprintf(framename, sizeof(framename), "%s%d", basename, c + 1);
-    frame->index = TLN_FindSpritesetSprite(spriteset, framename);
-    frame->delay = delay;
-    frame += 1;
-  }
+    /* build frames from sprite name */
+    frame = (TLN_SequenceFrame *)&sequence->data;
+    for (int c = 0; c < count; c++) {
+        snprintf(framename, sizeof(framename), "%s%d", basename, c + 1);
+        frame->index = TLN_FindSpritesetSprite(spriteset, framename);
+        frame->delay = delay;
+        frame += 1;
+    }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return sequence;
+    TLN_SetLastError(TLN_ERR_OK);
+    return sequence;
 }
 
 /*!
@@ -210,16 +210,17 @@ TLN_Sequence TLN_CreateSpriteSequence(const char *name, TLN_Spriteset spriteset,
  * TLN_FindSequence()
  */
 TLN_Sequence TLN_CloneSequence(TLN_Sequence src) {
-  TLN_Sequence sequence;
+    TLN_Sequence sequence;
 
-  if (!CheckBaseObject(src, OT_SEQUENCE))
-    return NULL;
+    if (!CheckBaseObject(src, OT_SEQUENCE)) {
+        return NULL;
+    }
 
-  sequence = (TLN_Sequence)CloneBaseObject(src);
-  if (sequence) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return sequence;
-  } else
+    sequence = (TLN_Sequence)CloneBaseObject(src);
+    if (sequence) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return sequence;
+    }
     return NULL;
 }
 
@@ -238,12 +239,12 @@ TLN_Sequence TLN_CloneSequence(TLN_Sequence src) {
  * TLN_FindSequence()
  */
 bool TLN_GetSequenceInfo(TLN_Sequence sequence, TLN_SequenceInfo *info) {
-  if (CheckBaseObject(sequence, OT_SEQUENCE) && info != NULL) {
-    strncpy(info->name, sequence->name, sizeof(info->name));
-    info->name[sizeof(info->name) - 1] = '\0';
-    info->num_frames = sequence->count;
-    return true;
-  } else
+    if ((int)CheckBaseObject(sequence, OT_SEQUENCE) && info != NULL) {
+        strncpy(info->name, sequence->name, sizeof(info->name));
+        info->name[sizeof(info->name) - 1] = '\0';
+        info->num_frames = sequence->count;
+        return true;
+    }
     return false;
 }
 
@@ -258,10 +259,10 @@ bool TLN_GetSequenceInfo(TLN_Sequence sequence, TLN_SequenceInfo *info) {
  * Don't delete an active sequence!
  */
 bool TLN_DeleteSequence(TLN_Sequence sequence) {
-  if (CheckBaseObject(sequence, OT_SEQUENCE)) {
-    DeleteBaseObject(sequence);
-    TLN_SetLastError(TLN_ERR_OK);
-    return true;
-  } else
+    if (CheckBaseObject(sequence, OT_SEQUENCE)) {
+        DeleteBaseObject(sequence);
+        TLN_SetLastError(TLN_ERR_OK);
+        return true;
+    }
     return false;
 }
