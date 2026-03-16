@@ -22,8 +22,8 @@
 
 #define TARGET_FPS 60
 
-#define HINGE_X 221
-#define HINGE_Y 183
+#define HINGE_X 216
+#define HINGE_Y 200
 #define DB_TRIGGER_X 768     /* world-x where drawbridge animation starts */
 #define DB_LAYER_X_OFFSET 80 /* bridge-layer x shift once drawbridge triggers */
 #define DB_LAYER_Y_OFFSET 8  /* bridge-layer y shift once drawbridge triggers */
