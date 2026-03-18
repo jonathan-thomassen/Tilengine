@@ -82,7 +82,7 @@ jobs:
             samples/Shooter.c samples/Racer.c samples/Boss.c \
             samples/Benchmark.c samples/PaletteLayer.c samples/TestMouse.c \
             sc4/Intro.c sc4/Drawbridge.c sc4/Simon.c \
-            sc4/Hud.c sc4/Prop.c sc4 \
+            sc4/Hud.c sc4/Prop.c sc4/Sandblock.c sc4/Torch.c sc4/Profiling.c \
             -p build 2>&1 | tee /tmp/clang-tidy.log; exit ${PIPESTATUS[0]}
 
       - name: Configure (Valgrind, no sanitizers)

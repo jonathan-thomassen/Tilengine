@@ -306,7 +306,7 @@ TLN_ObjectList TLN_LoadObjectList(const char *filename, const char *layername) {
 static void resolve_object_tilesets(TMXInfo *info) {
     struct Object *item;
     int gid = 0;
-    int c;
+    int idx;
 
     /* find a gid to identify the suitable tileset */
     item = loader.objects->list;
@@ -327,18 +327,18 @@ static void resolve_object_tilesets(TMXInfo *info) {
 
     /* load referenced tilesets */
     TLN_Tileset tilesets[TMX_MAX_TILESET] = {0};
-    for (c = 0; c < info->num_tilesets; c += 1) {
-        ODB("  loading tileset[%d] source='%s'", c, info->tilesets[c].source);
-        tilesets[c] = TLN_LoadTileset(info->tilesets[c].source);
-        ODB("  tileset[%d]=%p", c, (void *)tilesets[c]);
+    for (idx = 0; idx < info->num_tilesets; idx += 1) {
+        ODB("  loading tileset[%d] source='%s'", idx, info->tilesets[idx].source);
+        tilesets[idx] = TLN_LoadTileset(info->tilesets[idx].source);
+        ODB("  tileset[%d]=%p", idx, (void *)tilesets[idx]);
     }
 
     int suitable = TMXGetSuitableTileset(info, gid, tilesets);
     ODB("suitable=%d", suitable);
     if (suitable < 0 || suitable >= info->num_tilesets) {
         ODB("ERROR: suitable out of range! num_tilesets=%d", info->num_tilesets);
-        for (c = 0; c < info->num_tilesets; c += 1) {
-            TLN_DeleteTileset(tilesets[c]);
+        for (idx = 0; idx < info->num_tilesets; idx += 1) {
+            TLN_DeleteTileset(tilesets[idx]);
         }
         return;
     }
@@ -355,9 +355,9 @@ static void resolve_object_tilesets(TMXInfo *info) {
     }
 
     /* delete unused tilesets */
-    for (c = 0; c < info->num_tilesets; c += 1) {
-        if (c != suitable) {
-            TLN_DeleteTileset(tilesets[c]);
+    for (idx = 0; idx < info->num_tilesets; idx += 1) {
+        if (idx != suitable) {
+            TLN_DeleteTileset(tilesets[idx]);
         }
     }
 
