@@ -27,13 +27,13 @@ extern "C" {
 ResPack ResPack_Open(const char *filename, const char *passphrase);
 
 /* closes an opened resource pack */
-void ResPack_Close(ResPack rp);
+void ResPack_Close(ResPack respack);
 
 /* loads contents of asset to memory, returns buffer and actual size */
-void *ResPack_LoadAsset(ResPack rp, const char *filename, uint32_t *size);
+void *ResPack_LoadAsset(ResPack respack, const char *filename, uint32_t *size);
 
 /* creates a temporal file and opens it, returns asset handler */
-ResAsset ResPack_OpenAsset(ResPack rp, const char *filename);
+ResAsset ResPack_OpenAsset(ResPack respack, const char *filename);
 
 /* returns file handler of an opened asset with ResPack_OpenAsset() */
 FILE *ResPack_GetAssetFile(ResAsset asset);

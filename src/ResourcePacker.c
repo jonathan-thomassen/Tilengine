@@ -47,7 +47,7 @@ struct ResPack {
     uint32_t key[60];     /* scheduled AES key*/
     uint32_t num_entries; /* number of assets */
     bool encrypted;       /* true if pack is encrypted */
-    ResEntry entries[0];  /* array of ResEntry fields */
+    ResEntry entries[];   /* array of ResEntry fields */
 };
 
 /* private opened asset memory handler */
@@ -78,19 +78,19 @@ static uint32_t path2_crc32(const char *filename) {
 }
 
 /* finds given entry inside a resource pack */
-static ResEntry *find_entry(ResPack rp, const char *filename) {
+static ResEntry *find_entry(ResPack respack, const char *filename) {
     uint32_t id;
 
     /* validate params */
-    if (rp == NULL || filename == NULL) {
+    if (respack == NULL || filename == NULL) {
         return NULL;
     }
 
     /* find entry */
     id = path2_crc32(filename);
-    for (uint32_t c = 0; c < rp->num_entries; c++) {
-        if (rp->entries[c].id == id) {
-            return &rp->entries[c];
+    for (uint32_t c = 0; c < respack->num_entries; c++) {
+        if (respack->entries[c].id == id) {
+            return &respack->entries[c];
         }
     }
     return NULL;
@@ -104,7 +104,7 @@ static void aes_decrypt_cbc(const uint8_t *in, size_t in_len, uint8_t *out, cons
     memcpy(prev, init_vec, AES_BLOCK_SIZE);
     for (size_t i = 0; i + AES_BLOCK_SIZE <= in_len; i += AES_BLOCK_SIZE) {
         aes_decrypt(in + i, temp, key, keysize);
-        for (int j = 0; j < AES_BLOCK_SIZE; j++) {
+        for (size_t j = 0; j < AES_BLOCK_SIZE; j++) {
             out[i + j] = temp[j] ^ prev[j];
         }
         memcpy(prev, in + i, AES_BLOCK_SIZE);
@@ -112,21 +112,21 @@ static void aes_decrypt_cbc(const uint8_t *in, size_t in_len, uint8_t *out, cons
 }
 
 /* loads given asset to memory buffer */
-static void *load_asset(ResPack rp, ResEntry const *entry) {
+static void *load_asset(ResPack respack, ResEntry const *entry) {
     uint32_t crc;
     uint8_t *buffer = (uint8_t *)malloc(entry->data_size + 1);
     if (buffer == NULL) {
         return NULL;
     }
 
-    fseek(rp->pf, (long)entry->offset, SEEK_SET);
-    if (rp->encrypted) {
+    fseek(respack->pf, (long)entry->offset, SEEK_SET);
+    if (respack->encrypted) {
         void *cyphertext = malloc(entry->pack_size);
         void *plaintext = malloc(entry->pack_size);
         if (cyphertext != NULL && plaintext != NULL) {
-            fread(cyphertext, entry->pack_size, 1, rp->pf);
-            aes_decrypt_cbc((uint8_t *)cyphertext, entry->pack_size, (uint8_t *)plaintext, rp->key,
-                            KEY_SIZE, iv);
+            fread(cyphertext, entry->pack_size, 1, respack->pf);
+            aes_decrypt_cbc((uint8_t *)cyphertext, entry->pack_size, (uint8_t *)plaintext,
+                            respack->key, KEY_SIZE, iv);
             memcpy(buffer, plaintext, entry->data_size);
         }
         if (plaintext != NULL) {
@@ -136,7 +136,7 @@ static void *load_asset(ResPack rp, ResEntry const *entry) {
             free(cyphertext);
         }
     } else {
-        fread(buffer, entry->data_size, 1, rp->pf);
+        fread(buffer, entry->data_size, 1, respack->pf);
     }
 
     /* validate integrity */
@@ -163,7 +163,7 @@ static void build_key(const char *passphrase, uint32_t *key) {
 
 /* opens a resource pack */
 ResPack ResPack_Open(const char *filename, const char *passphrase) {
-    ResPack rp = NULL;
+    ResPack respack = NULL;
     ResHeader res_header;
     FILE *pf;
     uint32_t size;
@@ -183,49 +183,49 @@ ResPack ResPack_Open(const char *filename, const char *passphrase) {
 
     /* create object */
     size = sizeof(struct ResPack) + (sizeof(ResEntry) * res_header.num_regs);
-    rp = (ResPack)calloc(size, 1);
-    if (rp == NULL) {
+    respack = (ResPack)calloc(size, 1);
+    if (respack == NULL) {
         fclose(pf);
         return NULL;
     }
 
-    rp->num_entries = res_header.num_regs;
-    rp->pf = pf;
+    respack->num_entries = res_header.num_regs;
+    respack->pf = pf;
 
     /* prepare AES-128 key*/
     if (passphrase != NULL) {
-        build_key(passphrase, rp->key);
-        rp->encrypted = true;
+        build_key(passphrase, respack->key);
+        respack->encrypted = true;
     }
 
     /* load index */
-    fread(rp->entries, sizeof(ResEntry), rp->num_entries, pf);
-    return rp;
+    fread(respack->entries, sizeof(ResEntry), respack->num_entries, pf);
+    return respack;
 }
 
 /* closes an opened resource pack */
-void ResPack_Close(ResPack rp) {
-    if (rp != NULL) {
-        if (rp->pf != NULL) {
-            fclose(rp->pf);
+void ResPack_Close(ResPack respack) {
+    if (respack != NULL) {
+        if (respack->pf != NULL) {
+            fclose(respack->pf);
         }
-        free(rp);
+        free(respack);
     }
 }
 
 /* loads contents of asset to memory, returns actual size*/
-void *ResPack_LoadAsset(ResPack rp, const char *filename, uint32_t *size) {
+void *ResPack_LoadAsset(ResPack respack, const char *filename, uint32_t *size) {
     void *asset;
     ResEntry const *entry = NULL;
 
     /* validate & find */
-    entry = find_entry(rp, filename);
+    entry = find_entry(respack, filename);
     if (entry == NULL) {
         return NULL;
     }
 
     /* load */
-    asset = load_asset(rp, entry);
+    asset = load_asset(respack, entry);
     if (size != NULL) {
         *size = entry->data_size;
     }
@@ -234,18 +234,18 @@ void *ResPack_LoadAsset(ResPack rp, const char *filename, uint32_t *size) {
 }
 
 /* creates a temporal file and opens it */
-ResAsset ResPack_OpenAsset(ResPack rp, const char *filename) {
+ResAsset ResPack_OpenAsset(ResPack respack, const char *filename) {
     ResEntry const *entry = NULL;
     ResAsset asset;
     void const *content;
 
     /* validate & find */
-    entry = find_entry(rp, filename);
+    entry = find_entry(respack, filename);
     if (entry == NULL) {
         return NULL;
     }
 
-    content = load_asset(rp, entry);
+    content = load_asset(respack, entry);
     if (content == NULL) {
         return NULL;
     }

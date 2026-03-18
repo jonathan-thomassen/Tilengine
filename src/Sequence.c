@@ -52,7 +52,7 @@ TLN_Sequence TLN_CreateSequence(const char *name, int target, int count,
     TLN_Sequence sequence;
     TLN_SequenceFrame *frame;
 
-    size = count * sizeof(TLN_SequenceFrame);
+    size = (size_t)count * sizeof(TLN_SequenceFrame);
     sequence = (TLN_Sequence)CreateBaseObject(OT_SEQUENCE, sizeof(struct Sequence) + size);
     if (!sequence) {
         return NULL;
@@ -67,7 +67,7 @@ TLN_Sequence TLN_CreateSequence(const char *name, int target, int count,
     sequence->count = count;
 
     frame = (TLN_SequenceFrame *)&sequence->data;
-    memcpy(frame, frames, sizeof(TLN_SequenceFrame) * count);
+    memcpy(frame, frames, (size_t)count * sizeof(TLN_SequenceFrame));
 
     TLN_SetLastError(TLN_ERR_OK);
     return sequence;
@@ -101,7 +101,7 @@ TLN_Sequence TLN_CreateCycle(const char *name, int count, TLN_ColorStrip const *
     TLN_ColorStrip const *srcstrip;
     struct Strip *dststrip;
 
-    size = count * sizeof(struct Strip);
+    size = (size_t)count * sizeof(struct Strip);
     sequence = (TLN_Sequence)CreateBaseObject(OT_SEQUENCE, sizeof(struct Sequence) + size);
     if (!sequence) {
         return NULL;
@@ -170,7 +170,7 @@ TLN_Sequence TLN_CreateSpriteSequence(const char *name, TLN_Spriteset spriteset,
         return NULL;
     }
 
-    size = count * sizeof(TLN_SequenceFrame);
+    size = (size_t)count * sizeof(TLN_SequenceFrame);
     sequence = (TLN_Sequence)CreateBaseObject(OT_SEQUENCE, sizeof(struct Sequence) + size);
     if (!sequence) {
         return NULL;

@@ -27,8 +27,8 @@ typedef union {
 /* palette object */
 struct Palette {
     DEFINE_OBJECT;
-    int entries;      /* number of colors */
-    uint32_t data[0]; /* variable size Color array */
+    int entries;     /* number of colors */
+    uint32_t data[]; /* variable size Color array */
 };
 
 /* returns pointer to specified index color definition */

@@ -143,10 +143,9 @@ uint8_t *TLN_GetPaletteData(TLN_Palette palette, int index) {
     if (index >= palette->entries) {
         TLN_SetLastError(TLN_ERR_IDX_PICTURE);
         return NULL;
-    } else {
-        TLN_SetLastError(TLN_ERR_OK);
-        return (uint8_t *)GetPaletteData(palette, index);
     }
+    TLN_SetLastError(TLN_ERR_OK);
+    return (uint8_t *)GetPaletteData(palette, index);
 }
 
 /*!

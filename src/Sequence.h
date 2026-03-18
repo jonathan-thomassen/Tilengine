@@ -32,7 +32,7 @@ struct Sequence {
     int target;
     char name[32];
     struct Sequence *next;
-    uint8_t data[0]; /* array de Frame o Strip */
+    uint8_t data[]; /* array de Frame o Strip */
 };
 
 #endif
