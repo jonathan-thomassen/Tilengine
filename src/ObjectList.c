@@ -124,7 +124,7 @@ static void handle_finish_tag(const char *szName) {
 }
 
 /* XML parser callback */
-static void *handler(SimpleXmlParser parser [[maybe_unused]], SimpleXmlEvent evt,
+static void *handler([[maybe_unused]] SimpleXmlParser parser, SimpleXmlEvent evt,
                      const char *szName, const char *szAttribute, const char *szValue) {
     ODB("handler evt=%d szName=%s szAttr=%s szVal=%s", evt, szName ? szName : "(null)",
         szAttribute ? szAttribute : "(null)", szValue ? szValue : "(null)");
