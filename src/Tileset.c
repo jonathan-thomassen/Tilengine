@@ -48,68 +48,70 @@ static bool HasTransparentPixels(uint8_t const *src, int width);
  * \see
  * TLN_SetTilesetPixels()
  */
-TLN_Tileset TLN_CreateTileset(int numtiles, int width, int height,
-                              TLN_Palette palette, TLN_SequencePack sp,
-                              TLN_TileAttributes const *attributes) {
-  TLN_Tileset tileset;
-  int hshift = 0;
-  int vshift = 0;
-  int c;
-  size_t size;
-  size_t size_tiles;
+TLN_Tileset TLN_CreateTileset(int numtiles, int width, int height, TLN_Palette palette,
+                              TLN_SequencePack sp, TLN_TileAttributes const *attributes) {
+    TLN_Tileset tileset;
+    int hshift = 0;
+    int vshift = 0;
+    int c;
+    size_t size;
+    size_t size_tiles;
 
-  /* validate parameters */
-  if (numtiles <= 0) {
-    TLN_SetLastError(TLN_ERR_WRONG_SIZE);
-    return NULL;
-  }
+    /* validate parameters */
+    if (numtiles <= 0) {
+        TLN_SetLastError(TLN_ERR_WRONG_SIZE);
+        return NULL;
+    }
 
-  for (c = 0; c <= 8; c++) {
-    int mask = 1 << c;
-    if (mask == width)
-      hshift = c;
-    if (mask == height)
-      vshift = c;
-  }
-  if (!hshift || !vshift) {
-    TLN_SetLastError(TLN_ERR_WRONG_SIZE);
-    return NULL;
-  }
+    for (c = 0; c <= 8; c++) {
+        int mask = 1 << c;
+        if (mask == width) {
+            hshift = c;
+}
+        if (mask == height) {
+            vshift = c;
+}
+    }
+    if (!hshift || !vshift) {
+        TLN_SetLastError(TLN_ERR_WRONG_SIZE);
+        return NULL;
+    }
 
-  size_tiles = (size_t)width * (size_t)height * (size_t)numtiles;
-  size = sizeof(struct Tileset) + size_tiles;
-  tileset = (TLN_Tileset)CreateBaseObject(OT_TILESET, size);
-  if (!tileset) {
-    TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
-    return NULL;
-  }
+    size_tiles = (size_t)width * (size_t)height * (size_t)numtiles;
+    size = sizeof(struct Tileset) + size_tiles;
+    tileset = (TLN_Tileset)CreateBaseObject(OT_TILESET, size);
+    if (!tileset) {
+        TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
+        return NULL;
+    }
 
-  tileset->tstype = TILESET_TILES;
-  tileset->width = width;
-  tileset->height = height;
-  tileset->hshift = hshift;
-  tileset->vshift = vshift;
-  tileset->numtiles = numtiles;
-  tileset->palette = palette;
-  tileset->sp = sp;
-  tileset->color_key = (bool *)calloc(numtiles, height);
-  tileset->attributes =
-      (TLN_TileAttributes *)calloc(numtiles, sizeof(TLN_TileAttributes));
-  if (attributes != NULL)
-    memcpy(tileset->attributes, attributes,
-           numtiles * sizeof(TLN_TileAttributes));
-  /* Allocate numtiles+1 so that the maximum valid tile->index (numtiles,
-   * assigned as GID - firstgid + 1) is always in-bounds. */
-  tileset->tiles = (uint16_t *)calloc(numtiles + 1, sizeof(uint16_t));
-  for (c = 0; c <= numtiles; c += 1) tileset->tiles[c] = (uint16_t)c;
+    tileset->tstype = TILESET_TILES;
+    tileset->width = width;
+    tileset->height = height;
+    tileset->hshift = hshift;
+    tileset->vshift = vshift;
+    tileset->numtiles = numtiles;
+    tileset->palette = palette;
+    tileset->sp = sp;
+    tileset->color_key = (bool *)calloc(numtiles, height);
+    tileset->attributes = (TLN_TileAttributes *)calloc(numtiles, sizeof(TLN_TileAttributes));
+    if (attributes != NULL) {
+        memcpy(tileset->attributes, attributes, numtiles * sizeof(TLN_TileAttributes));
+}
+    /* Allocate numtiles+1 so that the maximum valid tile->index (numtiles,
+     * assigned as GID - firstgid + 1) is always in-bounds. */
+    tileset->tiles = (uint16_t *)calloc(numtiles + 1, sizeof(uint16_t));
+    for (c = 0; c <= numtiles; c += 1) {
+        tileset->tiles[c] = (uint16_t)c;
+}
 
-  /* create animations */
-  if (sp != NULL && sp->num_sequences > 0)
-    tileset->animations =
-        (Animation *)calloc(sp->num_sequences, sizeof(Animation));
+    /* create animations */
+    if (sp != NULL && sp->num_sequences > 0) {
+        tileset->animations = (Animation *)calloc(sp->num_sequences, sizeof(Animation));
+}
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return tileset;
+    TLN_SetLastError(TLN_ERR_OK);
+    return tileset;
 }
 
 /*!
@@ -127,21 +129,21 @@ TLN_Tileset TLN_CreateTileset(int numtiles, int width, int height,
  */
 
 TLN_Tileset TLN_CreateImageTileset(int numtiles, TLN_TileImage const *images) {
-  TLN_Tileset tileset;
-  const size_t images_size = (size_t)numtiles * sizeof(TLN_TileImage);
-  const size_t size = sizeof(struct Tileset) + images_size;
+    TLN_Tileset tileset;
+    const size_t images_size = (size_t)numtiles * sizeof(TLN_TileImage);
+    const size_t size = sizeof(struct Tileset) + images_size;
 
-  tileset = (TLN_Tileset)CreateBaseObject(OT_TILESET, size);
-  if (tileset == NULL) {
-    TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
-    return NULL;
-  }
+    tileset = (TLN_Tileset)CreateBaseObject(OT_TILESET, size);
+    if (tileset == NULL) {
+        TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
+        return NULL;
+    }
 
-  tileset->tstype = TILESET_IMAGES;
-  tileset->numtiles = numtiles;
-  tileset->images = (TLN_TileImage *)tileset->data;
-  memcpy(tileset->images, images, images_size);
-  return tileset;
+    tileset->tstype = TILESET_IMAGES;
+    tileset->numtiles = numtiles;
+    tileset->images = (TLN_TileImage *)tileset->data;
+    memcpy(tileset->images, images, images_size);
+    return tileset;
 }
 
 /*!
@@ -170,31 +172,30 @@ TLN_Tileset TLN_CreateImageTileset(int numtiles, TLN_TileImage const *images) {
  * \see
  * TLN_CreateTileset()
  */
-bool TLN_SetTilesetPixels(TLN_Tileset tileset, int entry,
-                          uint8_t const *srcdata, int srcpitch) {
-  int line;
-  uint8_t *dstdata;
+bool TLN_SetTilesetPixels(TLN_Tileset tileset, int entry, uint8_t const *srcdata, int srcpitch) {
+    int line;
+    uint8_t *dstdata;
 
-  if (!CheckBaseObject(tileset, OT_TILESET))
-    return false;
+    if (!CheckBaseObject(tileset, OT_TILESET)) {
+        return false;
+}
 
-  if (tileset->tstype != TILESET_TILES || entry > tileset->numtiles) {
-    TLN_SetLastError(TLN_ERR_IDX_PICTURE);
-    return false;
-  }
+    if (tileset->tstype != TILESET_TILES || entry > tileset->numtiles) {
+        TLN_SetLastError(TLN_ERR_IDX_PICTURE);
+        return false;
+    }
 
-  line = entry * tileset->height;
-  dstdata =
-      tileset->data + ((ptrdiff_t)entry * tileset->width * tileset->height);
-  for (int c = 0; c < tileset->height; c++) {
-    memcpy(dstdata, srcdata, tileset->width);
-    tileset->color_key[line++] = HasTransparentPixels(srcdata, tileset->width);
-    srcdata += srcpitch;
-    dstdata += tileset->width;
-  }
+    line = entry * tileset->height;
+    dstdata = tileset->data + ((ptrdiff_t)entry * tileset->width * tileset->height);
+    for (int c = 0; c < tileset->height; c++) {
+        memcpy(dstdata, srcdata, tileset->width);
+        tileset->color_key[line++] = HasTransparentPixels(srcdata, tileset->width);
+        srcdata += srcpitch;
+        dstdata += tileset->width;
+    }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -211,35 +212,36 @@ bool TLN_SetTilesetPixels(TLN_Tileset tileset, int entry,
  * TLN_LoadTileset()
  */
 TLN_Tileset TLN_CloneTileset(TLN_Tileset src) {
-  TLN_Tileset tileset;
+    TLN_Tileset tileset;
 
-  if (!CheckBaseObject(src, OT_TILESET))
-    return NULL;
+    if (!CheckBaseObject(src, OT_TILESET)) {
+        return NULL;
+}
 
-  tileset = (TLN_Tileset)CloneBaseObject(src);
-  if (tileset == NULL)
-    return NULL;
+    tileset = (TLN_Tileset)CloneBaseObject(src);
+    if (tileset == NULL) {
+        return NULL;
+}
 
-  const int size_tiles = (src->numtiles + 1) * (int)sizeof(uint16_t);
-  const int size_color = src->numtiles * src->height;
-  const int size_attributes = src->numtiles * (int)sizeof(TLN_TileAttributes);
+    const int size_tiles = (src->numtiles + 1) * (int)sizeof(uint16_t);
+    const int size_color = src->numtiles * src->height;
+    const int size_attributes = src->numtiles * (int)sizeof(TLN_TileAttributes);
 
-  tileset->tiles = (uint16_t *)malloc(size_tiles);
-  tileset->color_key = (bool *)malloc(size_color);
-  tileset->attributes = (TLN_TileAttributes *)malloc(size_attributes);
+    tileset->tiles = (uint16_t *)malloc(size_tiles);
+    tileset->color_key = (bool *)malloc(size_color);
+    tileset->attributes = (TLN_TileAttributes *)malloc(size_attributes);
 
-  if (tileset->tiles == NULL || tileset->color_key == NULL ||
-      tileset->attributes == NULL) {
-    TLN_DeleteTileset(tileset);
-    TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
-    return NULL;
-  }
+    if (tileset->tiles == NULL || tileset->color_key == NULL || tileset->attributes == NULL) {
+        TLN_DeleteTileset(tileset);
+        TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
+        return NULL;
+    }
 
-  memcpy(tileset->tiles, src->tiles, size_tiles);
-  memcpy(tileset->color_key, src->color_key, size_color);
-  memcpy(tileset->attributes, src->attributes, size_attributes);
-  TLN_SetLastError(TLN_ERR_OK);
-  return tileset;
+    memcpy(tileset->tiles, src->tiles, size_tiles);
+    memcpy(tileset->color_key, src->color_key, size_color);
+    memcpy(tileset->attributes, src->attributes, size_attributes);
+    TLN_SetLastError(TLN_ERR_OK);
+    return tileset;
 }
 
 /*!
@@ -256,16 +258,17 @@ TLN_Tileset TLN_CloneTileset(TLN_Tileset src) {
  * TLN_LoadTileset(), TLN_CloneTileset()
  */
 bool TLN_DeleteTileset(TLN_Tileset tileset) {
-  if (!CheckBaseObject(tileset, OT_TILESET))
-    return false;
+    if (!CheckBaseObject(tileset, OT_TILESET)) {
+        return false;
+}
 
-  free(tileset->tiles);
-  free(tileset->color_key);
-  free(tileset->attributes);
-  free(tileset->animations);
-  DeleteBaseObject(tileset);
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    free(tileset->tiles);
+    free(tileset->color_key);
+    free(tileset->attributes);
+    free(tileset->animations);
+    DeleteBaseObject(tileset);
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -279,11 +282,11 @@ bool TLN_DeleteTileset(TLN_Tileset tileset) {
  * TLN_GetTileHeight()
  */
 int TLN_GetTileWidth(TLN_Tileset tileset) {
-  if (CheckBaseObject(tileset, OT_TILESET)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return tileset->width;
-  } else
-    return 0;
+    if (CheckBaseObject(tileset, OT_TILESET)) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return tileset->width;
+    } 
+        return 0;
 }
 
 /*!
@@ -297,11 +300,11 @@ int TLN_GetTileWidth(TLN_Tileset tileset) {
  * TLN_GetTileWidth()
  */
 int TLN_GetTileHeight(TLN_Tileset tileset) {
-  if (CheckBaseObject(tileset, OT_TILESET)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return tileset->height;
-  } else
-    return 0;
+    if (CheckBaseObject(tileset, OT_TILESET)) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return tileset->height;
+    } 
+        return 0;
 }
 
 /*!
@@ -312,11 +315,11 @@ int TLN_GetTileHeight(TLN_Tileset tileset) {
  * Reference to the tileset to get info from
  */
 int TLN_GetTilesetNumTiles(TLN_Tileset tileset) {
-  if (CheckBaseObject(tileset, OT_TILESET)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return tileset->numtiles;
-  } else
-    return 0;
+    if (CheckBaseObject(tileset, OT_TILESET)) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return tileset->numtiles;
+    } 
+        return 0;
 }
 
 /*!
@@ -336,11 +339,11 @@ int TLN_GetTilesetNumTiles(TLN_Tileset tileset) {
  * TLN_LoadTileset(), TLN_SetLayerPalette()
  */
 TLN_Palette TLN_GetTilesetPalette(TLN_Tileset tileset) {
-  if (CheckBaseObject(tileset, OT_TILESET)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return tileset->palette;
-  } else
-    return NULL;
+    if (CheckBaseObject(tileset, OT_TILESET)) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return tileset->palette;
+    } 
+        return NULL;
 }
 
 /*!
@@ -355,33 +358,35 @@ TLN_Palette TLN_GetTilesetPalette(TLN_Tileset tileset) {
  * TLN_LoadTileset(), TLN_CreateTileset()
  */
 TLN_SequencePack TLN_GetTilesetSequencePack(TLN_Tileset tileset) {
-  if (CheckBaseObject(tileset, OT_TILESET)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return tileset->sp;
-  } else
-    return NULL;
+    if (CheckBaseObject(tileset, OT_TILESET)) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return tileset->sp;
+    } 
+        return NULL;
 }
 
 /* for image-based tilesets: returns bitmap with matching tileid */
 TLN_Bitmap GetTilesetBitmap(TLN_Tileset tileset, int tileid) {
-  if (!CheckBaseObject(tileset, OT_TILESET) ||
-      tileset->tstype != TILESET_IMAGES)
-    return NULL;
+    if (!CheckBaseObject(tileset, OT_TILESET) || tileset->tstype != TILESET_IMAGES) {
+        return NULL;
+}
 
-  for (int c = 0; c < tileset->numtiles; c += 1) {
-    if (tileset->images[c].id == tileid)
-      return tileset->images[c].bitmap;
-  }
-  return NULL;
+    for (int c = 0; c < tileset->numtiles; c += 1) {
+        if (tileset->images[c].id == tileid) {
+            return tileset->images[c].bitmap;
+}
+    }
+    return NULL;
 }
 
 /* returns whether the scanline uses a color key */
 static bool HasTransparentPixels(uint8_t const *src, int width) {
-  register uint8_t const *end = src + width;
-  do {
-    if (*src++ == 0)
-      return true;
-  } while (src < end);
+    register uint8_t const *end = src + width;
+    do {
+        if (*src++ == 0) {
+            return true;
+}
+    } while (src < end);
 
-  return false;
+    return false;
 }

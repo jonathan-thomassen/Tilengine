@@ -36,7 +36,7 @@ static SDL_FRect dstrect;
 
 static bool init;
 static bool done;
-#if defined WIN32
+#ifdef WIN32
 static bool timer_period_active = false;
 #endif
 static int wnd_width;
@@ -106,17 +106,18 @@ static void initialize_joystick(void);
 static void calibrate_timing(WindowFlags flags);
 
 #ifndef _MSC_VER
-extern char *strdup(const char *s);
+
 #endif
 
 static void SetupBackBuffer(void) {
     /* create framebuffer texture */
-    if (backbuffer != NULL)
+    if (backbuffer != NULL) {
         SDL_DestroyTexture(backbuffer);
+    }
     backbuffer = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
                                    wnd_params.width, wnd_params.height);
     SDL_SetTextureScaleMode(backbuffer,
-                            crt_params.enable ? SDL_SCALEMODE_LINEAR : SDL_SCALEMODE_NEAREST);
+                            (int)crt_params.enable ? SDL_SCALEMODE_LINEAR : SDL_SCALEMODE_NEAREST);
 }
 
 /* calculate window dimensions based on fullscreen/windowed mode */
@@ -131,8 +132,8 @@ static void calculate_window_dimensions(const SDL_DisplayMode *mode, WindowFlags
         wnd_width = wnd_params.width * flags->factor;
         wnd_height = wnd_params.height * flags->factor;
 
-        dstrect.x = 0.0f;
-        dstrect.y = 0.0f;
+        dstrect.x = 0.0F;
+        dstrect.y = 0.0F;
         dstrect.w = (float)wnd_width;
         dstrect.h = (float)wnd_height;
         wnd_params.flags = flags->value;
@@ -186,10 +187,11 @@ static void initialize_joystick(void) {
 
 /* calibrate timing for novsync mode */
 static void calibrate_timing(WindowFlags flags) {
-    if (!flags.novsync)
+    if (!flags.novsync) {
         return;
+    }
 
-#if defined WIN32
+#ifdef WIN32
     timeBeginPeriod(1);
 #endif
     int c;
@@ -201,7 +203,7 @@ static void calibrate_timing(WindowFlags flags) {
     }
     wnd_params.min_delay = (uint32_t)((SDL_GetTicks() - t0) / c);
 
-#if defined WIN32
+#ifdef WIN32
     timer_period_active = true;
 #endif
 
@@ -212,8 +214,9 @@ static void calibrate_timing(WindowFlags flags) {
         int target_fps = 0;
         SDL_RenderPresent(temp_renderer);
         t0 = (uint32_t)SDL_GetTicks();
-        for (c = 0; c < 20; c += 1)
+        for (c = 0; c < 20; c += 1) {
             SDL_RenderPresent(temp_renderer);
+        }
         target_fps = (c * 1000) / (int)((uint32_t)SDL_GetTicks() - t0);
         SDL_DestroyRenderer(temp_renderer);
 
@@ -241,8 +244,9 @@ static bool create_window(void) {
     calculate_window_dimensions(mode, &flags, &rflags);
 
     /* create window */
-    if (window_title == NULL)
+    if (window_title == NULL) {
         window_title = strdup("Tilengine window");
+    }
     window = SDL_CreateWindow(window_title, wnd_width, wnd_height, rflags);
     if (!window) {
         delete_window();
@@ -263,17 +267,19 @@ static bool create_window(void) {
         delete_window();
         return false;
     }
-    if (!(wnd_params.flags & CWF_NOVSYNC))
+    if (!(wnd_params.flags & CWF_NOVSYNC)) {
         SDL_SetRenderVSync(renderer, 1);
-    else
+    } else {
         SDL_SetRenderVSync(renderer, 0);
+    }
 
     /* setup backbuffer & crt effect */
     SetupBackBuffer();
     crt = CRTCreate(renderer, backbuffer, crt_params.type, wnd_width, wnd_height, crt_params.blur);
 
-    if (wnd_params.flags & CWF_FULLSCREEN)
+    if (wnd_params.flags & CWF_FULLSCREEN) {
         SDL_HideCursor();
+    }
 
     done = false;
     return true;
@@ -288,8 +294,8 @@ static void resize_window(int new_factor) {
 
     wnd_width = wnd_params.width * new_factor;
     wnd_height = wnd_params.height * new_factor;
-    dstrect.x = 0.0f;
-    dstrect.y = 0.0f;
+    dstrect.x = 0.0F;
+    dstrect.y = 0.0F;
     dstrect.w = (float)wnd_width;
     dstrect.h = (float)wnd_height;
 
@@ -301,7 +307,7 @@ static void resize_window(int new_factor) {
 
 /* destroy window delegate */
 static void delete_window(void) {
-#if defined WIN32
+#ifdef WIN32
     if (timer_period_active) {
         timeEndPeriod(1);
         timer_period_active = false;
@@ -343,23 +349,25 @@ static void delete_window(void) {
  *
  */
 void TLN_SetWindowTitle(const char *title) {
-    if (window != NULL)
+    if (window != NULL) {
         SDL_SetWindowTitle(window, title);
+    }
     if (window_title != NULL) {
         free(window_title);
         window_title = NULL;
     }
-    if (title != NULL)
+    if (title != NULL) {
         window_title = strdup(title);
+    }
 }
 
 static int WindowThread(void *data [[maybe_unused]]) {
     bool ok;
 
     ok = create_window();
-    if (ok == true)
+    if (ok) {
         wnd_params.retval = 1;
-    else {
+    } else {
         wnd_params.retval = 2;
         return 0;
     }
@@ -410,8 +418,9 @@ bool TLN_CreateWindow(int flags) {
         return true;
     }
 
-    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK))
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK)) {
         return false;
+    }
 
     /* fill parameters for window creation */
     wnd_params.width = TLN_GetWidth();
@@ -420,8 +429,9 @@ bool TLN_CreateWindow(int flags) {
 
     crt_params.enable = (wnd_params.flags & CWF_NEAREST) == 0;
     ok = create_window();
-    if (ok)
+    if (ok) {
         instances++;
+    }
     return ok;
 }
 
@@ -458,8 +468,9 @@ bool TLN_CreateWindowThread(int flags) {
         return true;
     }
 
-    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK))
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK)) {
         return false;
+    }
 
     /* fill parameters for window creation */
     wnd_params.retval = 0;
@@ -473,13 +484,11 @@ bool TLN_CreateWindowThread(int flags) {
 
     /* init thread & wait window creation result */
     thread = SDL_CreateThread(WindowThread, "WindowThread", &wnd_params);
-    while (wnd_params.retval == 0)
+    while (wnd_params.retval == 0) {
         SDL_Delay(10);
+    }
 
-    if (wnd_params.retval == 1)
-        return true;
-    else
-        return false;
+    return wnd_params.retval == 1;
 }
 
 /*!
@@ -492,11 +501,13 @@ bool TLN_CreateWindowThread(int flags) {
  */
 void TLN_DeleteWindow(void) {
     /* single instance, delete when reach 0 */
-    if (!instances)
+    if (!instances) {
         return;
+    }
     instances--;
-    if (instances)
+    if (instances) {
         return;
+    }
 
     delete_window();
     SDL_Quit();
@@ -521,18 +532,21 @@ static void ProcessKeycodeInput(TLN_Player player, SDL_Keycode keycode, uint8_t 
 
     /* search input */
     for (int c = INPUT_UP; c < MAX_INPUTS; c++) {
-        if (input != INPUT_NONE)
+        if (input != INPUT_NONE) {
             break;
-        if (player_input->keycodes[c] == keycode)
+        }
+        if (player_input->keycodes[c] == keycode) {
             input = (TLN_Input)c;
+        }
     }
 
     /* update */
     if (input != INPUT_NONE) {
-        if (state)
+        if (state) {
             SetInput(player, input);
-        else
+        } else {
             ClrInput(player, input);
+        }
     }
 }
 
@@ -543,18 +557,21 @@ static void ProcessJoybuttonInput(TLN_Player player, uint8_t button, uint8_t sta
 
     /* search input */
     for (int c = INPUT_BUTTON1; c < MAX_INPUTS; c++) {
-        if (input != INPUT_NONE)
+        if (input != INPUT_NONE) {
             break;
-        if (player_input->joybuttons[c] == button)
+        }
+        if (player_input->joybuttons[c] == button) {
             input = (TLN_Input)c;
+        }
     }
 
     /* update */
     if (input != INPUT_NONE) {
-        if (state)
+        if (state) {
             SetInput(player, input);
-        else
+        } else {
             ClrInput(player, input);
+        }
     }
 }
 
@@ -563,17 +580,19 @@ static void ProcessJoyaxisInput(TLN_Player player, uint8_t axis, int value) {
     if (axis == 0) {
         ClrInput(player, INPUT_LEFT);
         ClrInput(player, INPUT_RIGHT);
-        if (value > 1000)
+        if (value > 1000) {
             SetInput(player, INPUT_RIGHT);
-        else if (value < -1000)
+        } else if (value < -1000) {
             SetInput(player, INPUT_LEFT);
+        }
     } else if (axis == 1) {
         ClrInput(player, INPUT_UP);
         ClrInput(player, INPUT_DOWN);
-        if (value > 1000)
+        if (value > 1000) {
             SetInput(player, INPUT_DOWN);
-        else if (value < -1000)
+        } else if (value < -1000) {
             SetInput(player, INPUT_UP);
+        }
     }
 }
 
@@ -597,14 +616,16 @@ static void process_special_keys(SDL_Keycode key, uint16_t mod) {
             const SDL_DisplayMode *mode = SDL_GetDesktopDisplayMode(SDL_GetPrimaryDisplay());
             int new_factor = flags.factor + 1;
             if (mode && wnd_params.width * new_factor <= mode->w &&
-                wnd_params.height * new_factor <= mode->h)
+                wnd_params.height * new_factor <= mode->h) {
                 resize_window(new_factor);
+            }
         }
     } else if ((key == SDLK_MINUS || key == SDLK_KP_MINUS) && (mod & SDL_KMOD_CTRL)) {
         WindowFlags flags;
         flags.value = (uint8_t)wnd_params.flags;
-        if (!flags.fullscreen && flags.factor > 1)
+        if (!flags.fullscreen && flags.factor > 1) {
             resize_window(flags.factor - 1);
+        }
     }
 }
 
@@ -612,8 +633,9 @@ static void process_special_keys(SDL_Keycode key, uint16_t mod) {
 static void set_window_scale(int factor) {
     WindowFlags flags;
     flags.value = (uint8_t)wnd_params.flags;
-    if (factor == flags.factor)
+    if (factor == flags.factor) {
         return;
+    }
     if (flags.fullscreen) {
         flags.factor = (uint8_t)factor;
         flags.fullscreen = false;
@@ -627,8 +649,9 @@ static void set_window_scale(int factor) {
 
 /* process window scale override (Alt+1 through Alt+5) */
 static void process_window_scale(SDL_Keycode key, uint16_t mod) {
-    if (!(mod & SDL_KMOD_ALT))
+    if (!(mod & SDL_KMOD_ALT)) {
         return;
+    }
 
     for (int c = 1; c <= 5; c += 1) {
         if ((int)key == ('0' + c)) {
@@ -641,24 +664,27 @@ static void process_window_scale(SDL_Keycode key, uint16_t mod) {
 /* process keyboard input for all enabled players */
 static void process_all_players_keyinput(SDL_Keycode key, uint8_t down) {
     for (int c = PLAYER1; c < MAX_PLAYERS; c++) {
-        if (player_inputs[c].enabled)
+        if (player_inputs[c].enabled) {
             ProcessKeycodeInput((TLN_Player)c, key, down);
+        }
     }
 }
 
 /* process joystick button for all enabled players */
 static void process_all_players_joybutton(SDL_JoystickID which, uint8_t button, uint8_t down) {
     for (int c = PLAYER1; c < MAX_PLAYERS; c++) {
-        if (player_inputs[c].enabled && player_inputs[c].joystick_id == which)
+        if (player_inputs[c].enabled && player_inputs[c].joystick_id == which) {
             ProcessJoybuttonInput((TLN_Player)c, button, down);
+        }
     }
 }
 
 /* process joystick axis for all enabled players */
 static void process_all_players_joyaxis(SDL_JoystickID which, uint8_t axis, int value) {
     for (int c = PLAYER1; c < MAX_PLAYERS; c++) {
-        if (player_inputs[c].enabled && player_inputs[c].joystick_id == which)
+        if (player_inputs[c].enabled && player_inputs[c].joystick_id == which) {
             ProcessJoyaxisInput((TLN_Player)c, axis, value);
+        }
     }
 }
 
@@ -684,8 +710,9 @@ bool TLN_ProcessWindow(void) {
     SDL_JoyButtonEvent const *joybuttonevt;
     SDL_JoyAxisEvent const *joyaxisevt;
 
-    if (done)
+    if (done) {
         return false;
+    }
 
     /* dispatch message queue */
     while (SDL_PollEvent(&evt)) {
@@ -696,10 +723,10 @@ bool TLN_ProcessWindow(void) {
 
         case SDL_EVENT_KEY_DOWN:
             keybevt = (SDL_KeyboardEvent *)&evt;
-            if (keybevt->repeat == 0) {
+            if ((int)keybevt->repeat == 0) {
                 process_special_keys(keybevt->key, keybevt->mod);
                 process_window_scale(keybevt->key, keybevt->mod);
-                process_all_players_keyinput(keybevt->key, keybevt->down);
+                process_all_players_keyinput(keybevt->key, (uint8_t)keybevt->down);
             }
             break;
 
@@ -725,13 +752,15 @@ bool TLN_ProcessWindow(void) {
         }
 
         /* process user events */
-        if (sdl_callback != NULL)
+        if (sdl_callback != NULL) {
             sdl_callback(&evt);
+        }
     }
 
     /* delete */
-    if (done)
+    if (done) {
         TLN_DeleteWindow();
+    }
 
     return TLN_IsWindowActive();
 }
@@ -783,8 +812,9 @@ void TLN_EnableRFBlur(bool mode) { CRTSetBlur(crt, mode); }
  */
 
 void TLN_ConfigCRTEffect(TLN_CRT type, bool blur) {
-    if (crt != NULL)
+    if (crt != NULL) {
         CRTDelete(crt);
+    }
 
     crt_params.type = (CRTType)type;
     crt_params.blur = blur;
@@ -836,9 +866,7 @@ void TLN_DisableCRTEffect(void) {
 bool TLN_GetInput(TLN_Input input) {
     const TLN_Player player = (TLN_Player)(input >> 5);
     const uint32_t mask = (player_inputs[player].inputs & (1 << (input & INPUT_MASK)));
-    if (mask)
-        return true;
-    return false;
+    return mask != 0;
 }
 
 /*!
@@ -933,8 +961,9 @@ static void BeginWindowFrame(void) {
     wnd_params.t0 = (uint32_t)SDL_GetTicks();
     SDL_LockTexture(backbuffer, NULL, (void **)&rt_pixels, &rt_pitch);
     TLN_SetRenderTarget(rt_pixels, rt_pitch);
-    if (wnd_params.fps_t0 == 0)
+    if (wnd_params.fps_t0 == 0) {
         wnd_params.fps_t0 = (uint32_t)SDL_GetTicks();
+    }
 }
 
 static void EndWindowFrame(void) {
@@ -946,10 +975,10 @@ static void EndWindowFrame(void) {
         SDL_RenderClear(renderer);
     }
 
-    if (crt_params.enable && crt != NULL && flags.factor > 1)
+    if ((int)crt_params.enable && crt != NULL && flags.factor > 1) {
         CRTDraw(crt, rt_pixels, rt_pitch, &dstrect);
 
-    else {
+    } else {
         SDL_UnlockTexture(backbuffer);
         SDL_SetTextureBlendMode(backbuffer, SDL_BLENDMODE_NONE);
         SDL_RenderTexture(renderer, backbuffer, NULL, &dstrect);
@@ -989,8 +1018,9 @@ static void EndWindowFrame(void) {
             const uint64_t spin_ticks = 2 * freq / 1000; /* 2 ms in ticks */
             if (due_t > now_t + spin_ticks) {
                 uint32_t sleep_ms = (uint32_t)((due_t - now_t - spin_ticks) * 1000 / freq);
-                if (sleep_ms > 0)
+                if (sleep_ms > 0) {
                     SDL_Delay(sleep_ms);
+                }
             }
             /* precision spin for final 2 ms */
             while (SDL_GetPerformanceCounter() < due_t) {

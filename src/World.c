@@ -19,87 +19,90 @@ static int first;
  * \param first_layer Starting layer number where place the loaded tmx
  */
 bool TLN_LoadWorld(const char *filename, int first_layer) {
-  if (!TMXLoad(filename, &tmxinfo))
-    return NULL;
-
-  if (tmxinfo.num_layers > MAX_TMX_ITEM)
-    tmxinfo.num_layers = MAX_TMX_ITEM;
-
-  /* load and assign each layer type */
-  first = first_layer;
-  for (int c = 0; c < tmxinfo.num_layers; c += 1) {
-    TMXLayer const *tmxlayer = &tmxinfo.layers[c];
-    const int layerindex = tmxinfo.num_layers - c - 1 + first;
-    switch (tmxlayer->type) {
-      case LAYER_NONE:
-        break;
-
-      case LAYER_TILE: {
-        TLN_Tilemap tilemap = TLN_LoadTilemap(filename, tmxlayer->name);
-        TLN_SetLayerTilemap(layerindex, tilemap);
-      } break;
-
-      case LAYER_OBJECT: {
-        TLN_ObjectList objectlist =
-            TLN_LoadObjectList(filename, tmxlayer->name);
-        TLN_SetLayerObjects(layerindex, objectlist, NULL);
-      } break;
-
-      case LAYER_BITMAP: {
-        TLN_Bitmap bitmap = TLN_LoadBitmap(tmxlayer->image);
-        TLN_SetLayerBitmap(layerindex, bitmap);
-      } break;
+    if (!TMXLoad(filename, &tmxinfo)) {
+        return NULL;
     }
 
-    /* direct set of layer properties */
-    Layer *layer = GetLayer(layerindex);
-    layer->world.xfactor = tmxlayer->parallaxx;
-    layer->world.yfactor = tmxlayer->parallaxy;
-    layer->world.offsetx = (int)tmxlayer->offsetx;
-    layer->world.offsety = (int)tmxlayer->offsety;
+    if (tmxinfo.num_layers > MAX_TMX_ITEM) {
+        tmxinfo.num_layers = MAX_TMX_ITEM;
+    }
 
-    /* opacity selects blend mode */
-    if (!tmxlayer->visible)
-      TLN_DisableLayer(layerindex);
-  }
+    /* load and assign each layer type */
+    first = first_layer;
+    for (int c = 0; c < tmxinfo.num_layers; c += 1) {
+        TMXLayer const *tmxlayer = &tmxinfo.layers[c];
+        const int layerindex = tmxinfo.num_layers - c - 1 + first;
+        switch (tmxlayer->type) {
+        case LAYER_NONE:
+            break;
 
-  /* sets background color if defined */
-  if (tmxinfo.bgcolor != 0) {
-    Color bgcolor;
-    bgcolor.value = tmxinfo.bgcolor;
-    TLN_SetBGColor(bgcolor.r, bgcolor.g, bgcolor.b);
-  } else
-    TLN_DisableBGColor();
-  return true;
+        case LAYER_TILE: {
+            TLN_Tilemap tilemap = TLN_LoadTilemap(filename, tmxlayer->name);
+            TLN_SetLayerTilemap(layerindex, tilemap);
+        } break;
+
+        case LAYER_OBJECT: {
+            TLN_ObjectList objectlist = TLN_LoadObjectList(filename, tmxlayer->name);
+            TLN_SetLayerObjects(layerindex, objectlist, NULL);
+        } break;
+
+        case LAYER_BITMAP: {
+            TLN_Bitmap bitmap = TLN_LoadBitmap(tmxlayer->image);
+            TLN_SetLayerBitmap(layerindex, bitmap);
+        } break;
+        }
+
+        /* direct set of layer properties */
+        Layer *layer = GetLayer(layerindex);
+        layer->world.xfactor = tmxlayer->parallaxx;
+        layer->world.yfactor = tmxlayer->parallaxy;
+        layer->world.offsetx = (int)tmxlayer->offsetx;
+        layer->world.offsety = (int)tmxlayer->offsety;
+
+        /* opacity selects blend mode */
+        if (!tmxlayer->visible) {
+            TLN_DisableLayer(layerindex);
+        }
+    }
+
+    /* sets background color if defined */
+    if (tmxinfo.bgcolor != 0) {
+        Color bgcolor;
+        bgcolor.value = tmxinfo.bgcolor;
+        TLN_SetBGColor(bgcolor.r, bgcolor.g, bgcolor.b);
+    } else {
+        TLN_DisableBGColor();
+    }
+    return true;
 }
 
 /*!
  * \brief Releases world resources loaded with TLN_LoadWorld
  */
 void TLN_ReleaseWorld(void) {
-  for (int c = 0; c < tmxinfo.num_layers; c += 1) {
-    TMXLayer const *tmxlayer = &tmxinfo.layers[c];
-    const int layerindex = tmxinfo.num_layers - c - 1 + first;
+    for (int c = 0; c < tmxinfo.num_layers; c += 1) {
+        TMXLayer const *tmxlayer = &tmxinfo.layers[c];
+        const int layerindex = tmxinfo.num_layers - c - 1 + first;
 
-    Layer *layer = GetLayer(layerindex);
-    layer->flags.ok = false;
-    switch (tmxlayer->type) {
-      case LAYER_NONE:
-        break;
+        Layer *layer = GetLayer(layerindex);
+        layer->flags.ok = false;
+        switch (tmxlayer->type) {
+        case LAYER_NONE:
+            break;
 
-      case LAYER_TILE:
-        TLN_DeleteTilemap(layer->tilemap);
-        break;
+        case LAYER_TILE:
+            TLN_DeleteTilemap(layer->tilemap);
+            break;
 
-      case LAYER_OBJECT:
-        TLN_DeleteObjectList(layer->objects);
-        break;
+        case LAYER_OBJECT:
+            TLN_DeleteObjectList(layer->objects);
+            break;
 
-      case LAYER_BITMAP:
-        TLN_DeleteBitmap(layer->bitmap);
-        break;
+        case LAYER_BITMAP:
+            TLN_DeleteBitmap(layer->bitmap);
+            break;
+        }
     }
-  }
 }
 
 /*!
@@ -110,18 +113,18 @@ void TLN_ReleaseWorld(void) {
  * \param y Vertical parallax factor
  */
 bool TLN_SetLayerParallaxFactor(int nlayer, float x, float y) {
-  Layer *layer;
-  if (nlayer >= engine->numlayers) {
-    TLN_SetLastError(TLN_ERR_IDX_LAYER);
-    return false;
-  }
+    Layer *layer;
+    if (nlayer >= engine->numlayers) {
+        TLN_SetLastError(TLN_ERR_IDX_LAYER);
+        return false;
+    }
 
-  layer = &engine->layers[nlayer];
-  layer->world.xfactor = x;
-  layer->world.yfactor = y;
-  layer->flags.dirty = true;
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    layer = &engine->layers[nlayer];
+    layer->world.xfactor = x;
+    layer->world.yfactor = y;
+    layer->flags.dirty = true;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 /*!
@@ -131,9 +134,9 @@ bool TLN_SetLayerParallaxFactor(int nlayer, float x, float y) {
  * \param y vertical position in world space
  */
 void TLN_SetWorldPosition(int x, int y) {
-  engine->world.x = x;
-  engine->world.y = y;
-  engine->world.dirty = true;
+    engine->world.x = x;
+    engine->world.y = y;
+    engine->world.dirty = true;
 }
 
 /*!
@@ -144,18 +147,18 @@ void TLN_SetWorldPosition(int x, int y) {
  * \sa TLN_SetSpritePivot
  */
 bool TLN_SetSpriteWorldPosition(int nsprite, int x, int y) {
-  Sprite *sprite;
-  if (nsprite >= engine->numsprites) {
-    TLN_SetLastError(TLN_ERR_IDX_SPRITE);
-    return false;
-  }
+    Sprite *sprite;
+    if (nsprite >= engine->numsprites) {
+        TLN_SetLastError(TLN_ERR_IDX_SPRITE);
+        return false;
+    }
 
-  sprite = &engine->sprites[nsprite];
-  sprite->world_pos.x = x;
-  sprite->world_pos.y = y;
-  SetSpriteFlag(sprite, SPRITE_FLAG_WORLD_SPACE, true);
-  SetSpriteFlag(sprite, SPRITE_FLAG_DIRTY, true);
+    sprite = &engine->sprites[nsprite];
+    sprite->world_pos.x = x;
+    sprite->world_pos.y = y;
+    SetSpriteFlag(sprite, SPRITE_FLAG_WORLD_SPACE, true);
+    SetSpriteFlag(sprite, SPRITE_FLAG_DIRTY, true);
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }

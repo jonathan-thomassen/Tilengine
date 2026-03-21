@@ -53,9 +53,16 @@ static int move_frame = 0;
 /* When set, replaces tile-based floor collision for the current frame.
  * BRIDGE_FLOOR_Y = inactive (no override). Set before calling SimonTasks(). */
 static int bridge_floor = BRIDGE_FLOOR_Y;
+/* Tolerance window in pixels, scaled 0-8 with bridge progress.
+ * At 0 Simon sits exactly on top; at 8 he can stand 8 px into the bridge. */
+static int bridge_tolerance = 0;
 
 void SimonSetBridgeFloor(int feet_y) { bridge_floor = feet_y; }
-void SimonClearBridgeFloor(void) { bridge_floor = BRIDGE_FLOOR_Y; }
+void SimonSetBridgeTolerance(int tol) { bridge_tolerance = tol; }
+void SimonClearBridgeFloor(void) {
+    bridge_floor = BRIDGE_FLOOR_Y;
+    bridge_tolerance = 0;
+}
 
 void SimonInit(void) {
     simon = TLN_LoadSpriteset("simon_walk");
@@ -363,9 +370,13 @@ static void apply_collisions(int start_y_velocity) {
         /* Bridge surface replaces tile floor check entirely — prevents castle
          * approach tiles from fighting the bridge geometry.  Uses >= so that
          * standing still (feet == floor) also zeroes y_velocity every frame, stopping
-         * apex_hang from triggering gravity accumulation between snaps. */
-        if (new_y + SIMON_HEIGHT >= bridge_floor) {
-            new_y = bridge_floor - SIMON_HEIGHT;
+         * apex_hang from triggering gravity accumulation between snaps.
+         * Uses the same y+46 probe offset as check_floor so the snap landing
+         * position matches the tile-floor baseline exactly at progress=0.
+         * bridge_tolerance widens the band: Simon can enter up to
+         * bridge_tolerance px into the surface from above. */
+        if (new_y + 46 >= bridge_floor - bridge_tolerance) {
+            new_y = bridge_floor - 46 + bridge_tolerance;
             y_velocity = 0;
             apex_hang = 0;
         }

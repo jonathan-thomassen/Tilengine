@@ -62,29 +62,19 @@ static const int baked_tan[DB_STEPS] = {
     1542, 1661, 1799, 1970, 2167, 2418, 2720, 3109, 3627, 4369, 5461, 7282, 10923, 21845, 0,
 };
 
-/* Chain-sprite anchor — screen x and world y for the chain's bottom-left
- * corner at each animation step (triggered hinge = 221,175).
- * x: screen x; add xpos to get world x.
- * y: world y; sprite height (-128) and drift correction already folded in.
- * Struct layout keeps both fields in one cache-line load. */
-static const ChainPos chain_pos[DB_STEPS] = {
-    {80, 40},   {80, 38},   {80, 37},   {80, 35},   {80, 34},   {81, 32},   {81, 30},   {81, 29},
-    {81, 27},   {82, 26},   {82, 24},   {82, 23},   {82, 21},   {83, 19},   {83, 18},   {83, 16},
-    {84, 15},   {84, 13},   {85, 12},   {85, 10},   {85, 9},    {86, 7},    {86, 6},    {87, 4},
-    {87, 3},    {88, 1},    {89, 0},    {89, -2},   {90, -3},   {90, -5},   {91, -6},   {92, -8},
-    {92, -9},   {93, -11},  {94, -12},  {94, -14},  {95, -15},  {96, -16},  {97, -18},  {98, -19},
-    {98, -21},  {99, -22},  {100, -23}, {101, -25}, {102, -26}, {103, -27}, {104, -29}, {105, -30},
-    {105, -31}, {106, -33}, {107, -34}, {108, -35}, {109, -36}, {110, -38}, {111, -39}, {113, -40},
-    {114, -41}, {115, -42}, {116, -44}, {117, -45}, {118, -46}, {119, -47}, {120, -48}, {121, -49},
-    {123, -50}, {124, -52}, {125, -53}, {126, -54}, {127, -55}, {129, -56}, {130, -57}, {131, -58},
-    {133, -59}, {134, -60}, {135, -61}, {136, -62}, {138, -63}, {139, -63}, {140, -64}, {142, -65},
-    {143, -66}, {145, -67}, {146, -68}, {147, -69}, {149, -69}, {150, -70}, {152, -71}, {153, -72},
-    {155, -72}, {156, -73}, {158, -74}, {159, -74}, {161, -75}, {162, -76}, {164, -76}, {165, -77},
-    {167, -78}, {168, -78}, {170, -79}, {171, -79}, {173, -80}, {174, -80}, {176, -81}, {177, -81},
-    {179, -82}, {181, -82}, {182, -82}, {184, -83}, {185, -83}, {187, -84}, {189, -84}, {190, -84},
-    {192, -84}, {193, -85}, {195, -85}, {197, -85}, {198, -85}, {200, -86}, {202, -86}, {203, -86},
-    {205, -86}, {207, -86}, {208, -86}, {210, -86}, {211, -86}, {213, -86}, {215, -87}, {216, -87},
-    {218, -87}, {220, -86}, {221, -86}, {223, -86}, {225, -86}, {226, -86}, {228, -86}};
+/* Chain-sprite arc parameters — tweak these to reposition the chain.
+ * The chain's bottom-left corner traces an elliptical arc driven by the
+ * same rotation angle as the bridge.
+ *
+ * CHAIN_X_OFFSET : pixels right of hinge_x where the x-arc is centred.
+ * CHAIN_Y_OFFSET : pixels above hinge_y where the y-arc is centred.
+ * CHAIN_ARM_X    : screen-x half-span (bridge flat → bridge vertical).
+ * CHAIN_ARM_Y    : world-y half-span.
+ */
+#define CHAIN_X_OFFSET 17
+#define CHAIN_Y_OFFSET (-143)
+#define CHAIN_ARM_X 158
+#define CHAIN_ARM_Y 117
 
 /* ------------------------------------------------------------------ */
 
@@ -135,7 +125,21 @@ int DrawbridgeSurfaceY(int screen_x) {
 
 int DrawbridgeHingeX(void) { return db_state.hinge_x; }
 
-ChainPos DrawbridgeChainPos(void) { return chain_pos[db_state.progress]; }
+ChainPos DrawbridgeChainPos(void) {
+    int p = db_state.progress;
+    float cos_a = TRIG_COS(p);
+    float sin_a = baked_sin[p];
+    /* sin(2θ) = 2·sin·cos — zero at both endpoints, peaks at 1 at mid-arc.
+     * Used to correct the elliptical-vs-circular arc error at the midpoint. */
+    float bulge = 2.0F * sin_a * cos_a;
+    ChainPos pos = {
+        (db_state.hinge_x + CHAIN_X_OFFSET) - (int)((CHAIN_ARM_X * cos_a) + 0.5F) +
+            (int)(8.0F * bulge + 0.5F),
+        (db_state.hinge_y + CHAIN_Y_OFFSET) - (int)((CHAIN_ARM_Y * sin_a) + 0.5F) -
+            (int)(10.0F * bulge + 0.5F),
+    };
+    return pos;
+}
 
 void DrawbridgeTasks(void) {
     if (db_state.affine_dirty) {

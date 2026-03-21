@@ -58,144 +58,143 @@ typedef unsigned int uint32_t;   /*!< unsigned 32-bit wide data */
 #define TILENGINE_VER_MAJ 2
 #define TILENGINE_VER_MIN 15
 #define TILENGINE_VER_REV 3
-#define TILENGINE_HEADER_VERSION                                               \
-  ((TILENGINE_VER_MAJ << 16) | (TILENGINE_VER_MIN << 8) | TILENGINE_VER_REV)
+#define TILENGINE_HEADER_VERSION                                                                   \
+    ((TILENGINE_VER_MAJ << 16) | (TILENGINE_VER_MIN << 8) | TILENGINE_VER_REV)
 
 #define BITVAL(n) (1 << (n))
 
 /*! tile/sprite flags. Can be none or a combination of the following: */
 typedef enum {
-  FLAG_NONE = 0,           /*!< no flags */
-  FLAG_FLIPX = BITVAL(15), /*!< horizontal flip */
-  FLAG_FLIPY = BITVAL(14), /*!< vertical flip */
-  FLAG_ROTATE =
-      BITVAL(13), /*!< row/column flip (unsupported, Tiled compatibility) */
-  FLAG_PRIORITY = BITVAL(12), /*!< tile goes in front of sprite layer */
-  FLAG_MASKED = BITVAL(11),   /*!< sprite won't be drawn inside masked region */
-  FLAG_TILESET = (15 << 7),   /*!< tileset index (0 - 15) */
-  FLAG_PALETTE = (7 << 4),    /*!< palette index (0 - 7) */
-  FLAG_BACKGROUND = BITVAL(3), /*!< sprite renders behind all layers */
+    FLAG_NONE = 0,               /*!< no flags */
+    FLAG_FLIPX = BITVAL(15),     /*!< horizontal flip */
+    FLAG_FLIPY = BITVAL(14),     /*!< vertical flip */
+    FLAG_ROTATE = BITVAL(13),    /*!< row/column flip (unsupported, Tiled compatibility) */
+    FLAG_PRIORITY = BITVAL(12),  /*!< tile goes in front of sprite layer */
+    FLAG_MASKED = BITVAL(11),    /*!< sprite won't be drawn inside masked region */
+    FLAG_TILESET = (15 << 7),    /*!< tileset index (0 - 15) */
+    FLAG_PALETTE = (7 << 4),     /*!< palette index (0 - 7) */
+    FLAG_BACKGROUND = BITVAL(3), /*!< sprite renders behind all layers */
 } TLN_TileFlags;
 
 /*!
  * layer blend modes. Must be one of these and are mutually exclusive:
  */
 typedef enum {
-  BLEND_NONE = 0,   /*!< blending disabled */
-  BLEND_MIX25 = 1,  /*!< color averaging 1 */
-  BLEND_MIX50 = 2,  /*!< color averaging 2 */
-  BLEND_MIX75 = 3,  /*!< color averaging 3 */
-  BLEND_MIX90 = 4,  /*!< color averaging 4 (90% layer, 10% background) */
-  BLEND_ADD = 5,    /*!< color is always brighter (simulate light effects) */
-  BLEND_SUB = 6,    /*!< color is always darker (simulate shadow effects) */
-  BLEND_MOD = 7,    /*!< color is always darker (simulate shadow effects) */
-  BLEND_CUSTOM = 8, /*!< user provided blend function with
-                      TLN_SetCustomBlendFunction() */
-  MAX_BLEND = 9,
-  BLEND_MIX = BLEND_MIX50
+    BLEND_NONE = 0,   /*!< blending disabled */
+    BLEND_MIX25 = 1,  /*!< color averaging 1 */
+    BLEND_MIX50 = 2,  /*!< color averaging 2 */
+    BLEND_MIX75 = 3,  /*!< color averaging 3 */
+    BLEND_MIX90 = 4,  /*!< color averaging 4 (90% layer, 10% background) */
+    BLEND_ADD = 5,    /*!< color is always brighter (simulate light effects) */
+    BLEND_SUB = 6,    /*!< color is always darker (simulate shadow effects) */
+    BLEND_MOD = 7,    /*!< color is always darker (simulate shadow effects) */
+    BLEND_CUSTOM = 8, /*!< user provided blend function with
+                        TLN_SetCustomBlendFunction() */
+    MAX_BLEND = 9,
+    BLEND_MIX = BLEND_MIX50
 } TLN_Blend;
 
 /*!
  * layer type retrieved by \ref TLN_GetLayerType
  */
 typedef enum {
-  LAYER_NONE,   /*!< undefined */
-  LAYER_TILE,   /*!< tilemap-based layer */
-  LAYER_OBJECT, /*!< objects layer */
-  LAYER_BITMAP, /*!< bitmapped layer */
+    LAYER_NONE,   /*!< undefined */
+    LAYER_TILE,   /*!< tilemap-based layer */
+    LAYER_OBJECT, /*!< objects layer */
+    LAYER_BITMAP, /*!< bitmapped layer */
 } TLN_LayerType;
 
 /*! Affine transformation parameters */
 typedef struct {
-  float angle; /*!< rotation in degrees */
-  float dx;    /*!< horizontal translation */
-  float dy;    /*!< vertical translation */
-  float sx;    /*!< horizontal scaling */
-  float sy;    /*!< vertical scaling */
+    float angle; /*!< rotation in degrees */
+    float dx;    /*!< horizontal translation */
+    float dy;    /*!< vertical translation */
+    float sx;    /*!< horizontal scaling */
+    float sy;    /*!< vertical scaling */
 } TLN_Affine;
 
 /*! Tile item for Tilemap access methods */
 typedef union Tile {
-  uint32_t value;
-  struct {
-    uint16_t index; /*!< tile index */
-    union {
-      uint16_t flags; /*!< attributes (FLAG_FLIPX, FLAG_FLIPY, FLAG_PRIORITY) */
-      struct {
-        uint8_t unused : 4;
-        uint8_t palette : 3;
-        uint8_t tileset : 4;
-      };
+    uint32_t value;
+    struct {
+        uint16_t index; /*!< tile index */
+        union {
+            uint16_t flags; /*!< attributes (FLAG_FLIPX, FLAG_FLIPY, FLAG_PRIORITY) */
+            struct {
+                uint8_t unused : 4;
+                uint8_t palette : 3;
+                uint8_t tileset : 4;
+            };
+        };
     };
-  };
 } Tile;
 
 /*! frame animation definition */
 typedef struct {
-  int index; /*!< tile/sprite index */
-  int delay; /*!< time delay for next frame */
+    int index; /*!< tile/sprite index */
+    int delay; /*!< time delay for next frame */
 } TLN_SequenceFrame;
 
 /*! color strip definition */
 typedef struct {
-  int delay;     /*!< time delay between frames */
-  uint8_t first; /*!< index of first color to cycle */
-  uint8_t count; /*!< number of colors in the cycle */
-  uint8_t dir;   /*!< direction: 0=descending, 1=ascending */
+    int delay;     /*!< time delay between frames */
+    uint8_t first; /*!< index of first color to cycle */
+    uint8_t count; /*!< number of colors in the cycle */
+    uint8_t dir;   /*!< direction: 0=descending, 1=ascending */
 } TLN_ColorStrip;
 
 /*! sequence info returned by TLN_GetSequenceInfo */
 typedef struct {
-  char name[32];  /*!< sequence name */
-  int num_frames; /*!< number of frames */
+    char name[32];  /*!< sequence name */
+    int num_frames; /*!< number of frames */
 } TLN_SequenceInfo;
 
 /*! Sprite creation info for TLN_CreateSpriteset() */
 typedef struct {
-  char name[64]; /*!< entry name */
-  int x;         /*!< horizontal position */
-  int y;         /*!< vertical position */
-  int w;         /*!< width */
-  int h;         /*!< height */
+    char name[64]; /*!< entry name */
+    int x;         /*!< horizontal position */
+    int y;         /*!< vertical position */
+    int w;         /*!< width */
+    int h;         /*!< height */
 } TLN_SpriteData;
 
 /*! Sprite information */
 typedef struct {
-  int w; /*!< width of sprite */
-  int h; /*!< height of sprite */
+    int w; /*!< width of sprite */
+    int h; /*!< height of sprite */
 } TLN_SpriteInfo;
 
 /*! Tile information returned by TLN_GetLayerTile() */
 typedef struct {
-  uint16_t index; /*!< tile index */
-  uint16_t flags; /*!< attributes (FLAG_FLIPX, FLAG_FLIPY, FLAG_PRIORITY) */
-  int row;        /*!< row number in the tilemap */
-  int col;        /*!< col number in the tilemap */
-  int xoffset;    /*!< horizontal position inside the title */
-  int yoffset;    /*!< vertical position inside the title */
-  uint8_t color;  /*!< color index at collision point */
-  uint8_t type;   /*!< tile type */
-  bool empty;     /*!< cell is empty*/
+    uint16_t index; /*!< tile index */
+    uint16_t flags; /*!< attributes (FLAG_FLIPX, FLAG_FLIPY, FLAG_PRIORITY) */
+    int row;        /*!< row number in the tilemap */
+    int col;        /*!< col number in the tilemap */
+    int xoffset;    /*!< horizontal position inside the title */
+    int yoffset;    /*!< vertical position inside the title */
+    uint8_t color;  /*!< color index at collision point */
+    uint8_t type;   /*!< tile type */
+    bool empty;     /*!< cell is empty*/
 } TLN_TileInfo;
 
 /*! Object item info returned by TLN_GetObjectInfo() */
 typedef struct {
-  uint16_t id;    /*!< unique ID */
-  uint16_t gid;   /*!< graphic ID (tile index) */
-  uint16_t flags; /*!< attributes (FLAG_FLIPX, FLAG_FLIPY, FLAG_PRIORITY) */
-  int x;          /*!< horizontal position */
-  int y;          /*!< vertical position */
-  int width;      /*!< horizontal size */
-  int height;     /*!< vertical size */
-  uint8_t type;   /*!< type property */
-  bool visible;   /*!< visible property */
-  char name[64];  /*!< name property */
+    uint16_t id;    /*!< unique ID */
+    uint16_t gid;   /*!< graphic ID (tile index) */
+    uint16_t flags; /*!< attributes (FLAG_FLIPX, FLAG_FLIPY, FLAG_PRIORITY) */
+    int x;          /*!< horizontal position */
+    int y;          /*!< vertical position */
+    int width;      /*!< horizontal size */
+    int height;     /*!< vertical size */
+    uint8_t type;   /*!< type property */
+    bool visible;   /*!< visible property */
+    char name[64];  /*!< name property */
 } TLN_ObjectInfo;
 
 /*! Tileset attributes for TLN_CreateTileset() */
 typedef struct {
-  uint8_t type;  /*!< tile type */
-  bool priority; /*!< priority flag set */
+    uint8_t type;  /*!< tile type */
+    bool priority; /*!< priority flag set */
 } TLN_TileAttributes;
 
 /* kept for backwards compatibility with pre-2.10 release */
@@ -207,58 +206,57 @@ typedef struct {
 
 /*! types of built-in CRT effect for \ref TLN_ConfigCRTEffect */
 typedef enum {
-  TLN_CRT_SLOT, /*!< slot mask without scanlines, similar to legacy effect */
-  TLN_CRT_APERTURE, /*!< aperture grille with scanlines (matrix-like dot
-                       arrangement) */
-  TLN_CRT_SHADOW, /*!< shadow mask with scanlines, diagonal subpixel arrangement
-                   */
+    TLN_CRT_SLOT,     /*!< slot mask without scanlines, similar to legacy effect */
+    TLN_CRT_APERTURE, /*!< aperture grille with scanlines (matrix-like dot
+                         arrangement) */
+    TLN_CRT_SHADOW,   /*!< shadow mask with scanlines, diagonal subpixel arrangement
+                       */
 } TLN_CRT;
 
 /*! pixel mapping for TLN_SetLayerPixelMapping() */
 typedef struct {
-  int16_t dx; /*!< horizontal pixel displacement */
-  int16_t dy; /*!< vertical pixel displacement */
+    int16_t dx; /*!< horizontal pixel displacement */
+    int16_t dy; /*!< vertical pixel displacement */
 } TLN_PixelMap;
 
 /*! Rectangle for TLN_CopyTiles() */
 typedef struct {
-  int row;  /*!< starting row (y) */
-  int col;  /*!< starting column (x) */
-  int rows; /*!< number of rows (height) */
-  int cols; /*!< number of columns (width) */
+    int row;  /*!< starting row (y) */
+    int col;  /*!< starting column (x) */
+    int rows; /*!< number of rows (height) */
+    int cols; /*!< number of columns (width) */
 } TLN_Rect;
 
-typedef struct Engine *TLN_Engine;       /*!< Engine context */
-typedef union Tile *TLN_Tile;            /*!< Tile reference */
-typedef struct Tileset *TLN_Tileset;     /*!< Opaque tileset reference */
-typedef struct Tilemap *TLN_Tilemap;     /*!< Opaque tilemap reference */
-typedef struct Palette *TLN_Palette;     /*!< Opaque palette reference */
-typedef struct Spriteset *TLN_Spriteset; /*!< Opaque sspriteset reference */
-typedef struct Sequence *TLN_Sequence;   /*!< Opaque sequence reference */
-typedef struct SequencePack
-    *TLN_SequencePack;             /*!< Opaque sequence pack reference */
-typedef struct Bitmap *TLN_Bitmap; /*!< Opaque bitmap reference */
-typedef struct ObjectList *TLN_ObjectList; /*!< Opaque object list reference */
+typedef struct Engine *TLN_Engine;             /*!< Engine context */
+typedef union Tile *TLN_Tile;                  /*!< Tile reference */
+typedef struct Tileset *TLN_Tileset;           /*!< Opaque tileset reference */
+typedef struct Tilemap *TLN_Tilemap;           /*!< Opaque tilemap reference */
+typedef struct Palette *TLN_Palette;           /*!< Opaque palette reference */
+typedef struct Spriteset *TLN_Spriteset;       /*!< Opaque sspriteset reference */
+typedef struct Sequence *TLN_Sequence;         /*!< Opaque sequence reference */
+typedef struct SequencePack *TLN_SequencePack; /*!< Opaque sequence pack reference */
+typedef struct Bitmap *TLN_Bitmap;             /*!< Opaque bitmap reference */
+typedef struct ObjectList *TLN_ObjectList;     /*!< Opaque object list reference */
 
 /*! Image Tile items for TLN_CreateImageTileset() */
 typedef struct {
-  TLN_Bitmap bitmap;
-  uint16_t id;
-  uint8_t type;
+    TLN_Bitmap bitmap;
+    uint16_t id;
+    uint8_t type;
 } TLN_TileImage;
 
 /*! Sprite state */
 typedef struct {
-  int x;                   /*!< Screen position x */
-  int y;                   /*!< Screen position y */
-  int w;                   /*!< Actual width in screen (after scaling) */
-  int h;                   /*!< Actual height in screen (after scaling) */
-  uint32_t flags;          /*!< flags */
-  TLN_Palette palette;     /*!< assigned palette */
-  TLN_Spriteset spriteset; /*!< assigned spriteset */
-  int index;               /*!< graphic index inside spriteset */
-  bool enabled;            /*!< enabled or not */
-  bool collision;          /*!< per-pixel collision detection enabled or not */
+    int x;                   /*!< Screen position x */
+    int y;                   /*!< Screen position y */
+    int w;                   /*!< Actual width in screen (after scaling) */
+    int h;                   /*!< Actual height in screen (after scaling) */
+    uint32_t flags;          /*!< flags */
+    TLN_Palette palette;     /*!< assigned palette */
+    TLN_Spriteset spriteset; /*!< assigned spriteset */
+    int index;               /*!< graphic index inside spriteset */
+    bool enabled;            /*!< enabled or not */
+    bool collision;          /*!< per-pixel collision detection enabled or not */
 } TLN_SpriteState;
 
 /* callbacks */
@@ -269,91 +267,91 @@ typedef void (*TLN_SDLCallback)(SDL_Event *);
 
 /*! Player index for input assignment functions */
 typedef enum {
-  PLAYER1, /*!< Player 1 */
-  PLAYER2, /*!< Player 2 */
-  PLAYER3, /*!< Player 3 */
-  PLAYER4, /*!< Player 4 */
+    PLAYER1, /*!< Player 1 */
+    PLAYER2, /*!< Player 2 */
+    PLAYER3, /*!< Player 3 */
+    PLAYER4, /*!< Player 4 */
 } TLN_Player;
 
 /*! Standard inputs query for TLN_GetInput() */
 typedef enum {
-  INPUT_NONE = 0,      /*!< no input */
-  INPUT_UP = 1,        /*!< up direction */
-  INPUT_DOWN = 2,      /*!< down direction */
-  INPUT_LEFT = 3,      /*!< left direction */
-  INPUT_RIGHT = 4,     /*!< right direction */
-  INPUT_BUTTON1 = 5,   /*!< 1st action button */
-  INPUT_BUTTON2 = 6,   /*!< 2nd action button */
-  INPUT_BUTTON3 = 7,   /*!< 3th action button */
-  INPUT_BUTTON4 = 8,   /*!< 4th action button */
-  INPUT_BUTTON5 = 9,   /*!< 5th action button */
-  INPUT_BUTTON6 = 10,  /*!< 6th action button */
-  INPUT_START = 11,    /*!< Start button */
-  INPUT_QUIT = 12,     /*!< Window close (only Player 1 keyboard) */
-  INPUT_CRT = 13,      /*!< CRT toggle (only Player 1 keyboard) */
+    INPUT_NONE = 0,     /*!< no input */
+    INPUT_UP = 1,       /*!< up direction */
+    INPUT_DOWN = 2,     /*!< down direction */
+    INPUT_LEFT = 3,     /*!< left direction */
+    INPUT_RIGHT = 4,    /*!< right direction */
+    INPUT_BUTTON1 = 5,  /*!< 1st action button */
+    INPUT_BUTTON2 = 6,  /*!< 2nd action button */
+    INPUT_BUTTON3 = 7,  /*!< 3th action button */
+    INPUT_BUTTON4 = 8,  /*!< 4th action button */
+    INPUT_BUTTON5 = 9,  /*!< 5th action button */
+    INPUT_BUTTON6 = 10, /*!< 6th action button */
+    INPUT_START = 11,   /*!< Start button */
+    INPUT_QUIT = 12,    /*!< Window close (only Player 1 keyboard) */
+    INPUT_CRT = 13,     /*!< CRT toggle (only Player 1 keyboard) */
 
-  /* ... up to 32 unique inputs */
+    /* ... up to 32 unique inputs */
 
-  INPUT_P1 = (PLAYER1 << 5), /*!< request player 1 input (default) */
-  INPUT_P2 = (PLAYER2 << 5), /*!< request player 2 input */
-  INPUT_P3 = (PLAYER3 << 5), /*!< request player 3 input */
-  INPUT_P4 = (PLAYER4 << 5), /*!< request player 4 input */
+    INPUT_P1 = (PLAYER1 << 5), /*!< request player 1 input (default) */
+    INPUT_P2 = (PLAYER2 << 5), /*!< request player 2 input */
+    INPUT_P3 = (PLAYER3 << 5), /*!< request player 3 input */
+    INPUT_P4 = (PLAYER4 << 5), /*!< request player 4 input */
 
-  /* compatibility symbols for pre-1.18 input model */
-  INPUT_A = INPUT_BUTTON1,
-  INPUT_B = INPUT_BUTTON2,
-  INPUT_C = INPUT_BUTTON3,
-  INPUT_D = INPUT_BUTTON4,
-  INPUT_E = INPUT_BUTTON5,
-  INPUT_F = INPUT_BUTTON6,
+    /* compatibility symbols for pre-1.18 input model */
+    INPUT_A = INPUT_BUTTON1,
+    INPUT_B = INPUT_BUTTON2,
+    INPUT_C = INPUT_BUTTON3,
+    INPUT_D = INPUT_BUTTON4,
+    INPUT_E = INPUT_BUTTON5,
+    INPUT_F = INPUT_BUTTON6,
 } TLN_Input;
 
 /*! CreateWindow flags. Can be none or a combination of the following: */
 enum {
-  CWF_FULLSCREEN = (1 << 0), /*!< create a fullscreen window */
-  CWF_VSYNC = (1 << 1),      /*!< sync frame updates with vertical retrace */
-  CWF_S1 = (1 << 2), /*!< create a window the same size as the framebuffer */
-  CWF_S2 = (2 << 2), /*!< create a window 2x the size the framebuffer */
-  CWF_S3 = (3 << 2), /*!< create a window 3x the size the framebuffer */
-  CWF_S4 = (4 << 2), /*!< create a window 4x the size the framebuffer */
-  CWF_S5 = (5 << 2), /*!< create a window 5x the size the framebuffer */
-  CWF_S6 = (6 << 2), /*!< create a window 6x the size the framebuffer */
-  CWF_S7 = (7 << 2), /*!< create a window 7x the size the framebuffer */
-  CWF_S8 = (8 << 2), /*!< create a window 8x the size the framebuffer */
-  CWF_NEAREST = (1 << 6), /*<! unfiltered upscaling */
-  CWF_NOVSYNC = (1 << 7)  /*<! disable default vsync */
+    CWF_FULLSCREEN = (1 << 0), /*!< create a fullscreen window */
+    CWF_VSYNC = (1 << 1),      /*!< sync frame updates with vertical retrace */
+    CWF_S1 = (1 << 2),         /*!< create a window the same size as the framebuffer */
+    CWF_S2 = (2 << 2),         /*!< create a window 2x the size the framebuffer */
+    CWF_S3 = (3 << 2),         /*!< create a window 3x the size the framebuffer */
+    CWF_S4 = (4 << 2),         /*!< create a window 4x the size the framebuffer */
+    CWF_S5 = (5 << 2),         /*!< create a window 5x the size the framebuffer */
+    CWF_S6 = (6 << 2),         /*!< create a window 6x the size the framebuffer */
+    CWF_S7 = (7 << 2),         /*!< create a window 7x the size the framebuffer */
+    CWF_S8 = (8 << 2),         /*!< create a window 8x the size the framebuffer */
+    CWF_NEAREST = (1 << 6),    /*<! unfiltered upscaling */
+    CWF_NOVSYNC = (1 << 7)     /*<! disable default vsync */
 };
 
 /*! Error codes */
 typedef enum {
-  TLN_ERR_OK,             /*!< No error */
-  TLN_ERR_OUT_OF_MEMORY,  /*!< Not enough memory */
-  TLN_ERR_IDX_LAYER,      /*!< Layer index out of range */
-  TLN_ERR_IDX_SPRITE,     /*!< Sprite index out of range */
-  TLN_ERR_IDX_ANIMATION,  /*!< Animation index out of range */
-  TLN_ERR_IDX_PICTURE,    /*!< Picture or tile index out of range */
-  TLN_ERR_REF_TILESET,    /*!< Invalid TLN_Tileset reference */
-  TLN_ERR_REF_TILEMAP,    /*!< Invalid TLN_Tilemap reference */
-  TLN_ERR_REF_SPRITESET,  /*!< Invalid TLN_Spriteset reference */
-  TLN_ERR_REF_PALETTE,    /*!< Invalid TLN_Palette reference */
-  TLN_ERR_REF_SEQUENCE,   /*!< Invalid TLN_Sequence reference */
-  TLN_ERR_REF_SEQPACK,    /*!< Invalid TLN_SequencePack reference */
-  TLN_ERR_REF_BITMAP,     /*!< Invalid TLN_Bitmap reference */
-  TLN_ERR_NULL_POINTER,   /*!< Null pointer as argument */
-  TLN_ERR_FILE_NOT_FOUND, /*!< Resource file not found */
-  TLN_ERR_WRONG_FORMAT,   /*!< Resource file has invalid format */
-  TLN_ERR_WRONG_SIZE,     /*!< A width or height parameter is invalid */
-  TLN_ERR_UNSUPPORTED,    /*!< Unsupported function */
-  TLN_ERR_REF_LIST,       /*!< Invalid TLN_ObjectList reference */
-  TLN_ERR_IDX_PALETTE,    /*!< Palette index out of range */
-  TLN_MAX_ERR,
+    TLN_ERR_OK,             /*!< No error */
+    TLN_ERR_OUT_OF_MEMORY,  /*!< Not enough memory */
+    TLN_ERR_IDX_LAYER,      /*!< Layer index out of range */
+    TLN_ERR_IDX_SPRITE,     /*!< Sprite index out of range */
+    TLN_ERR_IDX_ANIMATION,  /*!< Animation index out of range */
+    TLN_ERR_IDX_PICTURE,    /*!< Picture or tile index out of range */
+    TLN_ERR_REF_TILESET,    /*!< Invalid TLN_Tileset reference */
+    TLN_ERR_REF_TILEMAP,    /*!< Invalid TLN_Tilemap reference */
+    TLN_ERR_REF_SPRITESET,  /*!< Invalid TLN_Spriteset reference */
+    TLN_ERR_REF_PALETTE,    /*!< Invalid TLN_Palette reference */
+    TLN_ERR_REF_SEQUENCE,   /*!< Invalid TLN_Sequence reference */
+    TLN_ERR_REF_SEQPACK,    /*!< Invalid TLN_SequencePack reference */
+    TLN_ERR_REF_BITMAP,     /*!< Invalid TLN_Bitmap reference */
+    TLN_ERR_NULL_POINTER,   /*!< Null pointer as argument */
+    TLN_ERR_FILE_NOT_FOUND, /*!< Resource file not found */
+    TLN_ERR_WRONG_FORMAT,   /*!< Resource file has invalid format */
+    TLN_ERR_WRONG_SIZE,     /*!< A width or height parameter is invalid */
+    TLN_ERR_UNSUPPORTED,    /*!< Unsupported function */
+    TLN_ERR_REF_LIST,       /*!< Invalid TLN_ObjectList reference */
+    TLN_ERR_IDX_PALETTE,    /*!< Palette index out of range */
+    TLN_MAX_ERR,
 } TLN_Error;
 
 /*! Debug level */
 typedef enum {
-  TLN_LOG_NONE,    /*!< Don't print anything (default) */
-  TLN_LOG_ERRORS,  /*!< Print only runtime errors */
-  TLN_LOG_VERBOSE, /*!< Print everything */
+    TLN_LOG_NONE,    /*!< Don't print anything (default) */
+    TLN_LOG_ERRORS,  /*!< Print only runtime errors */
+    TLN_LOG_VERBOSE, /*!< Print everything */
 } TLN_LogLevel;
 
 /**@}*/
@@ -366,8 +364,7 @@ extern "C" {
  * \defgroup setup
  * \brief Basic setup and management
  * @{ */
-TLNAPI TLN_Engine TLN_Init(int hres, int vres, int numlayers, int numsprites,
-                           int numanimations);
+TLNAPI TLN_Engine TLN_Init(int hres, int vres, int numlayers, int numsprites, int numanimations);
 TLNAPI void TLN_Deinit(void);
 TLNAPI bool TLN_DeleteContext(TLN_Engine context);
 TLNAPI bool TLN_SetContext(TLN_Engine context);
@@ -417,44 +414,39 @@ TLNAPI bool TLN_CreateWindowThread(int flags);
 TLNAPI void TLN_SetWindowTitle(const char *title);
 TLNAPI bool TLN_ProcessWindow(void);
 TLNAPI bool TLN_IsWindowActive(void);
-TLNAPI bool TLN_GetInput(TLN_Input id);
+TLNAPI bool TLN_GetInput(TLN_Input input);
 TLNAPI void TLN_EnableInput(TLN_Player player, bool enable);
 TLNAPI void TLN_AssignInputJoystick(TLN_Player player, int index);
-TLNAPI void TLN_DefineInputKey(TLN_Player player, TLN_Input input,
-                               uint32_t keycode);
-TLNAPI void TLN_DefineInputButton(TLN_Player player, TLN_Input input,
-                                  uint8_t joybutton);
+TLNAPI void TLN_DefineInputKey(TLN_Player player, TLN_Input input, uint32_t keycode);
+TLNAPI void TLN_DefineInputButton(TLN_Player player, TLN_Input input, uint8_t joybutton);
 TLNAPI void TLN_DrawFrame(int frame);
 TLNAPI void TLN_WaitRedraw(void);
 TLNAPI void TLN_DeleteWindow(void);
 TLNAPI void TLN_ConfigCRTEffect(TLN_CRT type, bool blur);
 TLNAPI void TLN_DisableCRTEffect(void);
-TLNAPI void TLN_SetSDLCallback(TLN_SDLCallback);
-TLNAPI void TLN_Delay(uint32_t msecs);
+TLNAPI void TLN_SetSDLCallback(TLN_SDLCallback /*callback*/);
+TLNAPI void TLN_Delay(uint32_t time);
 TLNAPI uint32_t TLN_GetTicks(void);
 TLNAPI uint32_t TLN_GetAverageFps(void);
 TLNAPI int TLN_GetWindowWidth(void);
 TLNAPI int TLN_GetWindowHeight(void);
 TLNAPI int TLN_GetWindowScaleFactor(void);
-TLNAPI void TLN_SetWindowScaleFactor(int);
+TLNAPI void TLN_SetWindowScaleFactor(int /*factor*/);
 /**@}*/
 
 /**
  * \defgroup spriteset
  * \brief Spriteset resources management for sprites
  * @{ */
-TLNAPI TLN_Spriteset TLN_CreateSpriteset(TLN_Bitmap bitmap,
-                                         TLN_SpriteData const *data,
+TLNAPI TLN_Spriteset TLN_CreateSpriteset(TLN_Bitmap bitmap, TLN_SpriteData const *data,
                                          int num_entries);
 TLNAPI TLN_Spriteset TLN_LoadSpriteset(const char *name);
 TLNAPI TLN_Spriteset TLN_CloneSpriteset(TLN_Spriteset src);
-TLNAPI bool TLN_GetSpriteInfo(TLN_Spriteset spriteset, int entry,
-                              TLN_SpriteInfo *info);
+TLNAPI bool TLN_GetSpriteInfo(TLN_Spriteset spriteset, int entry, TLN_SpriteInfo *info);
 TLNAPI TLN_Palette TLN_GetSpritesetPalette(TLN_Spriteset spriteset);
 TLNAPI int TLN_FindSpritesetSprite(TLN_Spriteset spriteset, const char *name);
-TLNAPI bool TLN_SetSpritesetData(TLN_Spriteset spriteset, int entry,
-                                 TLN_SpriteData const *data, void *pixels,
-                                 int pitch);
+TLNAPI bool TLN_SetSpritesetData(TLN_Spriteset spriteset, int entry, TLN_SpriteData const *data,
+                                 void *pixels, int pitch);
 TLNAPI bool TLN_DeleteSpriteset(TLN_Spriteset Spriteset);
 /**@}*/
 
@@ -462,15 +454,13 @@ TLNAPI bool TLN_DeleteSpriteset(TLN_Spriteset Spriteset);
  * \defgroup tileset
  * \brief Tileset resources management for background layers
  * @{ */
-TLNAPI TLN_Tileset TLN_CreateTileset(int numtiles, int width, int height,
-                                     TLN_Palette palette, TLN_SequencePack sp,
-                                     TLN_TileAttributes const *attributes);
-TLNAPI TLN_Tileset TLN_CreateImageTileset(int numtiles,
-                                          TLN_TileImage const *images);
+TLNAPI TLN_Tileset TLN_CreateTileset(int numtiles, int width, int height, TLN_Palette palette,
+                                     TLN_SequencePack sp, TLN_TileAttributes const *attributes);
+TLNAPI TLN_Tileset TLN_CreateImageTileset(int numtiles, TLN_TileImage const *images);
 TLNAPI TLN_Tileset TLN_LoadTileset(const char *filename);
 TLNAPI TLN_Tileset TLN_CloneTileset(TLN_Tileset src);
-TLNAPI bool TLN_SetTilesetPixels(TLN_Tileset tileset, int entry,
-                                 uint8_t const *srcdata, int srcpitch);
+TLNAPI bool TLN_SetTilesetPixels(TLN_Tileset tileset, int entry, uint8_t const *srcdata,
+                                 int srcpitch);
 TLNAPI int TLN_GetTileWidth(TLN_Tileset tileset);
 TLNAPI int TLN_GetTileHeight(TLN_Tileset tileset);
 TLNAPI int TLN_GetTilesetNumTiles(TLN_Tileset tileset);
@@ -483,23 +473,20 @@ TLNAPI bool TLN_DeleteTileset(TLN_Tileset tileset);
  * \defgroup tilemap
  * \brief Tilemap resources management for background layers
  * @{ */
-TLNAPI TLN_Tilemap TLN_CreateTilemap(int rows, int cols, Tile const *tiles,
-                                     uint32_t bgcolor, TLN_Tileset tileset);
+TLNAPI TLN_Tilemap TLN_CreateTilemap(int rows, int cols, Tile const *tiles, uint32_t bgcolor,
+                                     TLN_Tileset tileset);
 TLNAPI TLN_Tilemap TLN_LoadTilemap(const char *filename, const char *layername);
 TLNAPI TLN_Tilemap TLN_CloneTilemap(TLN_Tilemap src);
 TLNAPI int TLN_GetTilemapRows(TLN_Tilemap tilemap);
 TLNAPI int TLN_GetTilemapCols(TLN_Tilemap tilemap);
 TLNAPI bool TLN_SetTilemapTileset(TLN_Tilemap tilemap, TLN_Tileset tileset);
 TLNAPI TLN_Tileset TLN_GetTilemapTileset(TLN_Tilemap tilemap);
-TLNAPI bool TLN_SetTilemapTileset2(TLN_Tilemap tilemap, TLN_Tileset tileset,
-                                   int index);
+TLNAPI bool TLN_SetTilemapTileset2(TLN_Tilemap tilemap, TLN_Tileset tileset, int index);
 TLNAPI TLN_Tileset TLN_GetTilemapTileset2(TLN_Tilemap tilemap, int index);
-TLNAPI bool TLN_GetTilemapTile(TLN_Tilemap tilemap, int row, int col,
-                               TLN_Tile tile);
-TLNAPI bool TLN_SetTilemapTile(TLN_Tilemap tilemap, int row, int col,
-                               Tile const *tile);
-TLNAPI bool TLN_CopyTiles(TLN_Tilemap src, TLN_Rect const *src_rect,
-                          TLN_Tilemap dst, int dstrow, int dstcol);
+TLNAPI bool TLN_GetTilemapTile(TLN_Tilemap tilemap, int row, int col, TLN_Tile tile);
+TLNAPI bool TLN_SetTilemapTile(TLN_Tilemap tilemap, int row, int col, Tile const *tile);
+TLNAPI bool TLN_CopyTiles(TLN_Tilemap src, TLN_Rect const *src_rect, TLN_Tilemap dst, int dstrow,
+                          int dstcol);
 TLNAPI TLN_Tile TLN_GetTilemapTiles(TLN_Tilemap tilemap, int row, int col);
 TLNAPI bool TLN_DeleteTilemap(TLN_Tilemap tilemap);
 /**@}*/
@@ -511,16 +498,14 @@ TLNAPI bool TLN_DeleteTilemap(TLN_Tilemap tilemap);
 TLNAPI TLN_Palette TLN_CreatePalette(int entries);
 TLNAPI TLN_Palette TLN_LoadPalette(const char *filename);
 TLNAPI TLN_Palette TLN_ClonePalette(TLN_Palette src);
-TLNAPI bool TLN_SetPaletteColor(TLN_Palette palette, int color, uint8_t r,
-                                uint8_t g, uint8_t b);
-TLNAPI bool TLN_MixPalettes(TLN_Palette src1, TLN_Palette src2, TLN_Palette dst,
-                            uint8_t factor);
-TLNAPI bool TLN_AddPaletteColor(TLN_Palette palette, uint8_t r, uint8_t g,
-                                uint8_t b, uint8_t start, uint8_t num);
-TLNAPI bool TLN_SubPaletteColor(TLN_Palette palette, uint8_t r, uint8_t g,
-                                uint8_t b, uint8_t start, uint8_t num);
-TLNAPI bool TLN_ModPaletteColor(TLN_Palette palette, uint8_t r, uint8_t g,
-                                uint8_t b, uint8_t start, uint8_t num);
+TLNAPI bool TLN_SetPaletteColor(TLN_Palette palette, int color, uint8_t r, uint8_t g, uint8_t b);
+TLNAPI bool TLN_MixPalettes(TLN_Palette src1, TLN_Palette src2, TLN_Palette dst, uint8_t factor);
+TLNAPI bool TLN_AddPaletteColor(TLN_Palette palette, uint8_t r, uint8_t g, uint8_t b, uint8_t start,
+                                uint8_t num);
+TLNAPI bool TLN_SubPaletteColor(TLN_Palette palette, uint8_t r, uint8_t g, uint8_t b, uint8_t start,
+                                uint8_t num);
+TLNAPI bool TLN_ModPaletteColor(TLN_Palette palette, uint8_t r, uint8_t g, uint8_t b, uint8_t start,
+                                uint8_t num);
 TLNAPI uint8_t *TLN_GetPaletteData(TLN_Palette palette, int index);
 TLNAPI int TLN_GetPaletteNumColors(TLN_Palette palette);
 TLNAPI bool TLN_DeletePalette(TLN_Palette palette);
@@ -548,10 +533,9 @@ TLNAPI bool TLN_DeleteBitmap(TLN_Bitmap bitmap);
  * \brief ObjectList resources management
  * @{ */
 TLNAPI TLN_ObjectList TLN_CreateObjectList(void);
-TLNAPI bool TLN_AddTileObjectToList(TLN_ObjectList list, uint16_t id,
-                                    uint16_t gid, uint16_t flags, int x, int y);
-TLNAPI TLN_ObjectList TLN_LoadObjectList(const char *filename,
-                                         const char *layername);
+TLNAPI bool TLN_AddTileObjectToList(TLN_ObjectList list, uint16_t id, uint16_t gid, uint16_t flags,
+                                    int x, int y);
+TLNAPI TLN_ObjectList TLN_LoadObjectList(const char *filename, const char *layername);
 TLNAPI TLN_ObjectList TLN_CloneObjectList(TLN_ObjectList src);
 TLNAPI int TLN_GetListNumObjects(TLN_ObjectList list);
 TLNAPI bool TLN_GetListObject(TLN_ObjectList list, TLN_ObjectInfo *info);
@@ -568,28 +552,24 @@ TLNAPI bool TLN_SetLayerPalette(int nlayer, TLN_Palette palette);
 TLNAPI bool TLN_SetLayerPosition(int nlayer, int hstart, int vstart);
 TLNAPI bool TLN_SetLayerScaling(int nlayer, float xfactor, float yfactor);
 TLNAPI bool TLN_SetLayerAffineTransform(int nlayer, TLN_Affine const *affine);
-TLNAPI bool TLN_SetLayerTransform(int layer, float angle, float dx, float dy,
-                                  float sx, float sy);
-TLNAPI bool TLN_SetLayerTransformSC(int nlayer, float cos_a, float sin_a,
-                                    float dx, float dy, float sx, float sy);
-TLNAPI bool TLN_SetLayerTransformMatrix(int nlayer, float a, float b, float c,
-                                        float d, int x0, int y0);
+TLNAPI bool TLN_SetLayerTransform(int layer, float angle, float dx, float dy, float sx, float sy);
+TLNAPI bool TLN_SetLayerTransformSC(int nlayer, float cos_a, float sin_a, float dx, float dy,
+                                    float sx, float sy);
+TLNAPI bool TLN_SetLayerTransformMatrix(int nlayer, float a, float b, float c, float d, int x0,
+                                        int y0);
 TLNAPI bool TLN_SetLayerPixelMapping(int nlayer, TLN_PixelMap *table);
 TLNAPI bool TLN_SetLayerColumnOffset(int nlayer, int *offset);
 TLNAPI bool TLN_SetLayerBlendMode(int nlayer, TLN_Blend blend);
 TLNAPI bool TLN_SetLayerBlendMask(int nlayer, int nmask);
 TLNAPI bool TLN_ClearLayerBlendMask(int nlayer);
-TLNAPI bool TLN_SetLayerWindow(int nlayer, int x1, int y1, int x2, int y2,
-                               bool invert);
-TLNAPI bool TLN_SetLayerWindowColor(int nlayer, uint8_t r, uint8_t g, uint8_t b,
-                                    TLN_Blend blend);
+TLNAPI bool TLN_SetLayerWindow(int nlayer, int x1, int y1, int x2, int y2, bool invert);
+TLNAPI bool TLN_SetLayerWindowColor(int nlayer, uint8_t r, uint8_t g, uint8_t b, TLN_Blend blend);
 TLNAPI bool TLN_DisableLayerWindow(int nlayer);
 TLNAPI bool TLN_DisableLayerWindowColor(int nlayer);
 TLNAPI bool TLN_SetLayerMosaic(int nlayer, int width, int height);
 TLNAPI bool TLN_DisableLayerMosaic(int nlayer);
 TLNAPI bool TLN_ResetLayerMode(int nlayer);
-TLNAPI bool TLN_SetLayerObjects(int nlayer, TLN_ObjectList objects,
-                                TLN_Tileset tileset);
+TLNAPI bool TLN_SetLayerObjects(int nlayer, TLN_ObjectList objects, TLN_Tileset tileset);
 TLNAPI bool TLN_SetLayerPriority(int nlayer, bool enable);
 TLNAPI bool TLN_DisableLayer(int nlayer);
 TLNAPI bool TLN_EnableLayer(int nlayer);
@@ -628,8 +608,7 @@ TLNAPI bool TLN_GetSpriteState(int nsprite, TLN_SpriteState *state);
 TLNAPI bool TLN_SetFirstSprite(int nsprite);
 TLNAPI bool TLN_SetNextSprite(int nsprite, int next);
 TLNAPI void TLN_SetSpritesMaskRegion(int top_line, int bottom_line);
-TLNAPI bool TLN_SetSpriteAnimation(int nsprite, TLN_Sequence sequence,
-                                   int loop);
+TLNAPI bool TLN_SetSpriteAnimation(int nsprite, TLN_Sequence sequence, int loop);
 TLNAPI bool TLN_DisableSpriteAnimation(int nsprite);
 TLNAPI bool TLN_PauseSpriteAnimation(int index);
 TLNAPI bool TLN_ResumeSpriteAnimation(int index);
@@ -641,13 +620,10 @@ TLNAPI TLN_Palette TLN_GetSpritePalette(int nsprite);
  * \defgroup sequence
  * \brief Sequence resources management for layer, sprite and palette animations
  * @{ */
-TLNAPI TLN_Sequence TLN_CreateSequence(const char *name, int target,
-                                       int num_frames,
+TLNAPI TLN_Sequence TLN_CreateSequence(const char *name, int target, int num_frames,
                                        TLN_SequenceFrame const *frames);
-TLNAPI TLN_Sequence TLN_CreateCycle(const char *name, int num_strips,
-                                    TLN_ColorStrip const *strips);
-TLNAPI TLN_Sequence TLN_CreateSpriteSequence(const char *name,
-                                             TLN_Spriteset spriteset,
+TLNAPI TLN_Sequence TLN_CreateCycle(const char *name, int num_strips, TLN_ColorStrip const *strips);
+TLNAPI TLN_Sequence TLN_CreateSpriteSequence(const char *name, TLN_Spriteset spriteset,
                                              const char *basename, int delay);
 TLNAPI TLN_Sequence TLN_CloneSequence(TLN_Sequence src);
 TLNAPI bool TLN_GetSequenceInfo(TLN_Sequence sequence, TLN_SequenceInfo *info);
@@ -671,8 +647,8 @@ TLNAPI bool TLN_DeleteSequencePack(TLN_SequencePack sp);
  * \defgroup animation
  * \brief Color cycle animation
  * @{ */
-TLNAPI bool TLN_SetPaletteAnimation(int index, TLN_Palette palette,
-                                    TLN_Sequence sequence, bool blend);
+TLNAPI bool TLN_SetPaletteAnimation(int index, TLN_Palette palette, TLN_Sequence sequence,
+                                    bool blend);
 TLNAPI bool TLN_SetPaletteAnimationSource(int index, TLN_Palette /*palette*/);
 TLNAPI bool TLN_GetAnimationState(int index);
 TLNAPI bool TLN_SetAnimationDelay(int index, int frame, int delay);
@@ -684,7 +660,7 @@ TLNAPI bool TLN_DisablePaletteAnimation(int index);
  * \defgroup world
  * \brief World management
  * @{ */
-TLNAPI bool TLN_LoadWorld(const char *tmxfile, int first_layer);
+TLNAPI bool TLN_LoadWorld(const char *filename, int first_layer);
 TLNAPI void TLN_SetWorldPosition(int x, int y);
 TLNAPI bool TLN_SetLayerParallaxFactor(int nlayer, float x, float y);
 TLNAPI bool TLN_SetSpriteWorldPosition(int nsprite, int x, int y);

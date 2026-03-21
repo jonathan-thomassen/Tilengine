@@ -75,6 +75,13 @@ void SimonSetBridgeFloor(int feet_y);
 void SimonClearBridgeFloor(void);
 
 /**
+ * Sets the bridge snap tolerance (0–8 px). When non-zero, Simon can stand
+ * up to \p tol pixels into the bridge surface. Scale with bridge progress:
+ * 0 when flat, 8 when fully raised. Reset to 0 by SimonClearBridgeFloor().
+ */
+void SimonSetBridgeTolerance(int tol);
+
+/**
  * Directly sets the internal world-scroll offset used for tile collision
  * queries. Call once per frame during forced-scroll sequences (e.g. rails)
  * after advancing the camera position so that collision queries stay in sync

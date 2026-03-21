@@ -14,6 +14,7 @@
 
 #define WIDTH 256
 #define HEIGHT 224
+
 #define HUD_LAYER 0
 #define MAIN_LAYER 1
 #define DB_LAYER 2
@@ -22,16 +23,18 @@
 
 #define TARGET_FPS 60
 
-#define HINGE_X 216
-#define HINGE_Y 200
+#define HINGE_X 223
+#define HINGE_Y 191
+
+/* Runtime-adjustable hinge position (tweaked with [ ] - = keys). */
+static int g_hinge_x = HINGE_X;
+static int g_hinge_y = HINGE_Y;
 #define DB_TRIGGER_X 768     /* world-x where drawbridge animation starts */
 #define DB_LAYER_X_OFFSET 80 /* bridge-layer x shift once drawbridge triggers */
 #define DB_LAYER_Y_OFFSET 8  /* bridge-layer y shift once drawbridge triggers */
 #define DB_WINDOW_TOP 32     /* top clip row for the drawbridge tilemap */
-#define DB_WALL_MARGIN 32    /* pixels before the hinge that act as a wall */
 #define RAILS_STEP 3         /* on-rails camera scroll speed */
 #define RAILS_TRIGGER_X 640  /* world-x where camera locks and auto-scrolls */
-#define SIMON_X_OFFSET 24    /* offset from Simon's left edge to his foot */
 
 static int chain_prop_idx = -1;
 static int pillar_prop_idx = -1;
@@ -79,7 +82,7 @@ static void push_simon_on_bridge(bool db_active) {
     if (!db_active || DrawbridgeGetProgress() >= DB_STEPS - 1) {
         return;
     }
-    if (SimonGetScreenX() + SIMON_X_OFFSET >= DrawbridgeHingeX()) {
+    if (SimonGetScreenX() >= DrawbridgeHingeX()) {
         return;
     }
     static int frame = 0;
@@ -148,6 +151,35 @@ static void tick_chain_prop(bool db_triggered, int xpos) {
     }
 }
 
+/* Adjusts g_hinge_x / g_hinge_y with [ ] - = (hold Shift for ×10 step).
+ * Calls DrawbridgeSetHinge when either value changes and prints the new
+ * values to stderr so they can be baked back into the source. */
+static void tick_hinge_adjust(bool db_triggered) {
+    const bool *keys = SDL_GetKeyboardState(NULL);
+    bool shift = keys[SDL_SCANCODE_LSHIFT] || keys[SDL_SCANCODE_RSHIFT];
+    int step = shift ? 10 : 1;
+    int dx = 0, dy = 0;
+    if (keys[SDL_SCANCODE_A])
+        dx = -step;
+    if (keys[SDL_SCANCODE_S])
+        dx = +step;
+    if (keys[SDL_SCANCODE_Q])
+        dy = -step;
+    if (keys[SDL_SCANCODE_W])
+        dy = +step;
+    if (dx == 0 && dy == 0)
+        return;
+
+    g_hinge_x += dx;
+    g_hinge_y += dy;
+
+    /* Apply the same DB_LAYER_Y_OFFSET correction that the trigger block uses
+     * so the live value matches what DrawbridgeSurfaceY reads. */
+    int applied_y = db_triggered ? g_hinge_y - DB_LAYER_Y_OFFSET : g_hinge_y;
+    DrawbridgeSetHinge(g_hinge_x, applied_y);
+    fprintf(stderr, "[hinge] x=%d  y=%d\n", g_hinge_x, g_hinge_y);
+}
+
 /* Handles the Esc pause toggle; returns true while the game is paused. */
 static bool process_pause(bool *p_paused, bool *p_esc_prev) {
     const bool *keys = SDL_GetKeyboardState(NULL);
@@ -201,7 +233,7 @@ int main(int argc, char *argv[]) {
     TLN_SetLayerTilemap(WATER_LAYER, drawbridge_water);
     TLN_SetLayerTilemap(MAIN_LAYER, drawbridge_main);
 
-    DrawbridgeInit(DB_LAYER, HINGE_X, HINGE_Y);
+    DrawbridgeInit(DB_LAYER, g_hinge_x, g_hinge_y);
 
     TLN_SetLayerTilemap(HUD_LAYER, hud);
     TLN_SetLayerPriority(HUD_LAYER, true);
@@ -237,17 +269,42 @@ int main(int argc, char *argv[]) {
     int xpos = 0;
     bool db_triggered = false;
     int prev_xpos = -1;
+    /* Difference between Simon's tile-snapped feet Y and DrawbridgeSurfaceY at the
+     * moment the bridge animation triggers.  Added to every DrawbridgeSurfaceY call
+     * so the bridge floor is calibrated to Simon's actual position, not hinge_y. */
+    int db_floor_offset = 0;
 
-    /* Enable the frame profiler with --profile or -p. */
+    /* Enable the frame profiler with --profile or -p.
+     * Pass --test-db to skip to just before the drawbridge animation fires. */
     bool prof_enabled = false;
+    bool test_db_mode = false;
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--profile") == 0 || strcmp(argv[i], "-p") == 0) {
             prof_enabled = true;
+        } else if (strcmp(argv[i], "--test-db") == 0) {
+            test_db_mode = true;
         }
     }
     ProfState prof;
     if (prof_enabled) {
         prof_init(&prof);
+    }
+
+    /* Test mode: skip ahead to the moment the drawbridge animation triggers.
+     * Simon is placed on the flat bridge left of the hinge so the animation
+     * starts on the very first game frame. */
+    if (test_db_mode) {
+        xpos = DB_TRIGGER_X;
+        prev_xpos = DB_TRIGGER_X; /* suppress camera-delta spike on frame 1 */
+        rails_triggered = true;
+        rails_pos = DB_TRIGGER_X;
+        rails_max = TLN_GetLayerWidth(MAIN_LAYER) - WIDTH;
+        SimonFreezeCamera();
+        SimonSetScreenX(HINGE_X - 100); /* place Simon on the bridge, left of hinge */
+        SimonSetWorldX(DB_TRIGGER_X);
+        SimonPinFeetY(
+            g_hinge_y -
+            DB_LAYER_Y_OFFSET); /* bridge surface y in screen space once DB_LAYER is active */
     }
 
     while (TLN_ProcessWindow()) {
@@ -266,8 +323,9 @@ int main(int argc, char *argv[]) {
          * after xpos >= DB_TRIGGER_X; before that, normal tile floor collision must
          * apply for the castle approach geometry to work correctly. */
         SimonClearBridgeFloor();
-        if ((int)db_triggered && SimonGetScreenX() + SIMON_X_OFFSET < DrawbridgeHingeX()) {
-            SimonSetBridgeFloor(DrawbridgeSurfaceY(SimonGetScreenX() + SIMON_X_OFFSET));
+        if ((int)db_triggered && SimonGetScreenX() < DrawbridgeHingeX()) {
+            SimonSetBridgeFloor(DrawbridgeSurfaceY(SimonGetScreenX()) + db_floor_offset);
+            SimonSetBridgeTolerance(DrawbridgeGetProgress() * 32 / (DB_STEPS - 1));
         }
         SimonTasks();
         HudTasks();
@@ -319,16 +377,17 @@ int main(int argc, char *argv[]) {
 
             /* The bridge layer is shifted up by DB_LAYER_Y_OFFSET. Update the hinge
              * Y to a screen-space coordinate so DrawbridgeSurfaceY returns the
-             * correct screen Y for SimonSetFeetY (otherwise Simon sinks
+             * correct screen Y for the bridge surface (otherwise Simon sinks
              * DB_LAYER_Y_OFFSET px into the bridge surface). */
-            DrawbridgeSetHinge(DrawbridgeHingeX(), HINGE_Y - DB_LAYER_Y_OFFSET);
+            DrawbridgeSetHinge(g_hinge_x, g_hinge_y - DB_LAYER_Y_OFFSET);
+            /* Capture how far hinge_y is from Simon's actual tile-top feet position
+             * so that DrawbridgeSurfaceY can be corrected on every subsequent frame. */
+            db_floor_offset = (SimonGetFeetY() - DrawbridgeSurfaceY(SimonGetScreenX())) - 2;
         }
 
-        /* Hard clamp: once the bridge is fully raised it acts as a wall;
-         * allow Simon up to DB_WALL_MARGIN px closer than the hinge. */
-        if (DrawbridgeGetProgress() >= DB_STEPS - 1 &&
-            SimonGetScreenX() < DrawbridgeHingeX() - DB_WALL_MARGIN) {
-            SimonSetScreenX(DrawbridgeHingeX() - DB_WALL_MARGIN);
+        /* Hard clamp: once the bridge is fully raised it acts as a wall */
+        if (DrawbridgeGetProgress() >= DB_STEPS - 1 && SimonGetScreenX() < DrawbridgeHingeX()) {
+            SimonSetScreenX(DrawbridgeHingeX());
         }
 
         /* Compensate Simon's screen x for camera movement so his world position
@@ -351,6 +410,7 @@ int main(int argc, char *argv[]) {
         /* Camera is locked by SimonFreezeCamera(); xpos stays at its
          * frozen value for all layer positions. */
         push_simon_on_bridge(db_triggered);
+        tick_hinge_adjust(db_triggered);
 
         tick_chain_prop(db_triggered, xpos);
 
