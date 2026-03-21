@@ -68,12 +68,12 @@ typedef struct {
 
 /* sprite flag accessor macros */
 #define GetSpriteFlag(sprite, flag) (((sprite)->flags & (flag)) != 0)
-#define SetSpriteFlag(sprite, flag, value)                                     \
-  do {                                                                         \
-    if (value)                                                                 \
-      (sprite)->flags |= (flag);                                               \
-    else                                                                       \
-      (sprite)->flags &= ~(flag);                                              \
+#define SetSpriteFlag(sprite, flag, value)                                                         \
+  do {                                                                                             \
+    if (value)                                                                                     \
+      (sprite)->flags |= (flag);                                                                   \
+    else                                                                                           \
+      (sprite)->flags &= ~(flag);                                                                  \
   } while (0)
 
 /* sprite */
@@ -86,11 +86,9 @@ typedef struct Sprite {
   int index;     /* spriteset picture index */
   SpritePos pos; /* screen space location (TLN_SetSpritePosition) */
   SpriteIncrement inc;
-  SpriteWorldPos
-      world_pos; /* world space location (TLN_SetSpriteWorldPosition) */
+  SpriteWorldPos world_pos; /* world space location (TLN_SetSpriteWorldPosition) */
   SpriteScale scale;
-  SpritePivot
-      pivot; /* normalized pivot position inside sprite (default = 0,0) */
+  SpritePivot pivot; /* normalized pivot position inside sprite (default = 0,0) */
   rect_t srcrect;
   rect_t dstrect;
   draw_t mode;

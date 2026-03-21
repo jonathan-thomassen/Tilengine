@@ -20,10 +20,10 @@
 #include "Tilengine.h"
 
 typedef struct {
-  int x;
-  int y;
-  int w;
-  int h;
+    int x;
+    int y;
+    int w;
+    int h;
 } Rect;
 
 /*!
@@ -55,27 +55,28 @@ typedef struct {
  * \see
  * TLN_DeleteTilemap(), struct Tile
  */
-TLN_Tilemap TLN_CreateTilemap(int rows, int cols, Tile const *tiles,
-                              uint32_t bgcolor, TLN_Tileset tileset) {
-  TLN_Tilemap tilemap = NULL;
-  size_t size =
-      sizeof(struct Tilemap) + (size_t)rows * (size_t)cols * sizeof(Tile);
+TLN_Tilemap TLN_CreateTilemap(int rows, int cols, Tile const *tiles, uint32_t bgcolor,
+                              TLN_Tileset tileset) {
+    TLN_Tilemap tilemap = NULL;
+    size_t size = sizeof(struct Tilemap) + ((size_t)rows * (size_t)cols * sizeof(Tile));
 
-  tilemap = (TLN_Tilemap)CreateBaseObject(OT_TILEMAP, size);
-  if (!tilemap)
-    return NULL;
+    tilemap = (TLN_Tilemap)CreateBaseObject(OT_TILEMAP, size);
+    if (!tilemap) {
+        return NULL;
+    }
 
-  tilemap->rows = rows;
-  tilemap->cols = cols;
-  tilemap->bgcolor = (int)bgcolor;
-  tilemap->tilesets[0] = tileset;
-  tilemap->visible = true;
+    tilemap->rows = rows;
+    tilemap->cols = cols;
+    tilemap->bgcolor = (int)bgcolor;
+    tilemap->tilesets[0] = tileset;
+    tilemap->visible = true;
 
-  if (tiles)
-    memcpy(tilemap->tiles, tiles, tilemap->size - sizeof(struct Tilemap));
+    if (tiles) {
+        memcpy(tilemap->tiles, tiles, tilemap->size - sizeof(struct Tilemap));
+    }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return tilemap;
+    TLN_SetLastError(TLN_ERR_OK);
+    return tilemap;
 }
 
 /*!
@@ -92,16 +93,17 @@ TLN_Tilemap TLN_CreateTilemap(int rows, int cols, Tile const *tiles,
  * TLN_LoadTilemap()
  */
 TLN_Tilemap TLN_CloneTilemap(TLN_Tilemap src) {
-  TLN_Tilemap tilemap;
+    TLN_Tilemap tilemap;
 
-  if (!CheckBaseObject(src, OT_TILEMAP))
-    return NULL;
+    if (!CheckBaseObject(src, OT_TILEMAP)) {
+        return NULL;
+    }
 
-  tilemap = (TLN_Tilemap)CloneBaseObject(src);
-  if (tilemap) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return tilemap;
-  } else
+    tilemap = (TLN_Tilemap)CloneBaseObject(src);
+    if (tilemap) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return tilemap;
+    }
     return NULL;
 }
 
@@ -116,10 +118,10 @@ TLN_Tilemap TLN_CloneTilemap(TLN_Tilemap src) {
  * TLN_GetTilemapCols()
  */
 int TLN_GetTilemapRows(TLN_Tilemap tilemap) {
-  if (CheckBaseObject(tilemap, OT_TILEMAP)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return tilemap->rows;
-  } else
+    if (CheckBaseObject(tilemap, OT_TILEMAP)) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return tilemap->rows;
+    }
     return 0;
 }
 
@@ -134,10 +136,10 @@ int TLN_GetTilemapRows(TLN_Tilemap tilemap) {
  * TLN_GetTilemapCols()
  */
 int TLN_GetTilemapCols(TLN_Tilemap tilemap) {
-  if (CheckBaseObject(tilemap, OT_TILEMAP)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return tilemap->cols;
-  } else
+    if (CheckBaseObject(tilemap, OT_TILEMAP)) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return tilemap->cols;
+    }
     return 0;
 }
 
@@ -152,7 +154,7 @@ int TLN_GetTilemapCols(TLN_Tilemap tilemap) {
  * TLN_CreateTilemap(), TLN_LoadTilemap()
  */
 TLN_Tileset TLN_GetTilemapTileset(TLN_Tilemap tilemap) {
-  return TLN_GetTilemapTileset2(tilemap, 0);
+    return TLN_GetTilemapTileset2(tilemap, 0);
 }
 
 /*!
@@ -165,10 +167,10 @@ TLN_Tileset TLN_GetTilemapTileset(TLN_Tilemap tilemap) {
  * TLN_CreateTilemap(), TLN_LoadTilemap()
  */
 TLN_Tileset TLN_GetTilemapTileset2(TLN_Tilemap tilemap, int index) {
-  if (CheckBaseObject(tilemap, OT_TILEMAP)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return tilemap->tilesets[index];
-  } else
+    if (CheckBaseObject(tilemap, OT_TILEMAP)) {
+        TLN_SetLastError(TLN_ERR_OK);
+        return tilemap->tilesets[index];
+    }
     return NULL;
 }
 
@@ -179,7 +181,7 @@ TLN_Tileset TLN_GetTilemapTileset2(TLN_Tilemap tilemap, int index) {
  * \see TLN_GetTilemapTileset()
  */
 bool TLN_SetTilemapTileset(TLN_Tilemap tilemap, TLN_Tileset tileset) {
-  return TLN_SetTilemapTileset2(tilemap, tileset, 0);
+    return TLN_SetTilemapTileset2(tilemap, tileset, 0);
 }
 
 /*!
@@ -189,26 +191,25 @@ bool TLN_SetTilemapTileset(TLN_Tilemap tilemap, TLN_Tileset tileset) {
  * \param index Index of tileset to set (0 - 7)
  * \see TLN_GetTilemapTileset()
  */
-bool TLN_SetTilemapTileset2(TLN_Tilemap tilemap, TLN_Tileset tileset,
-                            int index) {
-  if (!CheckBaseObject(tilemap, OT_TILEMAP)) {
-    TLN_SetLastError(TLN_ERR_REF_TILEMAP);
-    return false;
-  }
-  if (!CheckBaseObject(tileset, OT_TILESET)) {
-    TLN_SetLastError(TLN_ERR_REF_TILESET);
-    return false;
-  }
+bool TLN_SetTilemapTileset2(TLN_Tilemap tilemap, TLN_Tileset tileset, int index) {
+    if (!CheckBaseObject(tilemap, OT_TILEMAP)) {
+        TLN_SetLastError(TLN_ERR_REF_TILEMAP);
+        return false;
+    }
+    if (!CheckBaseObject(tileset, OT_TILESET)) {
+        TLN_SetLastError(TLN_ERR_REF_TILESET);
+        return false;
+    }
 
-  tilemap->tilesets[index] = tileset;
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    tilemap->tilesets[index] = tileset;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }
 
 static TLN_Tile GetTilemapPtr(TLN_Tilemap tilemap, int row, int col) {
-  if (row < tilemap->rows && col < tilemap->cols)
-    return &tilemap->tiles[row * tilemap->cols + col];
-  else
+    if (row < tilemap->rows && col < tilemap->cols) {
+        return &tilemap->tiles[(row * tilemap->cols) + col];
+    }
     return NULL;
 }
 
@@ -229,18 +230,16 @@ static TLN_Tile GetTilemapPtr(TLN_Tilemap tilemap, int row, int col) {
  * Reference to an application-allocated struct Tile that will get the data
  */
 bool TLN_GetTilemapTile(TLN_Tilemap tilemap, int row, int col, TLN_Tile tile) {
-  if (CheckBaseObject(tilemap, OT_TILEMAP) && tile) {
-    Tile const *srctile = GetTilemapPtr(tilemap, row, col);
-    if (srctile) {
-      tile->flags = srctile->flags;
-      tile->index = srctile->index;
-      TLN_SetLastError(TLN_ERR_OK);
-      return true;
-    } else {
-      TLN_SetLastError(TLN_ERR_WRONG_SIZE);
-      return false;
+    if ((int)CheckBaseObject(tilemap, OT_TILEMAP) && tile) {
+        Tile const *srctile = GetTilemapPtr(tilemap, row, col);
+        if (srctile) {
+            tile->flags = srctile->flags;
+            tile->index = srctile->index;
+            TLN_SetLastError(TLN_ERR_OK);
+            return true;
+        }
+        TLN_SetLastError(TLN_ERR_WRONG_SIZE);
     }
-  } else
     return false;
 }
 
@@ -263,19 +262,16 @@ bool TLN_GetTilemapTile(TLN_Tilemap tilemap, int row, int col, TLN_Tile tile) {
  * \returns
  * true (success) or false (error)
  */
-bool TLN_SetTilemapTile(TLN_Tilemap tilemap, int row, int col,
-                        Tile const *tile) {
-  if (CheckBaseObject(tilemap, OT_TILEMAP) && tile) {
-    TLN_Tile dsttile = GetTilemapPtr(tilemap, row, col);
-    if (dsttile != NULL) {
-      dsttile->value = tile->value;
-      TLN_SetLastError(TLN_ERR_OK);
-      return true;
-    } else {
-      TLN_SetLastError(TLN_ERR_WRONG_SIZE);
-      return false;
+bool TLN_SetTilemapTile(TLN_Tilemap tilemap, int row, int col, Tile const *tile) {
+    if ((int)CheckBaseObject(tilemap, OT_TILEMAP) && tile) {
+        TLN_Tile dsttile = GetTilemapPtr(tilemap, row, col);
+        if (dsttile != NULL) {
+            dsttile->value = tile->value;
+            TLN_SetLastError(TLN_ERR_OK);
+            return true;
+        }
+        TLN_SetLastError(TLN_ERR_WRONG_SIZE);
     }
-  } else
     return false;
 }
 
@@ -291,10 +287,11 @@ bool TLN_SetTilemapTile(TLN_Tilemap tilemap, int row, int col,
  * manipulation can lead to memory corruption or crashes. Use with caution!
  */
 TLN_Tile TLN_GetTilemapTiles(TLN_Tilemap tilemap, int row, int col) {
-  if (!CheckBaseObject(tilemap, OT_TILEMAP))
-    return NULL;
+    if (!CheckBaseObject(tilemap, OT_TILEMAP)) {
+        return NULL;
+    }
 
-  return GetTilemapPtr(tilemap, row, col);
+    return GetTilemapPtr(tilemap, row, col);
 }
 
 /*!
@@ -311,21 +308,24 @@ TLN_Tile TLN_GetTilemapTiles(TLN_Tilemap tilemap, int row, int col) {
  * TLN_LoadTilemap(), TLN_CloneTilemap()
  */
 bool TLN_DeleteTilemap(TLN_Tilemap tilemap) {
-  if (CheckBaseObject(tilemap, OT_TILEMAP)) {
-    if (ObjectOwner(tilemap))
-      TLN_DeleteTileset(tilemap->tilesets[0]);
-    DeleteBaseObject(tilemap);
-    TLN_SetLastError(TLN_ERR_OK);
-    return true;
-  } else
+    if (CheckBaseObject(tilemap, OT_TILEMAP)) {
+        if (ObjectOwner(tilemap)) {
+            TLN_DeleteTileset(tilemap->tilesets[0]);
+        }
+        DeleteBaseObject(tilemap);
+        TLN_SetLastError(TLN_ERR_OK);
+        return true;
+    }
     return false;
 }
 
 static void ClipRect(Rect *src, Rect const *dst) {
-  if (src->x + src->w >= dst->w)
-    src->w = dst->w - src->x;
-  if (src->y + src->h >= dst->h)
-    src->h = dst->h - src->y;
+    if (src->x + src->w >= dst->w) {
+        src->w = dst->w - src->x;
+    }
+    if (src->y + src->h >= dst->h) {
+        src->h = dst->h - src->y;
+    }
 }
 
 /*!
@@ -350,37 +350,37 @@ static void ClipRect(Rect *src, Rect const *dst) {
  * \remarks
  * Use this function to implement tile streaming
  */
-bool TLN_CopyTiles(TLN_Tilemap src, TLN_Rect const *src_rect, TLN_Tilemap dst,
-                   int dstrow, int dstcol) {
-  if (!CheckBaseObject(src, OT_TILEMAP) || !CheckBaseObject(dst, OT_TILEMAP))
-    return false;
-
-  /* setup rects */
-  {
-    int size;
-    Rect tgtrect = {src_rect->col, src_rect->row, src_rect->cols,
-                    src_rect->rows};             /* area to copy */
-    Rect srcrect = {0, 0, src->rows, src->cols}; /* source tilemap */
-    Rect dstrect = {0, 0, dst->rows, dst->cols}; /* destination tilemap */
-
-    /* clipping */
-    ClipRect(&tgtrect, &srcrect);
-    ClipRect(&tgtrect, &dstrect);
-
-    size = tgtrect.w * (int)sizeof(Tile);
-    for (int y = 0; y < tgtrect.h; y++) {
-      Tile const *srctile =
-          GetTilemapPtr(src, y + src_rect->row, src_rect->col);
-      Tile *dsttile = GetTilemapPtr(dst, y + dstrow, dstcol);
-      if (srctile && dsttile)
-        memcpy(dsttile, srctile, size);
-      else {
-        TLN_SetLastError(TLN_ERR_WRONG_SIZE);
+bool TLN_CopyTiles(TLN_Tilemap src, TLN_Rect const *src_rect, TLN_Tilemap dst, int dstrow,
+                   int dstcol) {
+    if (!CheckBaseObject(src, OT_TILEMAP) || !CheckBaseObject(dst, OT_TILEMAP)) {
         return false;
-      }
     }
-  }
 
-  TLN_SetLastError(TLN_ERR_OK);
-  return true;
+    /* setup rects */
+    {
+        int size;
+        Rect tgtrect = {src_rect->col, src_rect->row, src_rect->cols,
+                        src_rect->rows};             /* area to copy */
+        Rect srcrect = {0, 0, src->rows, src->cols}; /* source tilemap */
+        Rect dstrect = {0, 0, dst->rows, dst->cols}; /* destination tilemap */
+
+        /* clipping */
+        ClipRect(&tgtrect, &srcrect);
+        ClipRect(&tgtrect, &dstrect);
+
+        size = tgtrect.w * (int)sizeof(Tile);
+        for (int y = 0; y < tgtrect.h; y++) {
+            Tile const *srctile = GetTilemapPtr(src, y + src_rect->row, src_rect->col);
+            Tile *dsttile = GetTilemapPtr(dst, y + dstrow, dstcol);
+            if (srctile && dsttile) {
+                memcpy(dsttile, srctile, (size_t)size);
+            } else {
+                TLN_SetLastError(TLN_ERR_WRONG_SIZE);
+                return false;
+            }
+        }
+    }
+
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
 }

@@ -18,15 +18,15 @@
 
 /* mapa */
 struct Tilemap {
-  DEFINE_OBJECT;
-  int rows;                               /* rows*/
-  int cols;                               /* columns */
-  int bgcolor;                            /* background color */
-  int id;                                 /* id property */
-  bool visible;                           /* visible property */
-  struct Tileset *tilesets[MAX_TILESETS]; /* attached tilesets */
-  int num_tilesets;                       /* actual amount of tilesets */
-  Tile tiles[];
+    DEFINE_OBJECT;
+    int rows;                               /* rows*/
+    int cols;                               /* columns */
+    int bgcolor;                            /* background color */
+    int id;                                 /* id property */
+    bool visible;                           /* visible property */
+    struct Tileset *tilesets[MAX_TILESETS]; /* attached tilesets */
+    int num_tilesets;                       /* actual amount of tilesets */
+    Tile tiles[];
 };
 
 #endif

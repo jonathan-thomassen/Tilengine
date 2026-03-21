@@ -16,18 +16,18 @@
 
 /* registro de sprite */
 typedef struct {
-  uint32_t hash;
-  int w;
-  int h;
-  int offset;
+    uint32_t hash;
+    int w;
+    int h;
+    int offset;
 } SpriteEntry;
 
 struct Spriteset {
-  DEFINE_OBJECT;
-  int entries;
-  TLN_Bitmap bitmap;
-  TLN_Palette palette;
-  SpriteEntry data[];
+    DEFINE_OBJECT;
+    int entries;
+    TLN_Bitmap bitmap;
+    TLN_Palette palette;
+    SpriteEntry data[];
 };
 
 TLN_SpriteInfo *GetSpriteInfo(TLN_Spriteset spriteset, int entry);

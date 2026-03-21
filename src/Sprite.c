@@ -12,6 +12,7 @@
 
 #include <math.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #include "Bitmap.h"
 #include "Blitters.h"
@@ -50,25 +51,28 @@ bool TLN_SetSpriteSet(int nsprite, TLN_Spriteset spriteset) {
     TLN_SetLastError(TLN_ERR_IDX_SPRITE);
     return false;
   }
-  if (!CheckBaseObject(spriteset, OT_SPRITESET))
+  if (!CheckBaseObject(spriteset, OT_SPRITESET)) {
     return false;
+  }
 
   sprite = &engine->sprites[nsprite];
   sprite->spriteset = spriteset;
   sprite->pixel_data.pitch = sprite->spriteset->bitmap->pitch;
   enabled = GetSpriteFlag(sprite, SPRITE_FLAG_OK);
-  if (spriteset->palette)
+  if (spriteset->palette) {
     sprite->palette = spriteset->palette;
+  }
   SetSpriteFlag(sprite, SPRITE_FLAG_OK, sprite->spriteset && sprite->palette);
   if (GetSpriteFlag(sprite, SPRITE_FLAG_OK)) {
     sprite->num = nsprite;
-    sprite->pivot.x = sprite->pivot.y = 0.0f;
+    sprite->pivot.x = sprite->pivot.y = 0.0F;
     SetSpriteFlag(sprite, SPRITE_FLAG_OK, TLN_SetSpritePicture(nsprite, 0));
   }
 
   /* sprite enabled: add to the end */
-  if (enabled == false && GetSpriteFlag(sprite, SPRITE_FLAG_OK) == true)
+  if (!enabled && GetSpriteFlag(sprite, SPRITE_FLAG_OK)) {
     ListAppendNode(&engine->list_sprites, nsprite);
+  }
 
   return GetSpriteFlag(sprite, SPRITE_FLAG_OK);
 }
@@ -85,10 +89,11 @@ bool TLN_EnableSpriteFlag(int nsprite, uint32_t flag, bool enable) {
     return false;
   }
 
-  if (enable)
+  if (enable) {
     engine->sprites[nsprite].flags |= flag;
-  else
+  } else {
     engine->sprites[nsprite].flags &= ~flag;
+  }
 
   TLN_SetLastError(TLN_ERR_OK);
   return true;
@@ -154,13 +159,13 @@ bool TLN_SetSpritePicture(int nsprite, int entry) {
   }
 
   sprite = &engine->sprites[nsprite];
-  if (!CheckBaseObject(sprite->spriteset, OT_SPRITESET))
+  if (!CheckBaseObject(sprite->spriteset, OT_SPRITESET)) {
     return false;
+  }
 
   sprite->index = entry;
   sprite->info = &sprite->spriteset->data[entry];
-  sprite->pixel_data.pixels =
-      sprite->spriteset->bitmap->data + sprite->info->offset;
+  sprite->pixel_data.pixels = sprite->spriteset->bitmap->data + sprite->info->offset;
   UpdateSprite(sprite);
   debugmsg("SetSpritePicture %d -> %d\n", nsprite, entry);
 
@@ -184,12 +189,13 @@ bool TLN_SetSpritePalette(int nsprite, TLN_Palette palette) {
     TLN_SetLastError(TLN_ERR_IDX_SPRITE);
     return false;
   }
-  if (!CheckBaseObject(palette, OT_PALETTE))
+  if (!CheckBaseObject(palette, OT_PALETTE)) {
     return false;
+  }
 
   sprite = &engine->sprites[nsprite];
   sprite->palette = palette;
-  SetSpriteFlag(sprite, SPRITE_FLAG_OK, sprite->spriteset && sprite->palette);
+  SetSpriteFlag(sprite, (uint32_t)SPRITE_FLAG_OK, sprite->spriteset && sprite->palette);
 
   TLN_SetLastError(TLN_ERR_OK);
   return true;
@@ -309,7 +315,7 @@ bool TLN_ResetSpriteScaling(int nsprite) {
   }
 
   sprite = &engine->sprites[nsprite];
-  sprite->scale.x = sprite->scale.y = 1.0f;
+  sprite->scale.x = sprite->scale.y = 1.0F;
   sprite->mode = MODE_NORMAL;
   sprite->funcs.draw = GetSpriteDraw(sprite->mode);
   UpdateSprite(sprite);
@@ -327,8 +333,7 @@ typedef struct {
 } Vector2D;
 
 /* sets fixed-point 2D vector */
-static void Vector2DSet(Vector2D *vector, Point2D const *src,
-                        Point2D const *dst, int len) {
+static void Vector2DSet(Vector2D *vector, Point2D const *src, Point2D const *dst, int len) {
   int dstw = (int)(dst->x - src->x);
   int dsth = (int)(dst->y - src->y);
   vector->x = float2fix(src->x);
@@ -365,19 +370,18 @@ bool TLN_SetSpriteRotation(int nsprite, float angle) {
   sprite = &engine->sprites[nsprite];
 
   /* delete previous rotation bitmap */
-  if (sprite->rotation_bitmap != NULL)
+  if (sprite->rotation_bitmap != NULL) {
     TLN_DeleteBitmap(sprite->rotation_bitmap);
+  }
 
   /* calculate 4 corners */
   spr_w = sprite->info->w;
   spr_h = sprite->info->h;
   Point2DSet(&corners[0], (math2d_t)sprite->pos.x, (math2d_t)sprite->pos.y);
-  Point2DSet(&corners[1], (math2d_t)sprite->pos.x + (math2d_t)spr_w - 1,
-             (math2d_t)sprite->pos.y);
+  Point2DSet(&corners[1], (math2d_t)sprite->pos.x + (math2d_t)spr_w - 1, (math2d_t)sprite->pos.y);
   Point2DSet(&corners[2], (math2d_t)sprite->pos.x + (math2d_t)spr_w - 1,
              (math2d_t)sprite->pos.y + (math2d_t)spr_h - 1);
-  Point2DSet(&corners[3], (math2d_t)sprite->pos.x,
-             (math2d_t)sprite->pos.y + (math2d_t)spr_h - 1);
+  Point2DSet(&corners[3], (math2d_t)sprite->pos.x, (math2d_t)sprite->pos.y + (math2d_t)spr_h - 1);
 
   /* calculate rotation matrix from the center */
   dx = sprite->pos.x - (spr_w >> 1);
@@ -385,7 +389,7 @@ bool TLN_SetSpriteRotation(int nsprite, float angle) {
   Matrix3SetIdentity(&matrix);
   Matrix3SetTranslation(&transform, (math2d_t)-dx, (math2d_t)-dy);
   Matrix3Multiply(&matrix, &transform);
-  Matrix3SetRotation(&transform, fmodf(angle, 360.0f));
+  Matrix3SetRotation(&transform, fmodf(angle, 360.0F));
   Matrix3Multiply(&matrix, &transform);
   Matrix3SetTranslation(&transform, (math2d_t)dx, (math2d_t)dy);
   Matrix3Multiply(&matrix, &transform);
@@ -403,14 +407,18 @@ bool TLN_SetSpriteRotation(int nsprite, float angle) {
   rect->y1 = rect->y2 = (int)corners[0].y;
   for (c = 1; c < 4; c++) {
     Point2D const *point = &corners[c];
-    if ((math2d_t)rect->x1 > point->x)
+    if ((math2d_t)rect->x1 > point->x) {
       rect->x1 = (int)point->x;
-    if ((math2d_t)rect->x2 < point->x)
+    }
+    if ((math2d_t)rect->x2 < point->x) {
       rect->x2 = (int)point->x;
-    if ((math2d_t)rect->y1 > point->y)
+    }
+    if ((math2d_t)rect->y1 > point->y) {
       rect->y1 = (int)point->y;
-    if ((math2d_t)rect->y2 < point->y)
+    }
+    if ((math2d_t)rect->y2 < point->y) {
       rect->y2 = (int)point->y;
+    }
   }
 
   /* adjust point array to origin (0,0) to obtain size */
@@ -419,8 +427,7 @@ bool TLN_SetSpriteRotation(int nsprite, float angle) {
     corners[c].y -= (math2d_t)rect->y1;
   }
 
-  rotated =
-      TLN_CreateBitmap(rect->x2 - rect->x1 + 1, rect->y2 - rect->y1 + 1, 8);
+  rotated = TLN_CreateBitmap(rect->x2 - rect->x1 + 1, rect->y2 - rect->y1 + 1, 8);
 
   /* initialize scan vectors */
   Vector2DSet(&xvect, &corners[0], &corners[1], spr_w);
@@ -430,8 +437,7 @@ bool TLN_SetSpriteRotation(int nsprite, float angle) {
   for (int y = 0; y < spr_h; y++) {
     xvect.x = yvect.x;
     xvect.y = yvect.y;
-    uint8_t const *srcptr =
-        sprite->pixel_data.pixels + (ptrdiff_t)y * sprite->pixel_data.pitch;
+    uint8_t const *srcptr = sprite->pixel_data.pixels + ((ptrdiff_t)y * sprite->pixel_data.pitch);
     for (int x = 0; x < spr_w; x++) {
       int tmpx = fix2int(xvect.x);
       int tmpy = fix2int(xvect.y);
@@ -458,8 +464,9 @@ bool TLN_ResetSpriteRotation(int nsprite) {
   }
 
   sprite = &engine->sprites[nsprite];
-  if (sprite->rotation_bitmap != NULL)
+  if (sprite->rotation_bitmap != NULL) {
     TLN_DeleteBitmap(sprite->rotation_bitmap);
+  }
 
   sprite->mode = MODE_NORMAL;
   sprite->funcs.draw = GetSpriteDraw(sprite->mode);
@@ -496,8 +503,9 @@ int TLN_GetSpritePicture(int nsprite) {
 int TLN_GetAvailableSprite(void) {
   TLN_SetLastError(TLN_ERR_OK);
   for (int c = 0; c < engine->numsprites; c++) {
-    if (!GetSpriteFlag(&engine->sprites[c], SPRITE_FLAG_OK))
+    if (!GetSpriteFlag(&engine->sprites[c], SPRITE_FLAG_OK)) {
       return c;
+    }
   }
   return -1;
 }
@@ -528,7 +536,7 @@ bool TLN_EnableSpriteCollision(int nsprite, bool enable) {
     return false;
   }
 
-  SetSpriteFlag(&engine->sprites[nsprite], SPRITE_FLAG_DO_COLLISION, enable);
+  SetSpriteFlag(&engine->sprites[nsprite], (uint32_t)SPRITE_FLAG_DO_COLLISION, enable);
   return true;
 }
 
@@ -579,12 +587,12 @@ bool TLN_DisableSprite(int nsprite) {
 
   sprite = &engine->sprites[nsprite];
   enabled = GetSpriteFlag(sprite, SPRITE_FLAG_OK);
-  SetSpriteFlag(sprite, SPRITE_FLAG_OK, false);
-  SetSpriteFlag(sprite, SPRITE_FLAG_COLLISION, false);
-  SetSpriteFlag(sprite, SPRITE_FLAG_DO_COLLISION, false);
+  SetSpriteFlag(sprite, (uint32_t)SPRITE_FLAG_OK, false);
+  SetSpriteFlag(sprite, (uint32_t)SPRITE_FLAG_COLLISION, false);
+  SetSpriteFlag(sprite, (uint32_t)SPRITE_FLAG_DO_COLLISION, false);
 
   /* disabled: remove from linked list */
-  if (enabled == true) {
+  if (enabled) {
     debugmsg("%s(%d)\t", __FUNCTION__, nsprite);
     ListUnlinkNode(&engine->list_sprites, nsprite);
   }
@@ -649,8 +657,7 @@ bool TLN_SetFirstSprite(int nsprite) {
   ListNode *node;
   int cut1;
   int cut2;
-  if (nsprite >= engine->numsprites ||
-      !GetSpriteFlag(&engine->sprites[nsprite], SPRITE_FLAG_OK) ||
+  if (nsprite >= engine->numsprites || !GetSpriteFlag(&engine->sprites[nsprite], SPRITE_FLAG_OK) ||
       nsprite == engine->list_sprites.first) {
     TLN_SetLastError(TLN_ERR_IDX_SPRITE);
     return false;
@@ -688,15 +695,13 @@ bool TLN_SetNextSprite(int nsprite, int next) {
   int cut1;
   int cut2;
   int cut3;
-  if (nsprite >= engine->numsprites ||
-      !GetSpriteFlag(&engine->sprites[nsprite], SPRITE_FLAG_OK) ||
+  if (nsprite >= engine->numsprites || !GetSpriteFlag(&engine->sprites[nsprite], SPRITE_FLAG_OK) ||
       nsprite == next) {
     TLN_SetLastError(TLN_ERR_IDX_SPRITE);
     return false;
   }
 
-  if (next >= engine->numsprites ||
-      !GetSpriteFlag(&engine->sprites[next], SPRITE_FLAG_OK)) {
+  if (next >= engine->numsprites || !GetSpriteFlag(&engine->sprites[next], SPRITE_FLAG_OK)) {
     TLN_SetLastError(TLN_ERR_IDX_SPRITE);
     return false;
   }
@@ -711,10 +716,12 @@ bool TLN_SetNextSprite(int nsprite, int next) {
   ListLinkNodes(list, nsprite, next);
   ListLinkNodes(list, next, cut1);
   ListLinkNodes(list, cut2, cut3);
-  if (list->first == next)
+  if (list->first == next) {
     list->first = cut3;
-  if (list->last == nsprite)
+  }
+  if (list->last == nsprite) {
     list->last = next;
+  }
 
   debugmsg("%s(%d,%d)\t", __FUNCTION__, nsprite, next);
   ListPrint(list);
@@ -724,10 +731,12 @@ bool TLN_SetNextSprite(int nsprite, int next) {
 
 /* normalize clamp in range 0.0f - 1.0f */
 static void nclamp(float *v) {
-  if (*v < 0.0f)
-    *v = 0.0f;
-  if (*v > 1.0f)
-    *v = 1.0f;
+  if (*v < 0.0F) {
+    *v = 0.0F;
+  }
+  if (*v > 1.0F) {
+    *v = 1.0F;
+  }
 }
 
 /*!
@@ -770,8 +779,9 @@ void UpdateSprite(Sprite *sprite) {
   int w;
   int h;
 
-  if (!GetSpriteFlag(sprite, SPRITE_FLAG_OK))
+  if (!GetSpriteFlag(sprite, SPRITE_FLAG_OK)) {
     return;
+  }
 
   /* sprite source rectangle */
   MakeRect(&sprite->srcrect, 0, 0, sprite->info->w, sprite->info->h);
@@ -839,8 +849,7 @@ void UpdateSprite(Sprite *sprite) {
       sprite->dstrect.y1 = 0;
     }
     if (sprite->dstrect.y2 > engine->framebuffer.height) {
-      sprite->srcrect.y2 -=
-          (sprite->dstrect.y2 - engine->framebuffer.height) * sprite->inc.y;
+      sprite->srcrect.y2 -= (sprite->dstrect.y2 - engine->framebuffer.height) * sprite->inc.y;
       sprite->dstrect.y2 = engine->framebuffer.height;
     }
 
@@ -850,8 +859,7 @@ void UpdateSprite(Sprite *sprite) {
       sprite->dstrect.x1 = 0;
     }
     if (sprite->dstrect.x2 > engine->framebuffer.width) {
-      sprite->srcrect.x2 -=
-          (sprite->dstrect.x2 - engine->framebuffer.width) * sprite->inc.x;
+      sprite->srcrect.x2 -= (sprite->dstrect.x2 - engine->framebuffer.width) * sprite->inc.x;
       sprite->dstrect.x2 = engine->framebuffer.width;
     }
   }

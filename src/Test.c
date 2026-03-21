@@ -9,40 +9,42 @@
 static uint8_t framebuffer[WIDTH * HEIGHT * 4];
 
 int main(void) {
-  int c;
-  TLN_Tilemap tilemap = NULL;
-  TLN_Spriteset spriteset = NULL;
+    int c;
+    TLN_Tilemap tilemap = NULL;
+    TLN_Spriteset spriteset = NULL;
 
-  /* basic setup */
-  TLN_Init(WIDTH, HEIGHT, 1, 1, 1);
-  TLN_SetBGColor(0, 128, 238);
-  TLN_SetRenderTarget(framebuffer, WIDTH * 4);
-  TLN_SetLoadPath("../assets/sonic");
-  TLN_SetLogLevel(TLN_LOG_VERBOSE);
-  printf("Tilengine version %06X\n", TLN_GetVersion());
+    /* basic setup */
+    TLN_Init(WIDTH, HEIGHT, 1, 1, 1);
+    TLN_SetBGColor(0, 128, 238);
+    TLN_SetRenderTarget(framebuffer, WIDTH * 4);
+    TLN_SetLoadPath("../assets/sonic");
+    TLN_SetLogLevel(TLN_LOG_VERBOSE);
+    printf("Tilengine version %06X\n", TLN_GetVersion());
 
-  /* test layer */
-  for (c = 0; c < 2; c++) {
-    TLN_SetLayerTilemap(0, tilemap);
-    if (tilemap == NULL)
-      tilemap = TLN_LoadTilemap("Sonic_md_bg1.tmx", NULL);
-  }
-  TLN_SetLayerPosition(1, 0, 0);
-  TLN_SetLayerPosition(0, 0, 0);
+    /* test layer */
+    for (c = 0; c < 2; c++) {
+        TLN_SetLayerTilemap(0, tilemap);
+        if (tilemap == NULL) {
+            tilemap = TLN_LoadTilemap("Sonic_md_bg1.tmx", NULL);
+        }
+    }
+    TLN_SetLayerPosition(1, 0, 0);
+    TLN_SetLayerPosition(0, 0, 0);
 
-  /* test sprite */
-  for (c = 0; c < 2; c++) {
-    TLN_SetSpriteSet(0, spriteset);
-    if (spriteset == NULL)
-      spriteset = TLN_LoadSpriteset("smw_sprite");
-  }
-  TLN_SetSpritePosition(1, 10, 10);
-  TLN_SetSpritePosition(0, 10, 10);
+    /* test sprite */
+    for (c = 0; c < 2; c++) {
+        TLN_SetSpriteSet(0, spriteset);
+        if (spriteset == NULL) {
+            spriteset = TLN_LoadSpriteset("smw_sprite");
+        }
+    }
+    TLN_SetSpritePosition(1, 10, 10);
+    TLN_SetSpritePosition(0, 10, 10);
 
-  TLN_UpdateFrame(0);
+    TLN_UpdateFrame(0);
 
-  TLN_DeleteSpriteset(spriteset);
-  TLN_DeleteTilemap(tilemap);
-  TLN_Deinit();
-  return 0;
+    TLN_DeleteSpriteset(spriteset);
+    TLN_DeleteTilemap(tilemap);
+    TLN_Deinit();
+    return 0;
 }

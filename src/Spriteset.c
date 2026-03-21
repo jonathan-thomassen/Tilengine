@@ -110,7 +110,7 @@ bool TLN_SetSpritesetData(TLN_Spriteset spriteset, int entry, TLN_SpriteData con
         uint8_t const *src = (uint8_t *)pixels;
         uint8_t *dst = TLN_GetBitmapPtr(spriteset->bitmap, data->x, data->y);
         for (int c = 0; c < data->h; c++) {
-            memcpy(dst, src, data->w);
+            memcpy(dst, src, (size_t)data->w);
             src += pitch;
             dst += spriteset->bitmap->pitch;
         }
