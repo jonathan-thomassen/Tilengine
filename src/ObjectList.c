@@ -24,7 +24,7 @@
 #define ODB(msg, ...)                                                                              \
     do {                                                                                           \
         char _odb_buf[256];                                                                        \
-        snprintf(_odb_buf, sizeof(_odb_buf), "[OBJ] " msg __VA_OPT__(, ) __VA_ARGS__);             \
+        snprintf(_odb_buf, sizeof(_odb_buf), "[OBJ] " msg, ##__VA_ARGS__);                         \
         tln_trace(TLN_LOG_VERBOSE, _odb_buf);                                                      \
     } while (0)
 
@@ -124,7 +124,7 @@ static void handle_finish_tag(const char *szName) {
 }
 
 /* XML parser callback */
-static void *handler([[maybe_unused]] SimpleXmlParser parser, SimpleXmlEvent evt,
+static void *handler(SimpleXmlParser parser [[maybe_unused]], SimpleXmlEvent evt,
                      const char *szName, const char *szAttribute, const char *szValue) {
     ODB("handler evt=%d szName=%s szAttr=%s szVal=%s", evt, szName ? szName : "(null)",
         szAttribute ? szAttribute : "(null)", szValue ? szValue : "(null)");
