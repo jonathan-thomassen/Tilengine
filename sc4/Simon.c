@@ -1,5 +1,8 @@
 #include "Simon.h"
 
+#include <stdlib.h>
+
+#include "LoadFile.h"
 #include "Sandblock.h"
 #include "Tilengine.h"
 #include "Whip.h"
@@ -9,9 +12,12 @@
 #define AIR_TURN_DELAY 6
 #define SIMON_HEIGHT 48
 #define SIMON_START_POS ((Coords2d){.x = 33, .y = 146})
-#define JUMP_SPRITE 7
-#define TEETER_SPRITE 8
-#define INITIAL_JUMP_VELOCITY -18
+#define SIMON_WIDTH 32          /* total sprite width  (2 × 16 px tiles)   */
+#define SIMON_SEG_W 16          /* width of one subsprite tile              */
+#define SIMON_MAX_STAGES 8      /* max animation stages per section         */
+#define SIMON_MAX_SEGS 8        /* max subsprites per stage                 */
+#define WALK_FRAMES_PER_STAGE 8 /* game frames each walk frame is shown     */
+#define INITIAL_JUMP_VELOCITY (-18)
 #define BRIDGE_FLOOR_Y 32767
 
 #define PROBE_X_START 4
@@ -27,9 +33,22 @@ typedef enum {
   DIR_RIGHT,
 } Direction;
 
+typedef struct {
+  int pic, dx, dy;
+} SimonSeg;
+typedef struct {
+  SimonSeg segs[SIMON_MAX_SEGS];
+  int count;
+} SimonStage;
+typedef struct {
+  SimonStage stages[SIMON_MAX_STAGES];
+  int num_stages;
+} SimonSection;
+
 static TLN_Spriteset simon;
-static TLN_SequencePack sequence_pack;
-static TLN_Sequence walk;
+static TLN_Bitmap simon_bmp;
+static SimonSection sec_stand, sec_walk, sec_jump, sec_teeter, sec_whip, sec_whip_jump;
+static int walk_anim_frame;
 
 static Coords2d position;
 static int y_velocity = 0;
@@ -65,32 +84,235 @@ void SimonClearBridgeFloor(void) {
   bridge_tolerance = 0;
 }
 
+/* ---------------------------------------------------------------------------
+ * Internal helpers: spriteset loader, section parser, renderer
+ * ------------------------------------------------------------------------- */
+
+static TLN_Spriteset load_grid_spriteset(const char *txt_name, const char *png_name,
+                                         TLN_Bitmap *out_bitmap) {
+  FILE *f = FileOpen(txt_name);
+  if (f == NULL) {
+    return NULL;
+  }
+
+  int tw = 0;
+  int th = 0;
+  int cols = 0;
+
+  char line[64];
+  while (fgets(line, sizeof(line), f) != NULL) {
+    int v;
+    if (sscanf(line, " w = %d", &v) == 1) {
+      tw = v;
+    } else if (sscanf(line, " h = %d", &v) == 1) {
+      th = v;
+    } else if (sscanf(line, " cols = %d", &v) == 1) {
+      cols = v;
+    }
+  }
+  fclose(f);
+
+  if (tw <= 0 || th <= 0 || cols <= 0) {
+    return NULL;
+  }
+
+  TLN_Bitmap bmp = TLN_LoadBitmap(png_name);
+  if (bmp == NULL) {
+    return NULL;
+  }
+
+  int rows = TLN_GetBitmapHeight(bmp) / th;
+  int total = rows * cols;
+
+  TLN_SpriteData *data = (TLN_SpriteData *)malloc((size_t)total * sizeof(TLN_SpriteData));
+  if (data == NULL) {
+    TLN_DeleteBitmap(bmp);
+    return NULL;
+  }
+
+  for (int r = 0; r < rows; r++) {
+    for (int c = 0; c < cols; c++) {
+      TLN_SpriteData *e = &data[(r * cols) + c];
+      snprintf(e->name, sizeof(e->name), "s%d", (r * cols) + c);
+      e->x = c * tw;
+      e->y = r * th;
+      e->w = tw;
+      e->h = th;
+    }
+  }
+
+  TLN_Spriteset ss = TLN_CreateSpriteset(bmp, data, total);
+  free(data);
+  /* Do NOT delete bmp here — the spriteset holds a reference to it.
+   * The caller is responsible for deleting it after the spriteset is freed. */
+  *out_bitmap = bmp;
+  return ss;
+}
+
+/*
+ * Parses a single named group from a simon_map.txt-style file into *out.
+ * Group format mirrors whip0_map0.txt: "# name" header, then "N:" stage
+ * headers, then "sP = ( dx, dy)" subsprite lines.  No flip flags are used
+ * for Simon — mirroring is applied uniformly when facing left.
+ */
+static void load_simon_section(const char *filename, const char *section, SimonSection *out) {
+  out->num_stages = 0;
+  for (int stage = 0; stage < SIMON_MAX_STAGES; stage++) {
+    out->stages[stage].count = 0;
+  }
+
+  FILE *file = FileOpen(filename);
+  if (file == NULL) {
+    return;
+  }
+
+  bool in_section = false;
+  int cur_stage = -1;
+  char line[128];
+  while (fgets(line, sizeof(line), file) != NULL) {
+    if (line[0] == '#') {
+      char name[64] = "";
+      sscanf(line, "# %63s", name);
+      in_section = (strcmp(name, section) == 0);
+      cur_stage = -1;
+      continue;
+    }
+    if (!in_section) {
+      continue;
+    }
+
+    int idx = -1;
+    if (sscanf(line, " %d :", &idx) == 1 && idx >= 0 && idx < SIMON_MAX_STAGES) {
+      cur_stage = idx;
+      if (cur_stage + 1 > out->num_stages) {
+        out->num_stages = cur_stage + 1;
+      }
+      continue;
+    }
+
+    if (cur_stage < 0 || out->stages[cur_stage].count >= SIMON_MAX_SEGS) {
+      continue;
+    }
+
+    int pic = -1;
+    int dx = 0;
+    int dy = 0;
+    if (sscanf(line, " s%d = ( %d , %d )", &pic, &dx, &dy) < 3 || pic < 0) {
+      continue;
+    }
+
+    SimonSeg *seg = &out->stages[cur_stage].segs[out->stages[cur_stage].count++];
+    seg->pic = pic;
+    seg->dx = dx;
+    seg->dy = dy;
+  }
+  fclose(file);
+}
+
+/* Renders one stage of a section using the current position and direction. */
+static void render_section_stage(const SimonSection *sec, int stage_idx) {
+  if (sec->num_stages == 0) {
+    for (int i = 0; i < MAX_SIMON_SPRITES; i++) {
+      TLN_DisableSprite(SIMON_SPRITE_BASE + i);
+    }
+    return;
+  }
+  if (stage_idx >= sec->num_stages) {
+    stage_idx = sec->num_stages - 1;
+  }
+  const SimonStage *st = &sec->stages[stage_idx];
+  bool facing_right = (direction == DIR_RIGHT);
+  for (int i = 0; i < MAX_SIMON_SPRITES; i++) {
+    if (i < st->count) {
+      const SimonSeg *s = &st->segs[i];
+      int wx = position.x + ((int)facing_right ? s->dx : (SIMON_WIDTH - s->dx - SIMON_SEG_W));
+      TLN_SetSpriteSet(SIMON_SPRITE_BASE + i, simon);
+      TLN_SetSpritePicture(SIMON_SPRITE_BASE + i, s->pic);
+      TLN_EnableSpriteFlag(SIMON_SPRITE_BASE + i, FLAG_FLIPX, (bool)!facing_right);
+      TLN_EnableSpriteFlag(SIMON_SPRITE_BASE + i, FLAG_FLIPY, false);
+      TLN_SetSpritePosition(SIMON_SPRITE_BASE + i, wx, position.y + s->dy);
+    } else {
+      TLN_DisableSprite(SIMON_SPRITE_BASE + i);
+    }
+  }
+}
+
+/*
+ * Selects the correct section and stage for the current animation state and
+ * calls render_section_stage().  Called at the end of every SimonTasks()
+ * and from any function that moves Simon outside the normal update loop.
+ */
+static void render_current_state(void) {
+  const SimonSection *sec;
+  int stage = 0;
+  if (WhipIsActive()) {
+    sec = (state == SIMON_JUMPING) ? &sec_whip_jump : &sec_whip;
+    stage = WhipGetStage();
+    if (stage >= sec->num_stages) {
+      stage = sec->num_stages - 1;
+    }
+  } else {
+    switch (state) {
+    case SIMON_WALKING:
+      sec = &sec_walk;
+      if (sec->num_stages > 0) {
+        stage = (walk_anim_frame / WALK_FRAMES_PER_STAGE) % sec->num_stages;
+      }
+      break;
+    case SIMON_JUMPING:
+      sec = &sec_jump;
+      break;
+    case SIMON_TEETER:
+      sec = &sec_teeter;
+      break;
+    default:
+      sec = &sec_stand;
+      break;
+    }
+  }
+  render_section_stage(sec, stage);
+}
+
+/* ---------------------------------------------------------------------------
+ * Public API
+ * ------------------------------------------------------------------------- */
+
 void SimonInit(void) {
-  simon = TLN_LoadSpriteset("simon_walk");
-  sequence_pack = TLN_LoadSequencePack("simon_walk.sqx");
-  walk = TLN_FindSequence(sequence_pack, "walk");
+  simon = load_grid_spriteset("simon.txt", "simon.png", &simon_bmp);
+  load_simon_section("simon_map.txt", "stand", &sec_stand);
+  load_simon_section("simon_map.txt", "walk", &sec_walk);
+  load_simon_section("simon_map.txt", "jump", &sec_jump);
+  load_simon_section("simon_map.txt", "teeter", &sec_teeter);
+  load_simon_section("simon_map.txt", "whip", &sec_whip);
+  load_simon_section("simon_map.txt", "jump-whip", &sec_whip_jump);
 
   position = SIMON_START_POS;
-
-  TLN_SetSpriteSet(SIMON_SPRITE, simon);
-  TLN_SetSpritePosition(SIMON_SPRITE, position.x, position.y);
-
   layer_width = TLN_GetLayerWidth(1);
-
-  SimonSetState(SIMON_IDLE);
+  state = SIMON_IDLE;
   direction = DIR_RIGHT;
+  walk_anim_frame = 0;
+
+  render_current_state();
 }
 
 void SimonDeinit(void) {
-  TLN_DeleteSequencePack(sequence_pack);
-  TLN_DeleteSpriteset(simon);
+  if (simon != NULL) {
+    TLN_DeleteSpriteset(simon);
+    simon = NULL;
+  }
+  if (simon_bmp != NULL) {
+    TLN_DeleteBitmap(simon_bmp);
+    simon_bmp = NULL;
+  }
 }
 
 void SimonBringToFront(void) {
-  /* Removing and re-adding the sprite moves it to the tail of the engine's
-   * render list, ensuring it is drawn on top of all other sprites. */
-  TLN_DisableSprite(SIMON_SPRITE);
-  TLN_SetSpriteSet(SIMON_SPRITE, simon);
+  /* Disabling then re-rendering all segments moves them to the tail of the
+   * engine's render list, ensuring Simon draws on top of all other sprites. */
+  for (int i = 0; i < MAX_SIMON_SPRITES; i++) {
+    TLN_DisableSprite(SIMON_SPRITE_BASE + i);
+  }
+  render_current_state();
 }
 
 void SimonFreezeCamera(void) { camera_frozen = true; }
@@ -99,28 +321,11 @@ void SimonSetState(SimonState new_state) {
   if (state == new_state) {
     return;
   }
-
   state = new_state;
-  switch (state) {
-  case SIMON_IDLE:
-    TLN_DisableSpriteAnimation(SIMON_SPRITE);
-    TLN_SetSpritePicture(SIMON_SPRITE, 0);
-    break;
-
-  case SIMON_WALKING:
-    TLN_SetSpriteAnimation(SIMON_SPRITE, walk, 0);
-    break;
-
-  case SIMON_JUMPING:
-    TLN_DisableSpriteAnimation(SIMON_SPRITE);
-    TLN_SetSpritePicture(SIMON_SPRITE, JUMP_SPRITE);
+  if (state == SIMON_JUMPING) {
     y_velocity = INITIAL_JUMP_VELOCITY;
-    break;
-
-  case SIMON_TEETER:
-    TLN_DisableSpriteAnimation(SIMON_SPRITE);
-    TLN_SetSpritePicture(SIMON_SPRITE, TEETER_SPRITE);
-    break;
+  } else if (state == SIMON_WALKING) {
+    walk_anim_frame = 0;
   }
 }
 
@@ -256,13 +461,9 @@ static void check_floor(int sprite_x, int world_x, int *inout_y, int *inout_vy) 
 }
 
 static void update_facing(Direction input) {
-  if (input == DIR_RIGHT && direction == DIR_LEFT) {
+  if ((input == DIR_RIGHT && direction == DIR_LEFT) ||
+      (input == DIR_LEFT && direction == DIR_RIGHT)) {
     direction = input;
-    TLN_EnableSpriteFlag(SIMON_SPRITE, FLAG_FLIPX, false);
-  }
-  if (input == DIR_LEFT && direction == DIR_RIGHT) {
-    direction = input;
-    TLN_EnableSpriteFlag(SIMON_SPRITE, FLAG_FLIPX, true);
   }
 }
 
@@ -399,15 +600,16 @@ void SimonTasks(void) {
   Direction input = DIR_NONE;
   bool jump = false;
 
-  /* Suppress movement and jump input while the whip is mid-swing so Simon
-   * stays planted during his attack animation. */
-  if (!WhipIsActive()) {
+  /* While whipping in the air, allow directional movement but suppress jump.
+   * On the ground, suppress all input so Simon stays planted. */
+  bool whip_airborne = WhipIsActive() && (state == SIMON_JUMPING);
+  if (!WhipIsActive() || whip_airborne) {
     if (TLN_GetInput(INPUT_LEFT)) {
       input = DIR_LEFT;
     } else if (TLN_GetInput(INPUT_RIGHT)) {
       input = DIR_RIGHT;
     }
-    if (TLN_GetInput(INPUT_A)) {
+    if (!WhipIsActive() && TLN_GetInput(INPUT_A)) {
       jump = true;
     }
   }
@@ -436,7 +638,10 @@ void SimonTasks(void) {
     SimonSetState(SIMON_IDLE);
   }
 
-  TLN_SetSpritePosition(SIMON_SPRITE, position.x, position.y);
+  if (state == SIMON_WALKING) {
+    walk_anim_frame++;
+  }
+  render_current_state();
 }
 
 int SimonGetPosition(void) { return position.scroll_x; }
@@ -445,7 +650,7 @@ void SimonSetPosition(Coords2d pos) {
   position.x = pos.x;
   position.y = pos.y;
   position.scroll_x = 0;
-  TLN_SetSpritePosition(SIMON_SPRITE, position.x, position.y);
+  render_current_state();
 }
 
 void SimonPushRight(int pixels) {
@@ -454,14 +659,14 @@ void SimonPushRight(int pixels) {
   if (position.x > TLN_GetWidth()) {
     position.x = TLN_GetWidth();
   }
-  TLN_SetSpritePosition(SIMON_SPRITE, position.x, position.y);
+  render_current_state();
 }
 
 int SimonGetScreenX(void) { return position.x; }
 
 void SimonSetScreenX(int screen_x) {
   position.x = screen_x;
-  TLN_SetSpritePosition(SIMON_SPRITE, position.x, position.y);
+  render_current_state();
 }
 
 void SimonSetFeetY(int feet_y) {
@@ -481,7 +686,7 @@ void SimonPinFeetY(int feet_y) {
   position.y = feet_y - SIMON_HEIGHT;
   y_velocity = 0;
   apex_hang = 0;
-  TLN_SetSpritePosition(SIMON_SPRITE, position.x, position.y);
+  render_current_state();
 }
 
 int SimonGetFeetY(void) { return position.y + SIMON_HEIGHT; }

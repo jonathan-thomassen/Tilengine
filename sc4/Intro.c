@@ -22,7 +22,7 @@
 #define WATER_LAYER 3
 #define BACKGROUND_LAYER 4
 
-#define TARGET_FPS 60
+#define TARGET_FPS 15
 
 #define HINGE_X 223
 #define HINGE_Y 191
@@ -155,11 +155,11 @@ static void tick_chain_prop(bool db_triggered, int xpos) {
  * values to stderr so they can be baked back into the source. */
 static void tick_hinge_adjust(bool db_triggered) {
   const bool *keys = SDL_GetKeyboardState(NULL);
-  bool shift = keys[SDL_SCANCODE_LSHIFT] || keys[SDL_SCANCODE_RSHIFT];
+  bool shift = ((int)keys[SDL_SCANCODE_LSHIFT] || (int)keys[SDL_SCANCODE_RSHIFT]) != 0;
   int step = (int)shift ? 10 : 1;
   int dx = 0;
   int dy = 0;
-  if (keys[SDL_SCANCODE_A]) {
+  /* if (keys[SDL_SCANCODE_A]) {
     dx = -step;
   }
   if (keys[SDL_SCANCODE_S]) {
@@ -170,7 +170,7 @@ static void tick_hinge_adjust(bool db_triggered) {
   }
   if (keys[SDL_SCANCODE_W]) {
     dy = +step;
-  }
+  } */
   if (dx == 0 && dy == 0) {
     return;
   }
@@ -223,7 +223,7 @@ int main(int argc, char *argv[]) {
 
   /* setup engine */
   TLN_Init(WIDTH, HEIGHT, NUM_LAYERS,
-           1 + MAX_SANDBLOCKS + MAX_TORCHES + MAX_PROPS + 1 + MAX_WHIP_SPRITES, 0);
+           1 + MAX_SANDBLOCKS + MAX_TORCHES + MAX_PROPS + MAX_SIMON_SPRITES + MAX_WHIP_SPRITES, 0);
   TLN_SetBGColor(0x10, 0x00, 0x20);
 
   /* load resources*/

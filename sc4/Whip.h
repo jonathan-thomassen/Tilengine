@@ -3,17 +3,15 @@
 
 #include <stdbool.h>
 
-#include "Prop.h"      /* MAX_PROPS    */
-#include "Sandblock.h" /* MAX_SANDBLOCKS */
-#include "Torch.h"     /* MAX_TORCHES  */
+#include "Simon.h" /* MAX_SIMON_SPRITES, and transitively MAX_PROPS/MAX_TORCHES/MAX_SANDBLOCKS */
 
 /*
- * SIMON_SPRITE occupies slot (1 + MAX_SANDBLOCKS + MAX_TORCHES + MAX_PROPS).
+ * Simon occupies MAX_SIMON_SPRITES sprite slots starting at SIMON_SPRITE_BASE.
  * The whip lash occupies the next MAX_WHIP_SPRITES slots — one per chain
  * segment that can be on-screen simultaneously.
  */
 #define MAX_WHIP_SPRITES 12
-#define WHIP_SPRITE_BASE (1 + MAX_SANDBLOCKS + MAX_TORCHES + MAX_PROPS + 1)
+#define WHIP_SPRITE_BASE (1 + MAX_SANDBLOCKS + MAX_TORCHES + MAX_PROPS + MAX_SIMON_SPRITES)
 
 /** Total duration of a whip swing, in game frames. */
 #define WHIP_DURATION 18
@@ -33,6 +31,12 @@ void WhipDeinit(void);
  * Simon's movement input should be suppressed whenever this is true.
  */
 bool WhipIsActive(void);
+
+/**
+ * Returns the current whip animation stage (0-based) while a swing is active,
+ * or 0 when inactive.  Used by Simon.c to synchronise his body pose.
+ */
+int WhipGetStage(void);
 
 /**
  * Polls INPUT_B (keyboard X) to start a swing, then advances the frame

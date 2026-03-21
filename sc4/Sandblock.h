@@ -40,10 +40,10 @@ void SandblockTasks(int xworld);
 
 /** Read-only snapshot of a sandblock used for external collision queries. */
 typedef struct {
-    int index; /* slot index, for SandblockMarkStood() */
-    bool falling;
-    int world_x;
-    int world_y;
+  int index; /* slot index, for SandblockMarkStood() */
+  bool falling;
+  int world_x;
+  int world_y;
 } SandblockState;
 
 /** Pixel dimensions of one sandblock — needed for AABB tests in Simon.c. */

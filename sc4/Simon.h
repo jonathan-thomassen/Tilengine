@@ -16,7 +16,9 @@ typedef struct {
 #define COLLISION_LAYER 5
 
 /* Simon occupies the last sprite slot so he renders on top of all props. */
-#define SIMON_SPRITE (1 + MAX_SANDBLOCKS + MAX_TORCHES + MAX_PROPS)
+/* Simon occupies MAX_SIMON_SPRITES consecutive sprite slots. */
+#define MAX_SIMON_SPRITES 8
+#define SIMON_SPRITE_BASE (1 + MAX_SANDBLOCKS + MAX_TORCHES + MAX_PROPS)
 
 void SimonInit(void);
 void SimonDeinit(void);
