@@ -8,9 +8,9 @@
 typedef enum { SIMON_IDLE, SIMON_WALKING, SIMON_JUMPING, SIMON_TEETER } SimonState;
 
 typedef struct {
-    int x;
-    int y;
-    int scroll_x;
+  int x;
+  int y;
+  int scroll_x;
 } Coords2d;
 
 #define COLLISION_LAYER 5
@@ -62,6 +62,12 @@ void SimonPinFeetY(int feet_y);
 
 /** Returns the screen y coordinate of Simon's feet (bottom of sprite). */
 int SimonGetFeetY(void);
+
+/** Returns the screen y coordinate of Simon's top edge (top of sprite). */
+int SimonGetScreenY(void);
+
+/** Returns true if Simon is currently facing right, false if facing left. */
+bool SimonFacingRight(void);
 
 /**
  * Sets a bridge-surface floor override used by SimonTasks() physics.

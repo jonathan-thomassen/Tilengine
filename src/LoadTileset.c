@@ -66,8 +66,7 @@ static void handle_subtag(const char *szName) {
     loader.context = CONTEXT_TILE;
 }
 
-static void handle_tileset_attribute(const char *szAttribute,
-                                     const char *szValue) {
+static void handle_tileset_attribute(const char *szAttribute, const char *szValue) {
   if (!strcasecmp(szAttribute, "tilewidth"))
     loader.tilewidth = (int)strtol(szValue, NULL, 10);
   else if (!strcasecmp(szAttribute, "tileheight"))
@@ -80,8 +79,7 @@ static void handle_tileset_attribute(const char *szAttribute,
     loader.tilecount = (int)strtol(szValue, NULL, 10);
 }
 
-static void handle_image_attribute(const char *szAttribute,
-                                   const char *szValue) {
+static void handle_image_attribute(const char *szAttribute, const char *szValue) {
   if (strcasecmp(szAttribute, "source") != 0)
     return;
   strncpy(loader.source, szValue, sizeof(loader.source));
@@ -110,16 +108,14 @@ static void handle_property_value(const char *szValue) {
     loader.attributes[loader.tile.id].priority = !strcasecmp(szValue, "true");
 }
 
-static void handle_property_attribute(const char *szAttribute,
-                                      const char *szValue) {
+static void handle_property_attribute(const char *szAttribute, const char *szValue) {
   if (!strcasecmp(szAttribute, "name"))
     handle_property_name(szValue);
   else if (!strcasecmp(szAttribute, "value"))
     handle_property_value(szValue);
 }
 
-static void handle_add_attribute(const char *szName, const char *szAttribute,
-                                 const char *szValue) {
+static void handle_add_attribute(const char *szName, const char *szAttribute, const char *szValue) {
   if (!strcasecmp(szName, "tileset"))
     handle_tileset_attribute(szAttribute, szValue);
   else if (!strcasecmp(szName, "image"))
@@ -133,21 +129,17 @@ static void handle_add_attribute(const char *szName, const char *szAttribute,
     handle_property_attribute(szAttribute, szValue);
   else if (!strcasecmp(szName, "frame")) {
     if (!strcasecmp(szAttribute, "tileid"))
-      loader.frames[loader.frame_count].index =
-          (int)strtol(szValue, NULL, 10) + 1;
+      loader.frames[loader.frame_count].index = (int)strtol(szValue, NULL, 10) + 1;
     else if (!strcasecmp(szAttribute, "duration"))
-      loader.frames[loader.frame_count].delay =
-          (int)strtol(szValue, NULL, 10) * 60 / 1000;
+      loader.frames[loader.frame_count].delay = (int)strtol(szValue, NULL, 10);
   }
 }
 
 static void handle_finish_attributes(const char *szName) {
   if (strcasecmp(szName, "tileset") != 0 || loader.tilecount == 0)
     return;
-  loader.attributes = (TLN_TileAttributes *)calloc(loader.tilecount,
-                                                   sizeof(TLN_TileAttributes));
-  loader.images =
-      (TLN_TileImage *)calloc(loader.tilecount, sizeof(TLN_TileImage));
+  loader.attributes = (TLN_TileAttributes *)calloc(loader.tilecount, sizeof(TLN_TileAttributes));
+  loader.images = (TLN_TileImage *)calloc(loader.tilecount, sizeof(TLN_TileImage));
   loader.image = loader.images;
 }
 
@@ -169,8 +161,8 @@ static void handle_finish_tile(void) {
 static void handle_finish_animation(void) {
   char seq_name[16];
   snprintf(seq_name, sizeof(seq_name), "%d", loader.tile.id);
-  TLN_Sequence sequence = TLN_CreateSequence(seq_name, loader.tile.id + 1,
-                                             loader.frame_count, loader.frames);
+  TLN_Sequence sequence =
+      TLN_CreateSequence(seq_name, loader.tile.id + 1, loader.frame_count, loader.frames);
   if (loader.sp == NULL)
     loader.sp = TLN_CreateSequencePack();
   TLN_AddSequenceToPack(loader.sp, sequence);
@@ -186,24 +178,23 @@ static void handle_finish_tag(const char *szName) {
 }
 
 /* XML parser callback */
-static void *handler(SimpleXmlParser parser [[maybe_unused]],
-                     SimpleXmlEvent evt, const char *szName,
-                     const char *szAttribute, const char *szValue) {
+static void *handler(SimpleXmlParser parser [[maybe_unused]], SimpleXmlEvent evt,
+                     const char *szName, const char *szAttribute, const char *szValue) {
   switch (evt) {
-    case ADD_SUBTAG:
-      handle_subtag(szName);
-      break;
-    case ADD_ATTRIBUTE:
-      handle_add_attribute(szName, szAttribute, szValue);
-      break;
-    case FINISH_ATTRIBUTES:
-      handle_finish_attributes(szName);
-      break;
-    case FINISH_TAG:
-      handle_finish_tag(szName);
-      break;
-    default:
-      break;
+  case ADD_SUBTAG:
+    handle_subtag(szName);
+    break;
+  case ADD_ATTRIBUTE:
+    handle_add_attribute(szName, szAttribute, szValue);
+    break;
+  case FINISH_ATTRIBUTES:
+    handle_finish_attributes(szName);
+    break;
+  case FINISH_TAG:
+    handle_finish_tag(szName);
+    break;
+  default:
+    break;
   }
   return &handler;
 }
@@ -251,16 +242,13 @@ static TLN_Tileset load_tile_based_tileset(const char *filename) {
 
   int dx = loader.tilewidth + loader.spacing;
   int dy = loader.tileheight + loader.spacing;
-  int htiles =
-      (TLN_GetBitmapWidth(bitmap) - loader.margin * 2 + loader.spacing) / dx;
-  int vtiles =
-      (TLN_GetBitmapHeight(bitmap) - loader.margin * 2 + loader.spacing) / dy;
+  int htiles = (TLN_GetBitmapWidth(bitmap) - loader.margin * 2 + loader.spacing) / dx;
+  int vtiles = (TLN_GetBitmapHeight(bitmap) - loader.margin * 2 + loader.spacing) / dy;
   int num_tiles = loader.tilecount != 0 ? loader.tilecount : htiles * vtiles;
 
-  TLN_Tileset ts =
-      TLN_CreateTileset(num_tiles, loader.tilewidth, loader.tileheight,
-                        TLN_ClonePalette(TLN_GetBitmapPalette(bitmap)),
-                        loader.sp, loader.attributes);
+  TLN_Tileset ts = TLN_CreateTileset(num_tiles, loader.tilewidth, loader.tileheight,
+                                     TLN_ClonePalette(TLN_GetBitmapPalette(bitmap)), loader.sp,
+                                     loader.attributes);
   if (ts == NULL) {
     TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
     TLN_DeleteBitmap(bitmap);
@@ -270,8 +258,8 @@ static TLN_Tileset load_tile_based_tileset(const char *filename) {
   int pitch = TLN_GetBitmapPitch(bitmap);
   for (int id = 0, y = 0; y < vtiles; y++) {
     for (int x = 0; x < htiles; x++, id++) {
-      uint8_t const *srcptr = TLN_GetBitmapPtr(bitmap, loader.margin + x * dx,
-                                               loader.margin + y * dy);
+      uint8_t const *srcptr =
+          TLN_GetBitmapPtr(bitmap, loader.margin + x * dx, loader.margin + y * dy);
       if (id < num_tiles)
         TLN_SetTilesetPixels(ts, id, srcptr, pitch);
     }
@@ -310,8 +298,7 @@ TLN_Tileset TLN_LoadTileset(const char *filename) {
   ssize_t size = 0;
   uint8_t *data = (uint8_t *)LoadFile(filename, &size);
   if (!data) {
-    TLN_SetLastError(size == 0 ? TLN_ERR_FILE_NOT_FOUND
-                               : TLN_ERR_OUT_OF_MEMORY);
+    TLN_SetLastError(size == 0 ? TLN_ERR_FILE_NOT_FOUND : TLN_ERR_OUT_OF_MEMORY);
     return NULL;
   }
 
@@ -332,8 +319,7 @@ TLN_Tileset TLN_LoadTileset(const char *filename) {
   simpleXmlDestroyParser(parser);
   free(data);
 
-  ts = loader.source[0] != 0 ? load_tile_based_tileset(filename)
-                             : load_image_based_tileset();
+  ts = loader.source[0] != 0 ? load_tile_based_tileset(filename) : load_image_based_tileset();
 
   free(loader.attributes);
   free(loader.images);

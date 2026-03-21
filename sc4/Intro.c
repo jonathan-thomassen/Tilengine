@@ -11,6 +11,7 @@
 #include "Simon.h"
 #include "Tilengine.h"
 #include "Torch.h"
+#include "Whip.h"
 
 #define WIDTH 256
 #define HEIGHT 224
@@ -155,25 +156,31 @@ static void tick_chain_prop(bool db_triggered, int xpos) {
 static void tick_hinge_adjust(bool db_triggered) {
   const bool *keys = SDL_GetKeyboardState(NULL);
   bool shift = keys[SDL_SCANCODE_LSHIFT] || keys[SDL_SCANCODE_RSHIFT];
-  int step = shift ? 10 : 1;
-  int dx = 0, dy = 0;
-  if (keys[SDL_SCANCODE_A])
+  int step = (int)shift ? 10 : 1;
+  int dx = 0;
+  int dy = 0;
+  if (keys[SDL_SCANCODE_A]) {
     dx = -step;
-  if (keys[SDL_SCANCODE_S])
+  }
+  if (keys[SDL_SCANCODE_S]) {
     dx = +step;
-  if (keys[SDL_SCANCODE_Q])
+  }
+  if (keys[SDL_SCANCODE_Q]) {
     dy = -step;
-  if (keys[SDL_SCANCODE_W])
+  }
+  if (keys[SDL_SCANCODE_W]) {
     dy = +step;
-  if (dx == 0 && dy == 0)
+  }
+  if (dx == 0 && dy == 0) {
     return;
+  }
 
   g_hinge_x += dx;
   g_hinge_y += dy;
 
   /* Apply the same DB_LAYER_Y_OFFSET correction that the trigger block uses
    * so the live value matches what DrawbridgeSurfaceY reads. */
-  int applied_y = db_triggered ? g_hinge_y - DB_LAYER_Y_OFFSET : g_hinge_y;
+  int applied_y = (int)db_triggered ? g_hinge_y - DB_LAYER_Y_OFFSET : g_hinge_y;
   DrawbridgeSetHinge(g_hinge_x, applied_y);
   fprintf(stderr, "[hinge] x=%d  y=%d\n", g_hinge_x, g_hinge_y);
 }
@@ -197,7 +204,7 @@ static void update_fps_title(Uint64 *p_t0, int *p_frames) {
   Uint64 elapsed = now - *p_t0;
   if (elapsed >= 1000) {
     char title[48];
-    double actual_fps = *p_frames * 1000.0 / elapsed;
+    double actual_fps = (float)*p_frames * 1000.0F / (float)elapsed;
     SDL_snprintf(title, sizeof(title), "sc4 - %.3f fps", actual_fps);
     TLN_SetWindowTitle(title);
     *p_frames = 0;
@@ -215,7 +222,8 @@ int main(int argc, char *argv[]) {
   TLN_Tilemap drawbridge_bridge;
 
   /* setup engine */
-  TLN_Init(WIDTH, HEIGHT, NUM_LAYERS, 1 + MAX_SANDBLOCKS + MAX_TORCHES + MAX_PROPS + 1, 0);
+  TLN_Init(WIDTH, HEIGHT, NUM_LAYERS,
+           1 + MAX_SANDBLOCKS + MAX_TORCHES + MAX_PROPS + 1 + MAX_WHIP_SPRITES, 0);
   TLN_SetBGColor(0x10, 0x00, 0x20);
 
   /* load resources*/
@@ -241,6 +249,7 @@ int main(int argc, char *argv[]) {
   TorchInit();
   PropInit();
   HudInit(hud);
+  WhipInit();
 
   /* place entities from the object layer */
   load_objects();
@@ -325,6 +334,7 @@ int main(int argc, char *argv[]) {
       SimonSetBridgeTolerance(DrawbridgeGetProgress() * 32 / (DB_STEPS - 1));
     }
     SimonTasks();
+    WhipTasks();
     HudTasks();
 
     /* scroll */
@@ -432,6 +442,7 @@ int main(int argc, char *argv[]) {
   TorchDeinit();
   SandblockDeinit();
   SimonDeinit();
+  WhipDeinit();
   TLN_DeleteTilemap(collision);
   TLN_DeleteTilemap(drawbridge_bg);
   TLN_DeleteTilemap(drawbridge_water);

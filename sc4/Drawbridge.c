@@ -10,12 +10,12 @@
 /* ------------------------------------------------------------------ */
 
 typedef struct {
-    int layer;
-    int hinge_x;
-    int hinge_y;
-    int progress;      /* 0-134; index into baked_* tables */
-    bool affine_dirty; /* true when the affine transform needs to be re-sent */
-    int tick;          /* countdown for the 9-frame rate divider */
+  int layer;
+  int hinge_x;
+  int hinge_y;
+  int progress;      /* 0-134; index into baked_* tables */
+  bool affine_dirty; /* true when the affine transform needs to be re-sent */
+  int tick;          /* countdown for the 9-frame rate divider */
 } DrawbridgeState;
 
 static DrawbridgeState db_state;
@@ -79,81 +79,81 @@ static const int baked_tan[DB_STEPS] = {
 /* ------------------------------------------------------------------ */
 
 void DrawbridgeInit(int layer, int hinge_x, int hinge_y) {
-    db_state.layer = layer;
-    db_state.hinge_x = hinge_x;
-    db_state.hinge_y = hinge_y;
-    db_state.progress = 0;
-    db_state.affine_dirty = false; /* no transform needed at progress=0 */
-    db_state.tick = DB_TICK_RATE;
+  db_state.layer = layer;
+  db_state.hinge_x = hinge_x;
+  db_state.hinge_y = hinge_y;
+  db_state.progress = 0;
+  db_state.affine_dirty = false; /* no transform needed at progress=0 */
+  db_state.tick = DB_TICK_RATE;
 }
 
 void DrawbridgeAdvance(void) {
-    if (db_state.progress >= DB_STEPS - 1) {
-        return;
-    }
-    db_state.progress++;
-    db_state.affine_dirty = true;
+  if (db_state.progress >= DB_STEPS - 1) {
+    return;
+  }
+  db_state.progress++;
+  db_state.affine_dirty = true;
 }
 
 int DrawbridgeGetProgress(void) { return db_state.progress; }
 
 void DrawbridgeSetHinge(int hinge_x, int hinge_y) {
-    db_state.hinge_x = hinge_x;
-    db_state.hinge_y = hinge_y;
-    db_state.affine_dirty = true;
+  db_state.hinge_x = hinge_x;
+  db_state.hinge_y = hinge_y;
+  db_state.affine_dirty = true;
 }
 
 /* ------------------------------------------------------------------ */
 
 bool DrawbridgeTick(void) {
-    if (--db_state.tick <= 0) {
-        db_state.tick = DB_TICK_RATE;
-        return true;
-    }
-    return false;
+  if (--db_state.tick <= 0) {
+    db_state.tick = DB_TICK_RATE;
+    return true;
+  }
+  return false;
 }
 
 int DrawbridgeSurfaceY(int screen_x) {
-    int d = db_state.hinge_x - screen_x; /* distance left of hinge */
-    int p = db_state.progress;
-    if (p >= DB_STEPS - 1) {
-        return db_state.hinge_y; /* bridge fully vertical (cos == 0) */
-    }
-    /* Q8 fixed-point: tan*256 is baked_tan[p].  +128 rounds to nearest. */
-    return db_state.hinge_y - ((d * baked_tan[p] + 128) >> 8);
+  int d = db_state.hinge_x - screen_x; /* distance left of hinge */
+  int p = db_state.progress;
+  if (p >= DB_STEPS - 1) {
+    return db_state.hinge_y; /* bridge fully vertical (cos == 0) */
+  }
+  /* Q8 fixed-point: tan*256 is baked_tan[p].  +128 rounds to nearest. */
+  return db_state.hinge_y - ((d * baked_tan[p] + 128) >> 8);
 }
 
 int DrawbridgeHingeX(void) { return db_state.hinge_x; }
 
 ChainPos DrawbridgeChainPos(void) {
-    int p = db_state.progress;
-    float cos_a = TRIG_COS(p);
-    float sin_a = baked_sin[p];
-    /* sin(2θ) = 2·sin·cos — zero at both endpoints, peaks at 1 at mid-arc.
-     * Used to correct the elliptical-vs-circular arc error at the midpoint. */
-    float bulge = 2.0F * sin_a * cos_a;
-    ChainPos pos = {
-        (db_state.hinge_x + CHAIN_X_OFFSET) - (int)((CHAIN_ARM_X * cos_a) + 0.5F) +
-            (int)(8.0F * bulge + 0.5F),
-        (db_state.hinge_y + CHAIN_Y_OFFSET) - (int)((CHAIN_ARM_Y * sin_a) + 0.5F) -
-            (int)(10.0F * bulge + 0.5F),
-    };
-    return pos;
+  int p = db_state.progress;
+  float cos_a = TRIG_COS(p);
+  float sin_a = baked_sin[p];
+  /* sin(2θ) = 2·sin·cos — zero at both endpoints, peaks at 1 at mid-arc.
+   * Used to correct the elliptical-vs-circular arc error at the midpoint. */
+  float bulge = 2.0F * sin_a * cos_a;
+  ChainPos pos = {
+      (db_state.hinge_x + CHAIN_X_OFFSET) - (int)((CHAIN_ARM_X * cos_a) + 0.5F) +
+          (int)((8.0F * bulge) + 0.5F),
+      (db_state.hinge_y + CHAIN_Y_OFFSET) - (int)((CHAIN_ARM_Y * sin_a) + 0.5F) -
+          (int)((10.0F * bulge) + 0.5F),
+  };
+  return pos;
 }
 
 void DrawbridgeTasks(void) {
-    if (db_state.affine_dirty) {
-        if (db_state.progress == 0) {
-            /* Bridge is flat — drop back to fast normal tile rendering. */
-            TLN_ResetLayerMode(db_state.layer);
-        } else {
-            float cf = TRIG_COS(db_state.progress);
-            float sf = baked_sin[db_state.progress];
-            /* Standard 2-D rotation matrix [[cos,-sin],[sin,cos]].
-             * TLN_SetLayerTransformMatrix inverts it internally. */
-            TLN_SetLayerTransformMatrix(db_state.layer, cf, -sf, sf, cf, db_state.hinge_x,
-                                        db_state.hinge_y);
-        }
-        db_state.affine_dirty = false;
+  if (db_state.affine_dirty) {
+    if (db_state.progress == 0) {
+      /* Bridge is flat — drop back to fast normal tile rendering. */
+      TLN_ResetLayerMode(db_state.layer);
+    } else {
+      float cf = TRIG_COS(db_state.progress);
+      float sf = baked_sin[db_state.progress];
+      /* Standard 2-D rotation matrix [[cos,-sin],[sin,cos]].
+       * TLN_SetLayerTransformMatrix inverts it internally. */
+      TLN_SetLayerTransformMatrix(db_state.layer, cf, -sf, sf, cf, db_state.hinge_x,
+                                  db_state.hinge_y);
     }
+    db_state.affine_dirty = false;
+  }
 }

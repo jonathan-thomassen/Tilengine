@@ -66,7 +66,8 @@ add_executable(
   Torch.c
   Prop.c
   Hud.c
-  Drawbridge.c)
+  Drawbridge.c
+  Whip.c)
 
 # Master list of all sc4 targets, used for dependency wiring below.
 set(SC4_TARGETS intro)
