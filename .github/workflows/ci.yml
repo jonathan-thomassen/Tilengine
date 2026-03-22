@@ -126,7 +126,7 @@ jobs:
             echo "### $label" >> $GITHUB_STEP_SUMMARY
             echo '```diff' >> $GITHUB_STEP_SUMMARY
             while IFS= read -r line; do
-              if echo "$line" | grep -qi "error:"; then
+              if echo "$line" | grep -qE ":[0-9]+:[0-9]+: error:"; then
                 echo "- $line" >> $GITHUB_STEP_SUMMARY
               else
                 echo "! $line" >> $GITHUB_STEP_SUMMARY
