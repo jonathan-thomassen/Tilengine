@@ -39,10 +39,22 @@ bool WhipIsActive(void);
 int WhipGetStage(void);
 
 /**
+ * Returns true if the current (or most recently started) swing was triggered
+ * with INPUT_UP held — i.e. Simon is whipping upward.
+ */
+bool WhipIsUp(void);
+
+/**
  * Polls INPUT_B (keyboard X) to start a swing, then advances the frame
- * counter and repositions the whip sprite relative to Simon each frame.
- * Call once per game frame, after SimonTasks().
+ * counter and stage selection. Call once per game frame, BEFORE SimonTasks().
+ * Sprite placement is deferred — call WhipRender() after SimonTasks().
  */
 void WhipTasks(void);
+
+/**
+ * Places whip sprites at Simon's current (post-movement) screen position.
+ * Call once per game frame, immediately after SimonTasks().
+ */
+void WhipRender(void);
 
 #endif /* WHIP_H */

@@ -5,7 +5,15 @@
 #include "Sandblock.h"
 #include "Torch.h"
 
-typedef enum { SIMON_IDLE, SIMON_WALKING, SIMON_JUMPING, SIMON_TEETER } SimonState;
+typedef enum {
+  SIMON_IDLE,
+  SIMON_WALKING,
+  SIMON_JUMPING,
+  SIMON_TEETER,
+  SIMON_CROUCHING,
+  SIMON_CROUCH_WALKING,
+  SIMON_CROUCH_WHIPPING
+} SimonState;
 
 typedef struct {
   int x;
@@ -70,6 +78,9 @@ int SimonGetScreenY(void);
 
 /** Returns true if Simon is currently facing right, false if facing left. */
 bool SimonFacingRight(void);
+
+/** Returns true if Simon is in any crouching state. */
+bool SimonIsCrouching(void);
 
 /**
  * Sets a bridge-surface floor override used by SimonTasks() physics.

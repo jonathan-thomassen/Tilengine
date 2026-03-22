@@ -17,8 +17,25 @@
 #define SIMON_MAX_STAGES 8      /* max animation stages per section         */
 #define SIMON_MAX_SEGS 8        /* max subsprites per stage                 */
 #define WALK_FRAMES_PER_STAGE 8 /* game frames each walk frame is shown     */
-#define INITIAL_JUMP_VELOCITY (-18)
+#define JUMP_ARC_LEN_SHORT 37
+#define JUMP_ARC_LEN_TALL 39
+#define JUMP_ARC_LEN_HIGHER 41
 #define BRIDGE_FLOOR_Y 32767
+
+/* Short arc (tap): 38 key-frames → 37 deltas.  Apex y=111. */
+static const int jump_arc_dy_short[JUMP_ARC_LEN_SHORT] = {
+    -1, -5, -4, -5, -3, -4, -3, -2, -3, -1, -2, -1, -1, 0, 0, 0, 0, 0, 0,
+    0,  0,  0,  0,  0,  0,  1,  1,  2,  1,  3,  2,  3,  4, 3, 5, 4, 6};
+
+/* Tall arc (hold 2 frames): 40 key-frames → 39 deltas.  Apex y=106. */
+static const int jump_arc_dy_tall[JUMP_ARC_LEN_TALL] = {
+    -1, -5, -4, -5, -4, -4, -3, -3, -3, -2, -2, -1, -2, -1, 0, 0, 0, 0, 0, 0,
+    0,  0,  0,  0,  0,  0,  1,  2,  1,  2,  2,  3,  3,  3,  4, 4, 5, 4, 6};
+
+/* Higher arc (hold 3+ frames): 42 key-frames → 41 deltas.  Apex y=102. */
+static const int jump_arc_dy_higher[JUMP_ARC_LEN_HIGHER] = {
+    -1, -5, -4, -5, -4, -5, -3, -4, -3, -2, -3, -1, -2, -1, -1, 0, 0, 0, 0, 0, 0,
+    0,  0,  0,  0,  0,  0,  1,  1,  2,  1,  3,  2,  3,  4,  3,  5, 4, 5, 4, 6};
 
 #define PROBE_X_START 4
 #define PROBE_X_STEP 16
@@ -47,12 +64,17 @@ typedef struct {
 
 static TLN_Spriteset simon;
 static TLN_Bitmap simon_bmp;
-static SimonSection sec_stand, sec_walk, sec_jump, sec_teeter, sec_whip, sec_whip_jump;
+static SimonSection sec_stand, sec_walk, sec_jump, sec_teeter, sec_crouch, sec_crouch_walk,
+    sec_whip, sec_whip_jump, sec_crouch_whip, sec_whip_up, sec_whip_jump_up;
 static int walk_anim_frame;
 
 static Coords2d position;
 static int y_velocity = 0;
 static int apex_hang = 0;
+static int jump_frame = 0;
+static bool jump_arc_tall = false;
+static bool jump_arc_higher = false;
+static bool jump_arc_committed = false;
 static SimonState state;
 static Direction direction;
 
@@ -246,7 +268,16 @@ static void render_current_state(void) {
   const SimonSection *sec;
   int stage = 0;
   if (WhipIsActive()) {
-    sec = (state == SIMON_JUMPING) ? &sec_whip_jump : &sec_whip;
+    if (state == SIMON_JUMPING) {
+      sec = (int)WhipIsUp() ? &sec_whip_jump_up : &sec_whip_jump;
+    } else if (state == SIMON_CROUCHING || state == SIMON_CROUCH_WALKING ||
+               state == SIMON_CROUCH_WHIPPING) {
+      sec = &sec_crouch_whip;
+    } else if (WhipIsUp()) {
+      sec = &sec_whip_up;
+    } else {
+      sec = &sec_whip;
+    }
     stage = WhipGetStage();
     if (stage >= sec->num_stages) {
       stage = sec->num_stages - 1;
@@ -264,6 +295,16 @@ static void render_current_state(void) {
       break;
     case SIMON_TEETER:
       sec = &sec_teeter;
+      break;
+    case SIMON_CROUCHING:
+    case SIMON_CROUCH_WHIPPING:
+      sec = &sec_crouch;
+      break;
+    case SIMON_CROUCH_WALKING:
+      sec = &sec_crouch_walk;
+      if (sec_crouch_walk.num_stages > 0) {
+        stage = (walk_anim_frame / WALK_FRAMES_PER_STAGE) % sec_crouch_walk.num_stages;
+      }
       break;
     default:
       sec = &sec_stand;
@@ -283,8 +324,13 @@ void SimonInit(void) {
   load_simon_section("simon_map.txt", "walk", &sec_walk);
   load_simon_section("simon_map.txt", "jump", &sec_jump);
   load_simon_section("simon_map.txt", "teeter", &sec_teeter);
+  load_simon_section("simon_map.txt", "crouch", &sec_crouch);
+  load_simon_section("simon_map.txt", "crouch-walk", &sec_crouch_walk);
   load_simon_section("simon_map.txt", "whip", &sec_whip);
   load_simon_section("simon_map.txt", "jump-whip", &sec_whip_jump);
+  load_simon_section("simon_map.txt", "crouch-whip", &sec_crouch_whip);
+  load_simon_section("simon_map.txt", "whip-up", &sec_whip_up);
+  load_simon_section("simon_map.txt", "jump-whip-up", &sec_whip_jump_up);
 
   position = SIMON_START_POS;
   layer_width = TLN_GetLayerWidth(1);
@@ -323,7 +369,11 @@ void SimonSetState(SimonState new_state) {
   }
   state = new_state;
   if (state == SIMON_JUMPING) {
-    y_velocity = INITIAL_JUMP_VELOCITY;
+    jump_frame = 0;
+    jump_arc_tall = false;
+    jump_arc_higher = false;
+    jump_arc_committed = false;
+    y_velocity = 0;
   } else if (state == SIMON_WALKING) {
     walk_anim_frame = 0;
   }
@@ -536,11 +586,34 @@ static void apply_movement(Direction input, int width) {
       SimonSetState(SIMON_IDLE);
     }
     break;
+  case SIMON_CROUCHING:
+    /* Directional input while crouching starts a crouch-walk. */
+    if (input) {
+      SimonSetState(SIMON_CROUCH_WALKING);
+      execute_move(input, width, changing_dir);
+    }
+    break;
+  case SIMON_CROUCH_WALKING:
+    if (!first_frame && (!changing_dir || dir_change_timer > AIR_TURN_DELAY)) {
+      execute_move(input, width, changing_dir);
+    } else {
+      move_frame = 0;
+    }
+    if (!input) {
+      SimonSetState(SIMON_CROUCHING);
+    }
+    break;
+  case SIMON_CROUCH_WHIPPING:
+    /* No movement during a crouched whip swing. */
+    break;
   }
 }
 
 /** Advances vertical velocity by one step, respecting apex hang. */
 static void advance_gravity(void) {
+  if (state == SIMON_JUMPING) {
+    return; /* vertical movement is table-driven; handled in apply_collisions */
+  }
   if (y_velocity >= TERM_VELOCITY) {
     return;
   }
@@ -560,10 +633,28 @@ static void advance_gravity(void) {
  * \param start_y_velocity  Vertical velocity captured before advance_gravity() was called.
  */
 static void apply_collisions(int start_y_velocity) {
-  /* rising: gentle arc (>> 2); falling: medium pull (/ 3) */
-  int new_y = position.y + (y_velocity > 0 ? y_velocity / 3 : y_velocity >> 2);
-  if (y_velocity < 0 &&
+  int arc_len = jump_arc_higher ? JUMP_ARC_LEN_HIGHER
+                : jump_arc_tall ? JUMP_ARC_LEN_TALL
+                                : JUMP_ARC_LEN_SHORT;
+  int dy;
+  if (state == SIMON_JUMPING) {
+    const int *arc = jump_arc_higher ? jump_arc_dy_higher
+                     : jump_arc_tall ? jump_arc_dy_tall
+                                     : jump_arc_dy_short;
+    if (jump_frame < arc_len) {
+      dy = arc[jump_frame++];
+    } else {
+      dy = TERM_VELOCITY; /* constant fall after arc ends */
+    }
+    y_velocity = dy; /* proxy: keeps landing detection working */
+  } else {
+    /* non-jumping states: original velocity-based movement */
+    dy = (y_velocity > 0 ? y_velocity / 3 : y_velocity >> 2);
+  }
+  int new_y = position.y + dy;
+  if (dy < 0 &&
       (int)check_ceiling(position.x, position.scroll_x, &new_y, &y_velocity, position.y)) {
+    jump_frame = arc_len; /* ceiling hit: skip to post-arc fall */
     apex_hang = 0;
   }
   if (bridge_floor < BRIDGE_FLOOR_Y) {
@@ -599,17 +690,21 @@ void SimonTasks(void) {
 
   Direction input = DIR_NONE;
   bool jump = false;
+  bool crouch_held = (int)TLN_GetInput(INPUT_DOWN) != 0;
 
   /* While whipping in the air, allow directional movement but suppress jump.
-   * On the ground, suppress all input so Simon stays planted. */
-  bool whip_airborne = WhipIsActive() && (state == SIMON_JUMPING);
-  if (!WhipIsActive() || whip_airborne) {
+   * On the ground, suppress all input so Simon stays planted.
+   * While crouching (stationary), allow left/right for crouch-walk but not jump. */
+  bool whip_airborne = ((int)WhipIsActive() && (state == SIMON_JUMPING)) != 0;
+  bool is_crouching = (state == SIMON_CROUCHING || state == SIMON_CROUCH_WALKING ||
+                       state == SIMON_CROUCH_WHIPPING) != 0;
+  if (!WhipIsActive() || (int)whip_airborne) {
     if (TLN_GetInput(INPUT_LEFT)) {
       input = DIR_LEFT;
     } else if (TLN_GetInput(INPUT_RIGHT)) {
       input = DIR_RIGHT;
     }
-    if (!WhipIsActive() && TLN_GetInput(INPUT_A)) {
+    if (!WhipIsActive() && !is_crouching && (int)TLN_GetInput(INPUT_A)) {
       jump = true;
     }
   }
@@ -618,6 +713,23 @@ void SimonTasks(void) {
 
   if ((int)jump && state != SIMON_JUMPING) {
     SimonSetState(SIMON_JUMPING);
+  }
+
+  /* Arc-type commitment: deferred until the earliest frame the button *could*
+   * have been released to distinguish all three hold durations.
+   * Frame 1: if INPUT_A already released → short arc (tap).
+   * Frame 2: if INPUT_A still held → higher arc (3+ frames); released → tall. */
+  if (state == SIMON_JUMPING && !jump_arc_committed) {
+    if (jump_frame == 1 && !TLN_GetInput(INPUT_A)) {
+      jump_arc_committed = true; /* short: tall and higher stay false */
+    } else if (jump_frame == 2) {
+      jump_arc_committed = true;
+      if (TLN_GetInput(INPUT_A)) {
+        jump_arc_higher = true;
+      } else {
+        jump_arc_tall = true;
+      }
+    }
   }
 
   int start_y_velocity = y_velocity;
@@ -631,6 +743,31 @@ void SimonTasks(void) {
     SimonSetState(SIMON_WALKING);
   }
 
+  /* Crouch: down held while on the ground (not jumping, not whipping). */
+  bool on_ground = (state != SIMON_JUMPING);
+  if ((int)crouch_held && (int)on_ground && !WhipIsActive()) {
+    if (state == SIMON_WALKING) {
+      SimonSetState(SIMON_CROUCH_WALKING);
+    } else if (state != SIMON_CROUCHING && state != SIMON_CROUCH_WALKING &&
+               state != SIMON_CROUCH_WHIPPING) {
+      SimonSetState(SIMON_CROUCHING);
+    }
+  } else if (state == SIMON_CROUCH_WHIPPING) {
+    /* S released while crouch-whipping: hold crouch until whip finishes. */
+    if (!WhipIsActive()) {
+      SimonSetState((int)crouch_held ? SIMON_CROUCHING : SIMON_IDLE);
+    }
+  } else if ((state == SIMON_CROUCHING || state == SIMON_CROUCH_WALKING) &&
+             (!crouch_held || !on_ground)) {
+    SimonSetState(state == SIMON_CROUCH_WALKING ? SIMON_WALKING : SIMON_IDLE);
+  }
+
+  /* Transition crouching states to CROUCH_WHIPPING when whip fires. */
+  if ((int)WhipIsActive() && (int)on_ground &&
+      (state == SIMON_CROUCHING || state == SIMON_CROUCH_WALKING)) {
+    SimonSetState(SIMON_CROUCH_WHIPPING);
+  }
+
   /* Teeter: idle on the bridge surface with no player input. */
   if (state == SIMON_IDLE && bridge_floor != BRIDGE_FLOOR_Y && input == DIR_NONE) {
     SimonSetState(SIMON_TEETER);
@@ -638,7 +775,7 @@ void SimonTasks(void) {
     SimonSetState(SIMON_IDLE);
   }
 
-  if (state == SIMON_WALKING) {
+  if (state == SIMON_WALKING || state == SIMON_CROUCH_WALKING) {
     walk_anim_frame++;
   }
   render_current_state();
@@ -694,5 +831,10 @@ int SimonGetFeetY(void) { return position.y + SIMON_HEIGHT; }
 void SimonSetWorldX(int new_world_x) { position.scroll_x = new_world_x; }
 
 int SimonGetScreenY(void) { return position.y; }
+
+bool SimonIsCrouching(void) {
+  return (state == SIMON_CROUCHING || state == SIMON_CROUCH_WALKING ||
+          state == SIMON_CROUCH_WHIPPING) != 0;
+}
 
 bool SimonFacingRight(void) { return direction == DIR_RIGHT; }

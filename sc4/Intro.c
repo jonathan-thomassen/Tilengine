@@ -22,7 +22,7 @@
 #define WATER_LAYER 3
 #define BACKGROUND_LAYER 4
 
-#define TARGET_FPS 15
+#define TARGET_FPS 6
 
 #define HINGE_X 223
 #define HINGE_Y 191
@@ -263,6 +263,12 @@ int main(int argc, char *argv[]) {
 
   /* main loop */
   TLN_CreateWindow(CWF_NEAREST | CWF_S6 | CWF_NOVSYNC);
+  TLN_DefineInputKey(PLAYER1, INPUT_UP, SDLK_W);
+  TLN_DefineInputKey(PLAYER1, INPUT_LEFT, SDLK_A);
+  TLN_DefineInputKey(PLAYER1, INPUT_RIGHT, SDLK_D);
+  TLN_DefineInputKey(PLAYER1, INPUT_DOWN, SDLK_S);
+  TLN_DefineInputKey(PLAYER1, INPUT_BUTTON1, SDLK_J); /* jump  */
+  TLN_DefineInputKey(PLAYER1, INPUT_BUTTON2, SDLK_K); /* whip  */
   TLN_DefineInputKey(PLAYER1, INPUT_QUIT, SDLK_F4);
   TLN_SetTargetFps(TARGET_FPS);
 
@@ -333,8 +339,9 @@ int main(int argc, char *argv[]) {
       SimonSetBridgeFloor(DrawbridgeSurfaceY(SimonGetScreenX()) + db_floor_offset);
       SimonSetBridgeTolerance(DrawbridgeGetProgress() * 32 / (DB_STEPS - 1));
     }
-    SimonTasks();
     WhipTasks();
+    SimonTasks();
+    WhipRender();
     HudTasks();
 
     /* scroll */

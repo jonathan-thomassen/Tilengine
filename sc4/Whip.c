@@ -127,11 +127,14 @@ typedef struct {
   bool flip_v; /* sprite's own vertical flip                   */
 } WhipSeg;
 
-/* Runtime stage data: segments loaded from whip0_mapN.txt. */
-static struct {
+/* Runtime stage data: segments loaded from whip0_map.txt. */
+typedef struct {
   WhipSeg segs[MAX_WHIP_SPRITES];
   int count; /* number of valid entries (0 = stage not loaded) */
-} stages[NUM_STAGES];
+} WhipStage;
+
+static WhipStage stages[NUM_STAGES];    /* horizontal swing (# main) */
+static WhipStage up_stages[NUM_STAGES]; /* upward swing    (# up)   */
 
 static TLN_Spriteset spriteset;
 static TLN_Bitmap spriteset_bmp;
@@ -139,11 +142,22 @@ static TLN_Bitmap spriteset_bmp;
 /* Current frame within the swing; >= WHIP_DURATION means inactive. */
 static int swing_frame;
 
+/* Stage index that was rendered on the current game frame. WhipGetStage()
+ * returns this so Simon's body is always in lock-step with the whip sprites,
+ * regardless of where swing_frame++ lands after the draw. */
+static int last_rendered_stage;
+
 /* Facing direction frozen at the moment the swing was triggered. */
 static bool swing_facing_right;
 
+/* True when the current swing was triggered with INPUT_UP held. */
+static bool swing_up;
+
 /* Edge-detect state: prevents re-triggering while INPUT_B is held. */
 static bool prev_pressed;
+
+/* True on frames where visible whip sprites should be placed by WhipRender(). */
+static bool render_pending;
 
 static void disable_all_segments(void) {
   for (int i = 0; i < MAX_WHIP_SPRITES; i++) {
@@ -165,7 +179,7 @@ static void disable_all_segments(void) {
  * subsequent stage lines to be ignored until the matching group is found.
  * Blank lines and unrecognised lines are silently skipped.
  */
-static void load_map_file(const char *filename, const char *section) {
+static void load_map_file(const char *filename, const char *section, WhipStage *dest) {
   FILE *file = FileOpen(filename);
   if (file == NULL) {
     return;
@@ -195,7 +209,7 @@ static void load_map_file(const char *filename, const char *section) {
       continue;
     }
 
-    if (cur_stage < 0 || stages[cur_stage].count >= MAX_WHIP_SPRITES) {
+    if (cur_stage < 0 || dest[cur_stage].count >= MAX_WHIP_SPRITES) {
       continue;
     }
 
@@ -209,13 +223,13 @@ static void load_map_file(const char *filename, const char *section) {
       continue;
     }
 
-    WhipSeg *segment = &stages[cur_stage].segs[stages[cur_stage].count];
+    WhipSeg *segment = &dest[cur_stage].segs[dest[cur_stage].count];
     segment->pic = pic;
     segment->dx = dx;
     segment->dy = dy;
     segment->flip_h = (strchr(flags, 'h') != NULL);
     segment->flip_v = (strchr(flags, 'v') != NULL);
-    stages[cur_stage].count++;
+    dest[cur_stage].count++;
   }
 
   fclose(file);
@@ -224,12 +238,13 @@ static void load_map_file(const char *filename, const char *section) {
 void WhipInit(void) {
   spriteset = load_grid_spriteset("whip0.txt", "whip0.png", &spriteset_bmp);
   swing_frame = WHIP_DURATION; /* inactive */
+  swing_up = false;
   prev_pressed = false;
   disable_all_segments();
 
-  /* Load all stage layouts from a single file.  A missing file or a section
-   * that is absent leaves that stage's count = 0 (no sprites shown). */
-  load_map_file("whip0_map.txt", "main");
+  /* Load both swing directions from a single file. */
+  load_map_file("whip0_map.txt", "main", stages);
+  load_map_file("whip0_map.txt", "up", up_stages);
 }
 
 void WhipDeinit(void) {
@@ -253,7 +268,7 @@ int WhipGetStage(void) {
   if (!WhipIsActive()) {
     return 0;
   }
-  return frame_to_stage(swing_frame);
+  return last_rendered_stage;
 }
 
 void WhipTasks(void) {
@@ -264,42 +279,21 @@ void WhipTasks(void) {
   if ((int)pressed && !prev_pressed && !WhipIsActive()) {
     swing_frame = 0;
     swing_facing_right = SimonFacingRight();
+    swing_up = (int)TLN_GetInput(INPUT_UP) != 0;
   }
   prev_pressed = pressed;
+
+  render_pending = false;
 
   if (!WhipIsActive()) {
     return;
   }
 
   if (swing_frame < total_visible_frames()) {
-    int stage = frame_to_stage(swing_frame);
-    int sx = SimonGetScreenX();
-    int sy = SimonGetScreenY();
-    int count = stages[stage].count;
-
-    for (int seg = 0; seg < MAX_WHIP_SPRITES; seg++) {
-      if (seg < count) {
-        const WhipSeg *segment = &stages[stage].segs[seg];
-        int wx;
-        bool fh;
-        if (swing_facing_right) {
-          wx = sx + segment->dx;
-          fh = segment->flip_h;
-        } else {
-          wx = sx + (SIMON_SPRITE_W - segment->dx - SEG_SIZE);
-          fh = ((!segment->flip_h) != 0);
-        }
-        TLN_SetSpriteSet(WHIP_SPRITE_BASE + seg, spriteset);
-        TLN_SetSpritePicture(WHIP_SPRITE_BASE + seg, segment->pic);
-        TLN_EnableSpriteFlag(WHIP_SPRITE_BASE + seg, FLAG_FLIPX, fh);
-        TLN_EnableSpriteFlag(WHIP_SPRITE_BASE + seg, FLAG_FLIPY, segment->flip_v);
-        TLN_SetSpritePosition(WHIP_SPRITE_BASE + seg, wx, sy + segment->dy);
-      } else {
-        TLN_DisableSprite(WHIP_SPRITE_BASE + seg);
-      }
-    }
+    last_rendered_stage = frame_to_stage(swing_frame);
+    render_pending = true; /* WhipRender() will place sprites after SimonTasks() */
   } else {
-    /* Retract phase: hide all segments for the remaining frames. */
+    /* Retract phase: hide all segments. */
     disable_all_segments();
   }
 
@@ -307,6 +301,43 @@ void WhipTasks(void) {
 
   /* Animation complete — ensure all segments are disabled. */
   if (swing_frame >= WHIP_DURATION) {
+    render_pending = false;
     disable_all_segments();
+  }
+}
+
+bool WhipIsUp(void) { return (int)(WhipIsActive() && (int)swing_up) != 0; }
+
+void WhipRender(void) {
+  if (!render_pending) {
+    return;
+  }
+  int stage = last_rendered_stage;
+  int sx = SimonGetScreenX();
+  int sy = SimonGetScreenY();
+  const WhipStage *active_stages = (int)swing_up ? up_stages : stages;
+  int count = active_stages[stage].count;
+
+  for (int seg = 0; seg < MAX_WHIP_SPRITES; seg++) {
+    if (seg < count) {
+      const WhipSeg *segment = &active_stages[stage].segs[seg];
+      int wx;
+      bool fh;
+      if (swing_facing_right) {
+        wx = sx + segment->dx;
+        fh = segment->flip_h;
+      } else {
+        wx = sx + (SIMON_SPRITE_W - segment->dx - SEG_SIZE);
+        fh = ((!segment->flip_h) != 0);
+      }
+      TLN_SetSpriteSet(WHIP_SPRITE_BASE + seg, spriteset);
+      TLN_SetSpritePicture(WHIP_SPRITE_BASE + seg, segment->pic);
+      TLN_EnableSpriteFlag(WHIP_SPRITE_BASE + seg, FLAG_FLIPX, fh);
+      TLN_EnableSpriteFlag(WHIP_SPRITE_BASE + seg, FLAG_FLIPY, segment->flip_v);
+      int y_offset = (int)SimonIsCrouching() ? 12 : 0;
+      TLN_SetSpritePosition(WHIP_SPRITE_BASE + seg, wx, sy + segment->dy + y_offset);
+    } else {
+      TLN_DisableSprite(WHIP_SPRITE_BASE + seg);
+    }
   }
 }
