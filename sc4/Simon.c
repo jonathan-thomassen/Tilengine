@@ -22,6 +22,13 @@
 #define JUMP_ARC_LEN_TALL 39
 #define JUMP_ARC_LEN_HIGHER 41
 #define BRIDGE_FLOOR_Y 32767
+#define CEILING_FALL_TV 8
+
+/* Gradual acceleration after falling from a ceiling hang.
+ * Pattern: 3 frames, 2 frames, 3 frames... per velocity step, capped at
+ * CEILING_FALL_TV.  After the table ends, CEILING_FALL_TV is used each frame. */
+static const int ceiling_fall_dy[] = {1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 6, 6, 7, 7, 7, 8};
+#define CEILING_FALL_LEN ((int)(sizeof(ceiling_fall_dy) / sizeof(ceiling_fall_dy[0])))
 
 /* Short arc (tap): 38 key-frames → 37 deltas.  Apex y=111. */
 static const int jump_arc_dy_short[JUMP_ARC_LEN_SHORT] = {
@@ -73,6 +80,8 @@ static Coords2d position;
 static int y_velocity = 0;
 static int apex_hang = 0;
 static int jump_frame = 0;
+static int ceiling_hang = 0;
+static int ceiling_fall_frame = -1;
 static bool jump_arc_tall = false;
 static bool jump_arc_higher = false;
 static bool jump_arc_committed = false;
@@ -376,6 +385,8 @@ void SimonSetState(SimonState new_state) {
     jump_arc_higher = false;
     jump_arc_committed = false;
     jump_was_released = false;
+    ceiling_hang = 0;
+    ceiling_fall_frame = -1;
     y_velocity = 0;
   } else if (state == SIMON_WALKING) {
     walk_anim_frame = 0;
@@ -641,15 +652,29 @@ static void apply_collisions(int start_y_velocity) {
                                 : JUMP_ARC_LEN_SHORT;
   int dy;
   if (state == SIMON_JUMPING) {
-    const int *arc = jump_arc_higher ? jump_arc_dy_higher
-                     : jump_arc_tall ? jump_arc_dy_tall
-                                     : jump_arc_dy_short;
-    if (jump_frame < arc_len) {
-      dy = arc[jump_frame++];
+    if (ceiling_hang > 0) {
+      ceiling_hang--;
+      dy = 0; /* hang motionless against ceiling */
+      y_velocity = 0;
+    } else if (ceiling_fall_frame >= 0) {
+      /* gradual acceleration after ceiling hang */
+      if (ceiling_fall_frame < CEILING_FALL_LEN) {
+        dy = ceiling_fall_dy[ceiling_fall_frame++];
+      } else {
+        dy = CEILING_FALL_TV;
+      }
+      y_velocity = dy;
     } else {
-      dy = TERM_VELOCITY; /* constant fall after arc ends */
+      const int *arc = jump_arc_higher ? jump_arc_dy_higher
+                       : jump_arc_tall ? jump_arc_dy_tall
+                                       : jump_arc_dy_short;
+      if (jump_frame < arc_len) {
+        dy = arc[jump_frame++];
+      } else {
+        dy = TERM_VELOCITY; /* constant fall after arc ends */
+      }
+      y_velocity = dy; /* proxy: keeps landing detection working */
     }
-    y_velocity = dy; /* proxy: keeps landing detection working */
   } else {
     /* non-jumping states: original velocity-based movement */
     dy = (y_velocity > 0 ? y_velocity / 3 : y_velocity >> 2);
@@ -657,7 +682,9 @@ static void apply_collisions(int start_y_velocity) {
   int new_y = position.y + dy;
   if (dy < 0 &&
       (int)check_ceiling(position.x, position.scroll_x, &new_y, &y_velocity, position.y)) {
-    jump_frame = arc_len; /* ceiling hit: skip to post-arc fall */
+    jump_frame = arc_len;   /* ceiling hit: switch to post-arc fall after hang */
+    ceiling_hang = 12;      /* hang against ceiling before falling */
+    ceiling_fall_frame = 0; /* begin gradual acceleration when hang ends */
     apex_hang = 0;
   }
   if (bridge_floor < BRIDGE_FLOOR_Y) {
