@@ -1,6 +1,7 @@
 #include "Simon.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "LoadFile.h"
 #include "Sandblock.h"
@@ -75,6 +76,7 @@ static int jump_frame = 0;
 static bool jump_arc_tall = false;
 static bool jump_arc_higher = false;
 static bool jump_arc_committed = false;
+static bool jump_was_released = true;
 static SimonState state;
 static Direction direction;
 
@@ -373,6 +375,7 @@ void SimonSetState(SimonState new_state) {
     jump_arc_tall = false;
     jump_arc_higher = false;
     jump_arc_committed = false;
+    jump_was_released = false;
     y_velocity = 0;
   } else if (state == SIMON_WALKING) {
     walk_anim_frame = 0;
@@ -709,9 +712,14 @@ void SimonTasks(void) {
     }
   }
 
+  /* Track whether jump button was released since last jump. */
+  if (!TLN_GetInput(INPUT_A)) {
+    jump_was_released = true;
+  }
+
   apply_movement(input, TLN_GetWidth());
 
-  if ((int)jump && state != SIMON_JUMPING) {
+  if ((int)jump && jump_was_released && state != SIMON_JUMPING) {
     SimonSetState(SIMON_JUMPING);
   }
 

@@ -22,7 +22,7 @@
 #define WATER_LAYER 3
 #define BACKGROUND_LAYER 4
 
-#define TARGET_FPS 6
+#define TARGET_FPS 60
 
 #define HINGE_X 223
 #define HINGE_Y 191
