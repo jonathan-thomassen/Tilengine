@@ -18,37 +18,49 @@
 #define SIMON_MAX_STAGES 8      /* max animation stages per section         */
 #define SIMON_MAX_SEGS 8        /* max subsprites per stage                 */
 #define WALK_FRAMES_PER_STAGE 8 /* game frames each walk frame is shown     */
-#define JUMP_ARC_LEN_SHORT 37
-#define JUMP_ARC_LEN_TALL 39
-#define JUMP_ARC_LEN_HIGHER 41
+#define JUMP_ARC_LEN_SHORT 45
+#define JUMP_ARC_LEN_TALL 46
+#define JUMP_ARC_LEN_HIGHER 48
 #define BRIDGE_FLOOR_Y 32767
 #define CEILING_FALL_TV 8
+#define CEILING_GAP 0 /* empty pixel rows between Simon's head and ceiling tile */
 
 /* Gradual acceleration after falling from a ceiling hang.
- * Pattern: 3 frames, 2 frames, 3 frames... per velocity step, capped at
- * CEILING_FALL_TV.  After the table ends, CEILING_FALL_TV is used each frame. */
-static const int ceiling_fall_dy[] = {1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 6, 6, 7, 7, 7, 8};
-#define CEILING_FALL_LEN ((int)(sizeof(ceiling_fall_dy) / sizeof(ceiling_fall_dy[0])))
+ * Odd velocity steps hold for 3 frames, even steps for 2, until CEILING_FALL_TV.
+ * {1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 6, 6, 7, 7, 7, 8} */
+static int ceiling_fall_dy_at(int frame) {
+  int v = 1;
+  int i = 0;
+  while (v < CEILING_FALL_TV) {
+    int count = (v & 1) ? 3 : 2;
+    if (frame < i + count) {
+      return v;
+    }
+    i += count;
+    v++;
+  }
+  return CEILING_FALL_TV;
+}
 
-/* Short arc (tap): 38 key-frames → 37 deltas.  Apex y=111. */
+/* Short arc (tap) */
 static const int jump_arc_dy_short[JUMP_ARC_LEN_SHORT] = {
-    -1, -5, -4, -5, -3, -4, -3, -2, -3, -1, -2, -1, -1, 0, 0, 0, 0, 0, 0,
-    0,  0,  0,  0,  0,  0,  1,  1,  2,  1,  3,  2,  3,  4, 3, 5, 4, 6};
+    -1, -5, -4, -5, -3, -4, -3, -2, -3, -1, -2, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0,  0,  1,  1,  2,  1,  3,  2,  3,  4,  3,  5,  4,  5, 5, 6, 6, 7, 7, 8, 7, 8};
 
-/* Tall arc (hold 2 frames): 40 key-frames → 39 deltas.  Apex y=106. */
+/* Tall arc (hold 2 frames) */
 static const int jump_arc_dy_tall[JUMP_ARC_LEN_TALL] = {
-    -1, -5, -4, -5, -4, -4, -3, -3, -3, -2, -2, -1, -2, -1, 0, 0, 0, 0, 0, 0,
-    0,  0,  0,  0,  0,  0,  1,  2,  1,  2,  2,  3,  3,  3,  4, 4, 5, 4, 6};
+    -1, -5, -4, -5, -4, -4, -3, -3, -3, -2, -2, -1, -2, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0,  0,  0,  1,  2,  1,  2,  2,  3,  3,  4,  4,  5,  4,  5, 5, 6, 6, 7, 7, 8, 7, 8};
 
-/* Higher arc (hold 3+ frames): 42 key-frames → 41 deltas.  Apex y=102. */
+/* Higher arc (hold 3+ frames) */
 static const int jump_arc_dy_higher[JUMP_ARC_LEN_HIGHER] = {
-    -1, -5, -4, -5, -4, -5, -3, -4, -3, -2, -3, -1, -2, -1, -1, 0, 0, 0, 0, 0, 0,
-    0,  0,  0,  0,  0,  0,  1,  1,  2,  1,  3,  2,  3,  4,  3,  5, 4, 5, 4, 6};
+    -1, -5, -4, -5, -4, -5, -3, -4, -3, -2, -3, -1, -2, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0,  0,  0,  1,  1,  2,  1,  3,  2,  3,  4,  3,  5,  4,  5,  5, 6, 6, 6, 7, 7, 8, 7, 8};
 
 #define PROBE_X_START 4
 #define PROBE_X_STEP 16
 #define PROBE_X_LIMIT 44
-#define PROBE_X_OFFSET 24
+#define PROBE_X_OFFSET 23
 
 #define PROBE_Y_OFFSET 36
 
@@ -393,40 +405,16 @@ void SimonSetState(SimonState new_state) {
   }
 }
 
-/**
- * Returns true if a solid tile is present at the given horizontal edge of the
- * sprite body, sampled at three heights.
- *
- * \param pos       Screen position of the sprite (pos.scroll_x is the world offset)
- * \param x_offset  Horizontal offset from pos.x to the edge being probed
- */
-static bool check_wall(Coords2d pos, int x_offset) {
-  for (int probe_x = PROBE_X_START; probe_x < PROBE_X_LIMIT; probe_x += PROBE_X_STEP) {
-    TLN_TileInfo tile_info;
-    TLN_GetLayerTile(COLLISION_LAYER, pos.x + pos.scroll_x + x_offset, pos.y + probe_x, &tile_info);
-    if (!tile_info.empty) {
-      return true;
-    }
+static void move_left(void) {
+  Coords2d pos_pre = position;
+  if (!camera_frozen && position.scroll_x > 0 && position.x <= 128) {
+    position.scroll_x--;
+  } else if (position.x > -4) {
+    position.x--;
   }
-  int wall_x = pos.x + pos.scroll_x + x_offset;
-  for (int i = 0; i < sb_count; i++) {
-    const SandblockState *sandblock_state = &sb_cache[i];
-    if (wall_x < sandblock_state->world_x || wall_x >= sandblock_state->world_x + SANDBLOCK_WIDTH) {
-      continue;
-    }
-    /* cull blocks entirely above or below the sampled y range */
-    if (pos.y + PROBE_X_START >= sandblock_state->world_y + SANDBLOCK_HEIGHT ||
-        pos.y + PROBE_Y_OFFSET < sandblock_state->world_y) {
-      continue;
-    }
-    for (int probe_x = PROBE_X_START; probe_x < PROBE_X_LIMIT; probe_x += PROBE_X_STEP) {
-      if (pos.y + probe_x >= sandblock_state->world_y &&
-          pos.y + probe_x < sandblock_state->world_y + SANDBLOCK_HEIGHT) {
-        return true;
-      }
-    }
+  if (check_wall(position, 9)) {
+    position = pos_pre;
   }
-  return false;
 }
 
 static void move_right(int width) {
@@ -441,15 +429,62 @@ static void move_right(int width) {
   }
 }
 
-static void move_left(void) {
-  Coords2d pos_pre = position;
-  if (!camera_frozen && position.scroll_x > 0 && position.x <= 128) {
-    position.scroll_x--;
-  } else if (position.x > -4) {
-    position.x--;
+static Coords2d adjust_movement_vector(int world_x, Coords2d sprite_pos, Coords2d vector) {
+  for (int y = 0; y < 48; y += 16) {
+    for (int x = 8; x < 24; x += 16) {
+      if (vector.x > 0) {
+        if (vector.y > 0) {
+
+        } else {
+          if (x < 24 && y > 0) {
+            break;
+          }
+          TLN_TileInfo tile_info;
+          TLN_GetLayerTile(COLLISION_LAYER, world_x + sprite_pos.x + vector.x,
+                           sprite_pos.y + vector.y, &tile_info);
+          if (tile_info.empty) {
+            TLN_GetLayerTile(COLLISION_LAYER, world_x + sprite_pos.x, sprite_pos.y + vector.y,
+                             &tile_info);
+            if (tile_info.empty) {
+              break;
+            } else {
+
+            }
+          } else {
+            *inout_y += *inout_y % 16;
+            break;
+          }
+        }
+      } else {
+        (world_x + sprite_pos.x + vector.x) % 16;
+        if (vector.y > 0) {
+
+        } else {
+        }
+      }
+    }
   }
-  if (check_wall(position, 8)) {
-    position = pos_pre;
+}
+
+static void check_wall_left(int sprite_y, int world_x, int *inout_x) {
+  for (int c = 0; c < 48; c += 16) {
+    TLN_TileInfo tile_info;
+    TLN_GetLayerTile(COLLISION_LAYER, world_x + *inout_x + 8, sprite_y + c, &tile_info);
+    if (!tile_info.empty) {
+      *inout_x += *inout_x % 16;
+      break;
+    }
+  }
+}
+
+static void check_wall_right(int sprite_y, int world_x, int *inout_x) {
+  for (int c = 0; c < 48; c += 16) {
+    TLN_TileInfo tile_info;
+    TLN_GetLayerTile(COLLISION_LAYER, world_x + *inout_x + 24, sprite_y + c, &tile_info);
+    if (!tile_info.empty) {
+      *inout_x -= *inout_x % 16;
+      break;
+    }
   }
 }
 
@@ -458,68 +493,39 @@ static void move_left(void) {
  * vertical collision. Stops upward velocity and pushes Simon down below
  * the tile.
  *
- * \param sprite_x    World x position of the sprite
+ * \param sprite_x    Screen x position of the sprite
  * \param world_x     Horizontal world scroll offset
  * \param inout_y     Pointer to the candidate new y position; adjusted
  *                    downward when a tile is hit
- * \param inout_vy    Pointer to the vertical velocity; zeroed on ceiling hit
- * \param prev_y      The y position from the previous frame, used to snap
- *                    back without overshooting
- * \return            true if a ceiling tile was hit
  */
-static bool check_ceiling(int sprite_x, int world_x, int *inout_y, int *inout_vy, int prev_y) {
-  for (int c = 8; c < 24; c += 8) {
+static void check_ceiling(int sprite_x, int world_x, int *inout_y) {
+  for (int c = 8; c < 24; c += 16) {
     TLN_TileInfo tile_info;
-    TLN_GetLayerTile(COLLISION_LAYER, sprite_x + c + world_x, *inout_y, &tile_info);
+    TLN_GetLayerTile(COLLISION_LAYER, world_x + sprite_x + c, *inout_y, &tile_info);
     if (!tile_info.empty) {
-      *inout_vy = 0;
-      *inout_y = prev_y; /* restore to position before the frame's movement */
-      return true;
+      *inout_y += *inout_y % 16;
+      break;
     }
   }
-  return false;
 }
 
 /**
  * Checks for solid tiles directly below the sprite's feet and resolves
- * vertical collision. Scans two sample points (x+8, x+16) one tile-height
- * below the sprite.
+ * vertical collision. Stops downward velocity and pushes Simon up above
+ * the tile.
  *
- * \param sprite_x    World x position of the sprite
+ * \param sprite_x    Screen x position of the sprite
  * \param world_x     Horizontal world scroll offset
- * \param inout_y     Pointer to the candidate new y position; adjusted upward
- *                    when a tile is hit
- * \param inout_vy    Pointer to the vertical velocity; zeroed on landing
+ * \param inout_y     Pointer to the candidate new y position; adjusted
+ *                    upward when a tile is hit
  */
-static void check_floor(int sprite_x, int world_x, int *inout_y, int *inout_vy) {
-  for (int c = 8; c < 24; c += 8) {
+static void check_floor(int sprite_x, int world_x, int *inout_y) {
+  for (int c = 8; c < 24; c += 16) {
     TLN_TileInfo tile_info;
-    TLN_GetLayerTile(COLLISION_LAYER, sprite_x + c + world_x, *inout_y + 46, &tile_info);
+    TLN_GetLayerTile(COLLISION_LAYER, world_x + sprite_x + c, *inout_y + 48, &tile_info);
     if (!tile_info.empty) {
-      *inout_vy = 0;
-      *inout_y -= tile_info.yoffset;
-      return;
-    }
-  }
-  int foot_y = *inout_y + 46;
-  for (int i = 0; i < sb_count; i++) {
-    const SandblockState *sandblock_state = &sb_cache[i];
-    /* cull blocks whose x range can't contain either foot sample */
-    if (sprite_x + 16 + world_x < sandblock_state->world_x ||
-        sprite_x + 8 + world_x >= sandblock_state->world_x + SANDBLOCK_WIDTH) {
-      continue;
-    }
-    for (int c = 8; c < 24; c += 8) {
-      int foot_x = sprite_x + c + world_x;
-      if (foot_x >= sandblock_state->world_x &&
-          foot_x < sandblock_state->world_x + SANDBLOCK_WIDTH &&
-          foot_y >= sandblock_state->world_y &&
-          foot_y < sandblock_state->world_y + SANDBLOCK_HEIGHT) {
-        *inout_vy = 0;
-        *inout_y = sandblock_state->world_y - 46;
-        SandblockMarkStood(sandblock_state->index);
-        return;
-      }
+      *inout_y -= *inout_y % 16;
+      break;
     }
   }
 }
@@ -623,25 +629,6 @@ static void apply_movement(Direction input, int width) {
   }
 }
 
-/** Advances vertical velocity by one step, respecting apex hang. */
-static void advance_gravity(void) {
-  if (state == SIMON_JUMPING) {
-    return; /* vertical movement is table-driven; handled in apply_collisions */
-  }
-  if (y_velocity >= TERM_VELOCITY) {
-    return;
-  }
-  if (y_velocity == 0 && apex_hang < HANGTIME) {
-    apex_hang++;
-    return;
-  }
-  if (y_velocity != 0) {
-    apex_hang = 0;
-  }
-  /* accelerate twice as fast on the way down for a snappier fall */
-  y_velocity += (y_velocity > 0) ? 2 : 1;
-}
-
 /**
  * Applies ceiling/floor collision and detects landing.
  * \param start_y_velocity  Vertical velocity captured before advance_gravity() was called.
@@ -658,11 +645,7 @@ static void apply_collisions(int start_y_velocity) {
       y_velocity = 0;
     } else if (ceiling_fall_frame >= 0) {
       /* gradual acceleration after ceiling hang */
-      if (ceiling_fall_frame < CEILING_FALL_LEN) {
-        dy = ceiling_fall_dy[ceiling_fall_frame++];
-      } else {
-        dy = CEILING_FALL_TV;
-      }
+      dy = ceiling_fall_dy_at(ceiling_fall_frame++);
       y_velocity = dy;
     } else {
       const int *arc = jump_arc_higher ? jump_arc_dy_higher
@@ -671,7 +654,7 @@ static void apply_collisions(int start_y_velocity) {
       if (jump_frame < arc_len) {
         dy = arc[jump_frame++];
       } else {
-        dy = TERM_VELOCITY; /* constant fall after arc ends */
+        dy = CEILING_FALL_TV; /* constant fall after arc ends */
       }
       y_velocity = dy; /* proxy: keeps landing detection working */
     }
@@ -680,13 +663,7 @@ static void apply_collisions(int start_y_velocity) {
     dy = (y_velocity > 0 ? y_velocity / 3 : y_velocity >> 2);
   }
   int new_y = position.y + dy;
-  if (dy < 0 &&
-      (int)check_ceiling(position.x, position.scroll_x, &new_y, &y_velocity, position.y)) {
-    jump_frame = arc_len;   /* ceiling hit: switch to post-arc fall after hang */
-    ceiling_hang = 12;      /* hang against ceiling before falling */
-    ceiling_fall_frame = 0; /* begin gradual acceleration when hang ends */
-    apex_hang = 0;
-  }
+  check_ceiling(position.x, position.scroll_x, &new_y);
   if (bridge_floor < BRIDGE_FLOOR_Y) {
     /* Bridge surface replaces tile floor check entirely — prevents castle
      * approach tiles from fighting the bridge geometry.  Uses >= so that
@@ -702,7 +679,7 @@ static void apply_collisions(int start_y_velocity) {
       apex_hang = 0;
     }
   } else {
-    check_floor(position.x, position.scroll_x, &new_y, &y_velocity);
+    check_floor(position.x, position.scroll_x, &new_y);
   }
   if (start_y_velocity > 0 && y_velocity == 0) {
     SimonSetState(SIMON_IDLE);
@@ -768,7 +745,6 @@ void SimonTasks(void) {
   }
 
   int start_y_velocity = y_velocity;
-  advance_gravity();
   apply_collisions(start_y_velocity);
 
   /* If collisions landed Simon into IDLE but a direction is still held,

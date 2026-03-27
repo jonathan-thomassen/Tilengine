@@ -315,8 +315,6 @@ int main(int argc, char *argv[]) {
     SimonFreezeCamera();
     SimonSetScreenX(HINGE_X - 100); /* place Simon on the bridge, left of hinge */
     SimonSetWorldX(DB_TRIGGER_X);
-    SimonPinFeetY(g_hinge_y -
-                  DB_LAYER_Y_OFFSET); /* bridge surface y in screen space once DB_LAYER is active */
   }
 
   while (TLN_ProcessWindow()) {
