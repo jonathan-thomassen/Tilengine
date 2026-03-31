@@ -57,123 +57,123 @@ static TLN_Engine create_context(int hres, int vres, int numlayers, int numsprit
  * animation slots
  */
 TLN_Engine TLN_Init(int hres, int vres, int numlayers, int numsprites, int numanimations) {
-    printf("Tilengine v%d.%d.%d %d-bit %s built %s %s\n", TILENGINE_VER_MAJ, TILENGINE_VER_MIN,
-           TILENGINE_VER_REV, (int)(sizeof(uintptr_t) * 8),
+  printf("Tilengine v%d.%d.%d %d-bit %s built %s %s\n", TILENGINE_VER_MAJ, TILENGINE_VER_MIN,
+         TILENGINE_VER_REV, (int)(sizeof(uintptr_t) * 8),
 #ifdef _DEBUG
-           "debug",
+         "debug",
 #else
-           "release",
+         "release",
 #endif
-           __DATE__, __TIME__);
-    return create_context(hres, vres, numlayers, numsprites, numanimations);
+         __DATE__, __TIME__);
+  return create_context(hres, vres, numlayers, numsprites, numanimations);
 }
 
 /* creates new engine context */
 static TLN_Engine create_context(int hres, int vres, int numlayers, int numsprites,
                                  int numanimations) {
-    int c;
-    TLN_Engine context;
+  int c;
+  TLN_Engine context;
 
-    /* validate parameters */
-    if (hres <= 0 || vres <= 0) {
-        TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
-        return NULL;
+  /* validate parameters */
+  if (hres <= 0 || vres <= 0) {
+    TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
+    return NULL;
+  }
+
+  TLN_SetLastError(TLN_ERR_OK);
+
+  /* create framebuffer */
+  context = (TLN_Engine)calloc(1, sizeof(Engine));
+  context->header = ID_CONTEXT;
+  context->framebuffer.width = hres;
+  context->framebuffer.height = vres;
+  context->framebuffer.pitch = (((hres * 32) >> 3) + 3) & ~0x03;
+  context->timing.target_fps = INTERNAL_FPS;
+
+  /* create static layers */
+  if (numlayers > 0) {
+    context->numlayers = numlayers;
+    context->layers = (Layer *)calloc(numlayers, sizeof(Layer));
+    if (!context->layers) {
+      TLN_DeleteContext(context);
+      TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
+      return NULL;
     }
-
-    TLN_SetLastError(TLN_ERR_OK);
-
-    /* create framebuffer */
-    context = (TLN_Engine)calloc(1, sizeof(Engine));
-    context->header = ID_CONTEXT;
-    context->framebuffer.width = hres;
-    context->framebuffer.height = vres;
-    context->framebuffer.pitch = (((hres * 32) >> 3) + 3) & ~0x03;
-    context->timing.target_fps = INTERNAL_FPS;
-
-    /* create static layers */
-    if (numlayers > 0) {
-        context->numlayers = numlayers;
-        context->layers = (Layer *)calloc(numlayers, sizeof(Layer));
-        if (!context->layers) {
-            TLN_DeleteContext(context);
-            TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
-            return NULL;
-        }
-        for (c = 0; c < context->numlayers; c++) {
-            context->layers[c].mosaic.buffer = (uint32_t *)calloc(hres, sizeof(uint32_t));
-            context->layers[c].blend_mask_layer = -1;
-        }
-
-        /* buffer for intermediate scanline output */
-        context->linebuffer = (uint32_t *)calloc(hres, sizeof(uint32_t));
-        context->water_render = (uint32_t *)calloc(hres, sizeof(uint32_t));
-        context->blend_source_layer = -1;
-        context->priority = (uint32_t *)malloc(hres * sizeof(uint32_t));
-        context->blend_mask = (uint8_t *)calloc(hres, sizeof(uint8_t));
-    }
-
-    /* create static sprites */
-    if (numsprites > 0) {
-        context->numsprites = numsprites;
-        context->sprites = (Sprite *)calloc(numsprites, sizeof(Sprite));
-        if (!context->sprites) {
-            TLN_DeleteContext(context);
-            TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
-            return NULL;
-        }
-        for (c = 0; c < context->numsprites; c++) {
-            Sprite *sprite = &context->sprites[c];
-            sprite->funcs.draw = GetSpriteDraw(MODE_NORMAL);
-            sprite->funcs.blitter = SelectBlitter(true, false, false);
-            sprite->scale.x = sprite->scale.y = 1.0f;
-        }
-        ListInit(&context->list_sprites, &context->sprites[0].list_node, sizeof(Sprite),
-                 context->numsprites);
-
-        /* sprite collision buffer */
-        context->collision = (uint16_t *)calloc(hres, sizeof(uint16_t));
-    }
-
-    /* create static animations */
-    if (numanimations > 0) {
-        context->anim.num = numanimations;
-        context->anim.items = (Animation *)calloc(numanimations, sizeof(Animation));
-        if (!context->anim.items) {
-            TLN_DeleteContext(context);
-            TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
-            return NULL;
-        }
-        ListInit(&context->anim.list, &context->anim.items[0].list_node, sizeof(Animation),
-                 context->anim.num);
-    }
-
-    context->bg.color = PackRGB32(0, 0, 0);
-    context->bg.blit_fast = SelectBlitter(false, false, false);
-    if (!CreateBlendTables()) {
-        TLN_DeleteContext(context);
-        TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
-        return NULL;
-    }
-    context->bg.blend_table = SelectBlendTable(BLEND_MOD);
-
-    /* set as default context if it's the first one */
-    if (engine == NULL) {
-        engine = context;
-    }
-
     for (c = 0; c < context->numlayers; c++) {
-        TLN_DisableLayerWindow(c);
+      context->layers[c].mosaic.buffer = (uint32_t *)calloc(hres, sizeof(uint32_t));
+      context->layers[c].blend_mask_layer = -1;
     }
+
+    /* buffer for intermediate scanline output */
+    context->linebuffer = (uint32_t *)calloc(hres, sizeof(uint32_t));
+    context->water_render = (uint32_t *)calloc(hres, sizeof(uint32_t));
+    context->blend_source_layer = -1;
+    context->priority = (uint32_t *)malloc(hres * sizeof(uint32_t));
+    context->blend_mask = (uint8_t *)calloc(hres, sizeof(uint8_t));
+  }
+
+  /* create static sprites */
+  if (numsprites > 0) {
+    context->numsprites = numsprites;
+    context->sprites = (Sprite *)calloc(numsprites, sizeof(Sprite));
+    if (!context->sprites) {
+      TLN_DeleteContext(context);
+      TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
+      return NULL;
+    }
+    for (c = 0; c < context->numsprites; c++) {
+      Sprite *sprite = &context->sprites[c];
+      sprite->funcs.draw = GetSpriteDraw(MODE_NORMAL);
+      sprite->funcs.blitter = SelectBlitter(true, false, false);
+      sprite->scale.x = sprite->scale.y = 1.0f;
+    }
+    ListInit(&context->list_sprites, &context->sprites[0].list_node, sizeof(Sprite),
+             context->numsprites);
+
+    /* sprite collision buffer */
+    context->collision = (uint16_t *)calloc(hres, sizeof(uint16_t));
+  }
+
+  /* create static animations */
+  if (numanimations > 0) {
+    context->anim.num = numanimations;
+    context->anim.items = (Animation *)calloc(numanimations, sizeof(Animation));
+    if (!context->anim.items) {
+      TLN_DeleteContext(context);
+      TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
+      return NULL;
+    }
+    ListInit(&context->anim.list, &context->anim.items[0].list_node, sizeof(Animation),
+             context->anim.num);
+  }
+
+  context->bg.color = PackRGB32(0, 0, 0);
+  context->bg.blit_fast = SelectBlitter(false, false, false);
+  if (!CreateBlendTables()) {
+    TLN_DeleteContext(context);
+    TLN_SetLastError(TLN_ERR_OUT_OF_MEMORY);
+    return NULL;
+  }
+  context->bg.blend_table = SelectBlendTable(BLEND_MOD);
+
+  /* set as default context if it's the first one */
+  if (engine == NULL) {
+    engine = context;
+  }
+
+  for (c = 0; c < context->numlayers; c++) {
+    TLN_DisableLayerWindow(c);
+  }
 
 #ifdef _DEBUG
-    TLN_SetLogLevel(TLN_LOG_ERRORS);
+  TLN_SetLogLevel(TLN_LOG_ERRORS);
 #endif
 
-    return context;
+  return context;
 }
 
 static bool check_context(Engine const *context) {
-    return (bool)(context != NULL && context->header == ID_CONTEXT);
+  return (bool)(context != NULL && context->header == ID_CONTEXT);
 }
 
 /*!
@@ -187,13 +187,13 @@ static bool check_context(Engine const *context) {
  * true if success or false if wrong context is supplied
  */
 bool TLN_SetContext(TLN_Engine context) {
-    if (check_context(context)) {
-        engine = context;
-        TLN_SetLastError(TLN_ERR_OK);
-        return true;
-    }
-    TLN_SetLastError(TLN_ERR_NULL_POINTER);
-    return false;
+  if (check_context(context)) {
+    engine = context;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
+  }
+  TLN_SetLastError(TLN_ERR_NULL_POINTER);
+  return false;
 }
 
 /*!
@@ -207,10 +207,10 @@ TLN_Engine TLN_GetContext(void) { return engine; }
  * Deinitialises current engine context and frees used resources
  */
 void TLN_Deinit(void) {
-    if (engine != NULL) {
-        TLN_DeleteContext(engine);
-        engine = NULL;
-    }
+  if (engine != NULL) {
+    TLN_DeleteContext(engine);
+    engine = NULL;
+  }
 }
 
 /*!
@@ -221,51 +221,51 @@ void TLN_Deinit(void) {
  * context reference to delete
  */
 bool TLN_DeleteContext(TLN_Engine context) {
-    if (!check_context(context)) {
-        TLN_SetLastError(TLN_ERR_NULL_POINTER);
-        return false;
-    }
+  if (!check_context(context)) {
+    TLN_SetLastError(TLN_ERR_NULL_POINTER);
+    return false;
+  }
 
-    DeleteBlendTables();
+  DeleteBlendTables();
 
-    for (int c = 0; c < context->numlayers; c++) {
-        free(context->layers[c].mosaic.buffer);
-    }
+  for (int c = 0; c < context->numlayers; c++) {
+    free(context->layers[c].mosaic.buffer);
+  }
 
-    if (context->sprites) {
-        free(context->sprites);
-    }
+  if (context->sprites) {
+    free(context->sprites);
+  }
 
-    if (context->layers) {
-        free(context->layers);
-    }
+  if (context->layers) {
+    free(context->layers);
+  }
 
-    if (context->priority) {
-        free(context->priority);
-    }
+  if (context->priority) {
+    free(context->priority);
+  }
 
-    if (context->anim.items) {
-        free(context->anim.items);
-    }
+  if (context->anim.items) {
+    free(context->anim.items);
+  }
 
-    if (context->collision) {
-        free(context->collision);
-    }
+  if (context->collision) {
+    free(context->collision);
+  }
 
-    if (context->blend_mask) {
-        free(context->blend_mask);
-    }
+  if (context->blend_mask) {
+    free(context->blend_mask);
+  }
 
-    if (context->water_render) {
-        free(context->water_render);
-    }
+  if (context->water_render) {
+    free(context->water_render);
+  }
 
-    if (context->linebuffer) {
-        free(context->linebuffer);
-    }
+  if (context->linebuffer) {
+    free(context->linebuffer);
+  }
 
-    free(context);
-    return true;
+  free(context);
+  return true;
 }
 
 /*!
@@ -276,9 +276,9 @@ bool TLN_DeleteContext(TLN_Engine context) {
  * value to set, member of the TLN_LogLevel enumeration
  */
 void TLN_SetLogLevel(TLN_LogLevel log_level) {
-    if (engine != NULL) {
-        engine->log_level = log_level;
-    }
+  if (engine != NULL) {
+    engine->log_level = log_level;
+  }
 }
 
 /*!
@@ -297,8 +297,8 @@ void TLN_SetLogLevel(TLN_LogLevel log_level) {
  *
  */
 uint32_t TLN_GetVersion(void) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return TILENGINE_HEADER_VERSION;
+  TLN_SetLastError(TLN_ERR_OK);
+  return TILENGINE_HEADER_VERSION;
 }
 
 /*!
@@ -327,8 +327,8 @@ int TLN_GetTargetFps(void) { return engine->timing.target_fps; }
  * TLN_Init(), TLN_GetHeight()
  */
 int TLN_GetWidth(void) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return engine->framebuffer.width;
+  TLN_SetLastError(TLN_ERR_OK);
+  return engine->framebuffer.width;
 }
 
 /*!
@@ -339,8 +339,8 @@ int TLN_GetWidth(void) {
  * TLN_Init(), TLN_GetWidth()
  */
 int TLN_GetHeight(void) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return engine->framebuffer.height;
+  TLN_SetLastError(TLN_ERR_OK);
+  return engine->framebuffer.height;
 }
 
 /*!
@@ -366,9 +366,9 @@ int TLN_GetHeight(void) {
  * TLN_UpdateFrame()
  */
 void TLN_SetRenderTarget(uint8_t *data, int pitch) {
-    engine->framebuffer.data = data;
-    engine->framebuffer.pitch = pitch;
-    TLN_SetLastError(TLN_ERR_OK);
+  engine->framebuffer.data = data;
+  engine->framebuffer.pitch = pitch;
+  TLN_SetLastError(TLN_ERR_OK);
 }
 
 /*!
@@ -379,8 +379,8 @@ void TLN_SetRenderTarget(uint8_t *data, int pitch) {
  * TLN_SetRenderTarget()
  */
 uint8_t *TLN_GetRenderTarget(void) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return engine->framebuffer.data;
+  TLN_SetLastError(TLN_ERR_OK);
+  return engine->framebuffer.data;
 }
 
 /*!
@@ -391,112 +391,112 @@ uint8_t *TLN_GetRenderTarget(void) {
  * TLN_SetRenderTarget()
  */
 int TLN_GetRenderTargetPitch(void) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return engine->framebuffer.pitch;
+  TLN_SetLastError(TLN_ERR_OK);
+  return engine->framebuffer.pitch;
 }
 
 /* basic reference list without duplicates */
 typedef struct {
-    int index;
-    void *refs[TMX_MAX_TILESET];
+  int index;
+  void *refs[TMX_MAX_TILESET];
 } RefList;
 
 /* finds reference in list */
 bool ref_find(const RefList *refs, const void *item) {
-    for (int c = 0; c < refs->index; c += 1) {
-        if (refs->refs[c] == item) {
-            return true;
-        }
+  for (int c = 0; c < refs->index; c += 1) {
+    if (refs->refs[c] == item) {
+      return true;
     }
-    return false;
+  }
+  return false;
 }
 
 /* adds reference to list */
 bool ref_add(RefList *refs, void *item) {
-    if (refs->index < TMX_MAX_TILESET - 1 && !ref_find(refs, item)) {
-        refs->refs[refs->index++] = item;
-        return true;
-    }
-    return false;
+  if (refs->index < TMX_MAX_TILESET - 1 && !ref_find(refs, item)) {
+    refs->refs[refs->index++] = item;
+    return true;
+  }
+  return false;
 }
 
 /* Processes color cycle animations for the current frame */
 static void update_color_cycle_animations(int frame) {
-    if (engine->anim.num > 0) {
-        List const *list = &engine->anim.list;
-        int index = list->first;
-        while (index != -1) {
-            Animation *animation = &engine->anim.items[index];
-            UpdateAnimation(animation, frame);
-            index = animation->list_node.next;
-        }
+  if (engine->anim.num > 0) {
+    List const *list = &engine->anim.list;
+    int index = list->first;
+    while (index != -1) {
+      Animation *animation = &engine->anim.items[index];
+      UpdateAnimation(animation, frame);
+      index = animation->list_node.next;
     }
+  }
 }
 
 /* Processes sprite animations for the current frame */
 static void update_sprite_animations(int frame) {
-    if (engine->numsprites > 0) {
-        List const *list = &engine->list_sprites;
-        int index = list->first;
-        while (index != -1) {
-            Sprite *sprite = &engine->sprites[index];
-            SetSpriteFlag(sprite, SPRITE_FLAG_COLLISION, false);
-            if (sprite->animation.enabled && !sprite->animation.paused) {
-                UpdateAnimation(&sprite->animation, frame);
-            }
-            index = sprite->list_node.next;
-        }
+  if (engine->numsprites > 0) {
+    List const *list = &engine->list_sprites;
+    int index = list->first;
+    while (index != -1) {
+      Sprite *sprite = &engine->sprites[index];
+      SetSpriteFlag(sprite, SPRITE_FLAG_COLLISION, false);
+      if (sprite->animation.enabled && !sprite->animation.paused) {
+        UpdateAnimation(&sprite->animation, frame);
+      }
+      index = sprite->list_node.next;
     }
+  }
 }
 
 /* Processes tilesets for a single layer */
 static void process_layer_tilesets(Layer const *layer, RefList *tilesets, int frame) {
-    if (layer->tilemap == NULL) {
-        return;
+  if (layer->tilemap == NULL) {
+    return;
+  }
+
+  for (int ts = 0; ts < MAX_TILESETS; ts += 1) {
+    TLN_Tileset tileset = layer->tilemap->tilesets[ts];
+    if (tileset == NULL) {
+      break;
     }
 
-    for (int ts = 0; ts < MAX_TILESETS; ts += 1) {
-        TLN_Tileset tileset = layer->tilemap->tilesets[ts];
-        if (tileset == NULL) {
-            break;
-        }
-
-        if (tileset->sp != NULL && ref_add(tilesets, tileset)) {
-            for (int c = 0; c < tileset->sp->num_sequences; c += 1) {
-                UpdateAnimation(&tileset->animations[c], frame);
-            }
-        }
+    if (tileset->sp != NULL && ref_add(tilesets, tileset)) {
+      for (int c = 0; c < tileset->sp->num_sequences; c += 1) {
+        UpdateAnimation(&tileset->animations[c], frame);
+      }
     }
+  }
 }
 
 /* Processes tileset animations, calling once per globally used tileset to
  * avoid duplicates */
 static void update_tileset_animations(int frame) {
-    RefList tilesets = {0};
-    for (int index = 0; index < engine->numlayers; index += 1) {
-        process_layer_tilesets(&engine->layers[index], &tilesets, frame);
-    }
+  RefList tilesets = {0};
+  for (int index = 0; index < engine->numlayers; index += 1) {
+    process_layer_tilesets(&engine->layers[index], &tilesets, frame);
+  }
 }
 
 /* Starts active rendering of the current frame */
 static void BeginFrame(int frame) {
-    int raw_frame = engine->timing.frame;
-    /* adjust to target fps */
-    frame = (raw_frame * INTERNAL_FPS) / engine->timing.target_fps;
-    engine->timing.frame += 1;
+  int raw_frame = engine->timing.frame;
+  /* adjust to target fps */
+  frame = (raw_frame * INTERNAL_FPS) / engine->timing.target_fps;
+  engine->timing.frame += 1;
 
-    /* update active animations */
-    update_color_cycle_animations(frame);
-    /* sprite animation delays count raw game frames so animation speed scales
-     * with TARGET_FPS, matching the fps-dependent game logic */
-    update_sprite_animations(raw_frame);
-    update_tileset_animations(frame);
+  /* update active animations */
+  update_color_cycle_animations(frame);
+  /* sprite animation delays count raw game frames so animation speed scales
+   * with TARGET_FPS, matching the fps-dependent game logic */
+  update_sprite_animations(raw_frame);
+  update_tileset_animations(frame);
 
-    /* frame callback */
-    engine->timing.line = 0;
-    if (engine->callbacks.frame) {
-        engine->callbacks.frame(engine->timing.frame);
-    }
+  /* frame callback */
+  engine->timing.line = 0;
+  if (engine->callbacks.frame) {
+    engine->callbacks.frame(engine->timing.frame);
+  }
 }
 
 /*!
@@ -510,12 +510,12 @@ static void BeginFrame(int frame) {
  * TLN_SetRenderTarget()
  */
 void TLN_UpdateFrame(int frame) {
-    BeginFrame(frame);
-    while (DrawScanline()) {
-        /* DrawScanline() performs all rendering work and returns false when
-         * complete */
-    }
-    TLN_SetLastError(TLN_ERR_OK);
+  BeginFrame(frame);
+  while (DrawScanline()) {
+    /* DrawScanline() performs all rendering work and returns false when
+     * complete */
+  }
+  TLN_SetLastError(TLN_ERR_OK);
 }
 
 /*!
@@ -526,8 +526,8 @@ void TLN_UpdateFrame(int frame) {
  * TLN_Init()
  */
 int TLN_GetNumLayers(void) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return engine->numlayers;
+  TLN_SetLastError(TLN_ERR_OK);
+  return engine->numlayers;
 }
 
 /*!
@@ -539,8 +539,8 @@ int TLN_GetNumLayers(void) {
  */
 
 int TLN_GetNumSprites(void) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return engine->numsprites;
+  TLN_SetLastError(TLN_ERR_OK);
+  return engine->numsprites;
 }
 
 /*!
@@ -560,8 +560,8 @@ int TLN_GetNumSprites(void) {
  * comes from the use of raster effects
  */
 void TLN_SetRasterCallback(void (*callback)(int)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    engine->callbacks.raster = callback;
+  TLN_SetLastError(TLN_ERR_OK);
+  engine->callbacks.raster = callback;
 }
 
 /*!
@@ -572,8 +572,8 @@ void TLN_SetRasterCallback(void (*callback)(int)) {
  * Address of the function to call
  */
 void TLN_SetFrameCallback(void (*callback)(int)) {
-    TLN_SetLastError(TLN_ERR_OK);
-    engine->callbacks.frame = callback;
+  TLN_SetLastError(TLN_ERR_OK);
+  engine->callbacks.frame = callback;
 }
 
 /*!
@@ -606,12 +606,12 @@ void TLN_SetBGColor(uint8_t r, uint8_t g, uint8_t b) { engine->bg.color = PackRG
  * Reference to the tilemap with the background color to set
  */
 bool TLN_SetBGColorFromTilemap(TLN_Tilemap tilemap) {
-    if (CheckBaseObject(tilemap, OT_TILEMAP)) {
-        engine->bg.color = tilemap->bgcolor | 0xFF000000;
-        TLN_SetLastError(TLN_ERR_OK);
-        return true;
-    }
-    return false;
+  if (CheckBaseObject(tilemap, OT_TILEMAP)) {
+    engine->bg.color = tilemap->bgcolor | 0xFF000000;
+    TLN_SetLastError(TLN_ERR_OK);
+    return true;
+  }
+  return false;
 }
 
 /*!
@@ -639,15 +639,15 @@ void TLN_DisableBGColor(void) { engine->bg.color = 0; }
  * TLN_SetBGPalette()
  */
 bool TLN_SetBGBitmap(TLN_Bitmap bitmap) {
-    if (bitmap != NULL) {
-        if (!CheckBaseObject(bitmap, OT_BITMAP)) {
-            return false;
-        }
-        engine->bg.palette = bitmap->palette;
+  if (bitmap != NULL) {
+    if (!CheckBaseObject(bitmap, OT_BITMAP)) {
+      return false;
     }
-    engine->bg.bitmap = bitmap;
-    TLN_SetLastError(TLN_ERR_OK);
-    return true;
+    engine->bg.palette = bitmap->palette;
+  }
+  engine->bg.bitmap = bitmap;
+  TLN_SetLastError(TLN_ERR_OK);
+  return true;
 }
 
 /*!
@@ -661,13 +661,13 @@ bool TLN_SetBGBitmap(TLN_Bitmap bitmap) {
  * TLN_SetBGBitmap()
  */
 bool TLN_SetBGPalette(TLN_Palette palette) {
-    if (!CheckBaseObject(palette, OT_PALETTE)) {
-        return false;
-    }
+  if (!CheckBaseObject(palette, OT_PALETTE)) {
+    return false;
+  }
 
-    engine->bg.palette = palette;
-    TLN_SetLastError(TLN_ERR_OK);
-    return true;
+  engine->bg.palette = palette;
+  TLN_SetLastError(TLN_ERR_OK);
+  return true;
 }
 
 /*!
@@ -678,18 +678,18 @@ bool TLN_SetBGPalette(TLN_Palette palette) {
  * \see TLN_GetGlobalPalette()
  */
 bool TLN_SetGlobalPalette(int index, TLN_Palette palette) {
-    if (index < 0 || index > NUM_PALETTES - 1) {
-        TLN_SetLastError(TLN_ERR_IDX_PALETTE);
-        return false;
-    }
+  if (index < 0 || index > NUM_PALETTES - 1) {
+    TLN_SetLastError(TLN_ERR_IDX_PALETTE);
+    return false;
+  }
 
-    if (palette != NULL && !CheckBaseObject(palette, OT_PALETTE)) {
-        return false;
-    }
+  if (palette != NULL && !CheckBaseObject(palette, OT_PALETTE)) {
+    return false;
+  }
 
-    engine->palettes[index] = palette;
-    TLN_SetLastError(TLN_ERR_OK);
-    return true;
+  engine->palettes[index] = palette;
+  TLN_SetLastError(TLN_ERR_OK);
+  return true;
 }
 
 /*!
@@ -699,13 +699,13 @@ bool TLN_SetGlobalPalette(int index, TLN_Palette palette) {
  * \see TLN_SetGlobalPalette
  */
 TLN_Palette TLN_GetGlobalPalette(int index) {
-    if (index < 0 || index > NUM_PALETTES - 1) {
-        TLN_SetLastError(TLN_ERR_IDX_PALETTE);
-        return NULL;
-    }
+  if (index < 0 || index > NUM_PALETTES - 1) {
+    TLN_SetLastError(TLN_ERR_IDX_PALETTE);
+    return NULL;
+  }
 
-    TLN_SetLastError(TLN_ERR_OK);
-    return engine->palettes[index];
+  TLN_SetLastError(TLN_ERR_OK);
+  return engine->palettes[index];
 }
 
 /*!
@@ -724,18 +724,18 @@ TLN_Palette TLN_GetGlobalPalette(int index) {
  * TLN_SetSpriteBlendMode()|TLN_SetLayerBlendMode()
  */
 void TLN_SetCustomBlendFunction(uint8_t (*blend_function)(uint8_t src, uint8_t dst)) {
-    uint8_t *table = SelectBlendTable(BLEND_CUSTOM);
+  uint8_t *table = SelectBlendTable(BLEND_CUSTOM);
 
-    if (blend_function == NULL) {
-        return;
-    }
+  if (blend_function == NULL) {
+    return;
+  }
 
-    /* fill table */
-    for (int a = 0; a < 256; a++) {
-        for (int b = 0; b < 256; b++) {
-            table[(a << 8) + b] = blend_function((uint8_t)a, (uint8_t)b);
-        }
+  /* fill table */
+  for (int a = 0; a < 256; a++) {
+    for (int b = 0; b < 256; b++) {
+      table[(a << 8) + b] = blend_function((uint8_t)a, (uint8_t)b);
     }
+  }
 }
 
 /*!
@@ -750,8 +750,8 @@ void TLN_SetCustomBlendFunction(uint8_t (*blend_function)(uint8_t src, uint8_t d
  * TLN_GetUsedMemory()
  */
 uint32_t TLN_GetNumObjects(void) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return GetNumObjects();
+  TLN_SetLastError(TLN_ERR_OK);
+  return GetNumObjects();
 }
 
 /*!
@@ -762,8 +762,8 @@ uint32_t TLN_GetNumObjects(void) {
  * TLN_GetNumObjects()
  */
 uint32_t TLN_GetUsedMemory(void) {
-    TLN_SetLastError(TLN_ERR_OK);
-    return GetNumBytes();
+  TLN_SetLastError(TLN_ERR_OK);
+  return GetNumBytes();
 }
 
 const char *const errornames[] = {"No error",
@@ -799,12 +799,12 @@ const char *const errornames[] = {"No error",
  * TLN_GetLastError()
  */
 void TLN_SetLastError(TLN_Error error) {
-    if (check_context(engine)) {
-        engine->error = error;
-        if (error != TLN_ERR_OK) {
-            tln_trace(TLN_LOG_ERRORS, errornames[error]);
-        }
+  if (check_context(engine)) {
+    engine->error = error;
+    if (error != TLN_ERR_OK) {
+      tln_trace(TLN_LOG_ERRORS, errornames[error]);
     }
+  }
 }
 
 /*!
@@ -815,10 +815,10 @@ void TLN_SetLastError(TLN_Error error) {
  * TLN_Error
  */
 TLN_Error TLN_GetLastError(void) {
-    if (check_context(engine)) {
-        return engine->error;
-    }
-    return TLN_ERR_NULL_POINTER;
+  if (check_context(engine)) {
+    return engine->error;
+  }
+  return TLN_ERR_NULL_POINTER;
 }
 
 /*!
@@ -832,15 +832,15 @@ TLN_Error TLN_GetLastError(void) {
  * TLN_GetLastError()
  */
 const char *TLN_GetErrorString(TLN_Error error) {
-    if (error < TLN_MAX_ERR) {
-        return errornames[error];
-    }
-    return "Invalid error code";
+  if (error < TLN_MAX_ERR) {
+    return errornames[error];
+  }
+  return "Invalid error code";
 }
 
 /* outputs trace message */
 void tln_trace(TLN_LogLevel log_level, const char *message) {
-    if (engine != NULL && engine->log_level >= log_level) {
-        printf("Tilengine: %s\n", message);
-    }
+  if (engine != NULL && engine->log_level >= log_level) {
+    printf("Tilengine: %s\n", message);
+  }
 }

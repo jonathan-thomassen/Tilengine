@@ -1,6 +1,7 @@
 # misc
 .svn/
 .vs/
+.vscode/
 build/
 test/
 Thumbs.db
@@ -28,3 +29,5 @@ samples/csharp/*.dll
 *.zip
 *.gz
 *.bz2
+
+
