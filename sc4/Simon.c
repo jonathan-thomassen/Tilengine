@@ -722,6 +722,14 @@ static void move_up_right_probe_down_right(int world_x, int sprite_x, int sprite
   *dx = h_tile.xoffset - (world_x + sprite_x + SIMON_COL_WIDTH + SIMON_COL_X_OFFSET);
 }
 
+static void move_up_right_probes(int world_x, int sprite_x, int sprite_y, int *dx, int *dy) {
+  move_up_right_probe_up_right(world_x, sprite_x, sprite_y, dx, dy);
+  move_up_right_probe_right_1(world_x, sprite_x, sprite_y, dx, dy);
+  move_up_right_probe_right_2(world_x, sprite_x, sprite_y, dx, dy);
+  move_up_right_probe_up_left(world_x, sprite_x, sprite_y, dx, dy);
+  move_up_right_probe_down_right(world_x, sprite_x, sprite_y, dx, dy);
+}
+
 /*
  * Resolves a candidate displacement (*dx, *dy) against tile collision.
  *
