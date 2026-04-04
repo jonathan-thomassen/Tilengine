@@ -177,6 +177,22 @@ static void col_definition_lookup(int H, int N, int rotations, bool mirror_h, bo
  * Probing
  * ------------------------------------------------------------------------- */
 
+static void move_left_probes(int world_x, int sprite_x, int sprite_y, int *dx, bool (*probes)[4]) {
+  for (int i = 0; i < 4; i++) {
+    if (probes[0][i]) {
+      continue;
+    }
+    TLN_TileInfo h_tile;
+    TLN_GetLayerTile(COLLISION_LAYER, world_x + sprite_x + SIMON_COL_X_OFFSET + *dx,
+                     i == 0 ? sprite_y : sprite_y + (TILE_SIZE * i) - 1, &h_tile);
+
+    if (!h_tile.empty) {
+      *dx += 8 - h_tile.xoffset;
+      return;
+    }
+  }
+}
+
 static void move_right_probes(int world_x, int sprite_x, int sprite_y, int *dx, bool (*probes)[4]) {
   for (int i = 0; i < 4; i++) {
     if (probes[1][i]) {
@@ -188,23 +204,7 @@ static void move_right_probes(int world_x, int sprite_x, int sprite_y, int *dx, 
                      i == 0 ? sprite_y : sprite_y + (TILE_SIZE * i) - 1, &h_tile);
 
     if (!h_tile.empty) {
-      *dx = h_tile.xoffset - (world_x + sprite_x + SIMON_COL_X_OFFSET + SIMON_COL_WIDTH);
-      return;
-    }
-  }
-}
-
-static void move_left_probes(int world_x, int sprite_x, int sprite_y, int *dx, bool (*probes)[4]) {
-  for (int i = 0; i < 4; i++) {
-    if (probes[0][i]) {
-      continue;
-    }
-    TLN_TileInfo h_tile;
-    TLN_GetLayerTile(COLLISION_LAYER, world_x + sprite_x + SIMON_COL_X_OFFSET + *dx,
-                     i == 0 ? sprite_y : sprite_y + (TILE_SIZE * i) - 1, &h_tile);
-
-    if (!h_tile.empty) {
-      *dx = (h_tile.xoffset + TILE_SIZE) - (world_x + sprite_x + SIMON_COL_X_OFFSET);
+      *dx -= h_tile.xoffset;
       return;
     }
   }
@@ -222,7 +222,7 @@ static void move_up_probes(int world_x, int sprite_x, int sprite_y, int *dy, boo
                      sprite_y + *dy, &v_tile);
 
     if (!v_tile.empty) {
-      *dy = (v_tile.yoffset + TILE_SIZE) - sprite_y;
+      *dy += 8 - v_tile.yoffset;
       return;
     }
   }
@@ -240,7 +240,7 @@ static void move_down_probes(int world_x, int sprite_x, int sprite_y, int *dy, b
                      sprite_y + SIMON_COL_HEIGHT + *dy, &v_tile);
 
     if (!v_tile.empty) {
-      *dy = (v_tile.yoffset + TILE_SIZE) - (sprite_y + SIMON_COL_HEIGHT);
+      *dy -= v_tile.yoffset;
       return;
     }
   }
@@ -261,7 +261,6 @@ static void move_up_right_probe_up_right(int world_x, int sprite_x, int sprite_y
   if (hv_tile.empty) {
     if (h_tile.empty) {
       if (v_tile.empty) {
-
         return;
       }
       *dy = (v_tile.yoffset + TILE_SIZE) - sprite_y;
@@ -938,9 +937,9 @@ void resolve_collision(int world_x, int sprite_x, int sprite_y, int *dx, int *dy
     }
   } else {
     if (*dy < 0) {
-      move_down_probes(world_x, sprite_x, sprite_y, dy, probes);
-    } else if (*dy > 0) {
       move_up_probes(world_x, sprite_x, sprite_y, dy, probes);
+    } else if (*dy > 0) {
+      move_down_probes(world_x, sprite_x, sprite_y, dy, probes);
     }
   }
 }

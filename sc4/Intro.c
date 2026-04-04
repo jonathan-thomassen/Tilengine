@@ -262,7 +262,7 @@ int main(int argc, char *argv[]) {
   TLN_SetLayerBlendMode(MAIN_LAYER, BLEND_MIX50);
 
   /* main loop */
-  TLN_CreateWindow(CWF_NEAREST | CWF_S6 | CWF_NOVSYNC);
+  TLN_CreateWindow(CWF_NEAREST | CWF_S4 | CWF_NOVSYNC);
   TLN_DefineInputKey(PLAYER1, INPUT_UP, SDLK_W);
   TLN_DefineInputKey(PLAYER1, INPUT_LEFT, SDLK_A);
   TLN_DefineInputKey(PLAYER1, INPUT_RIGHT, SDLK_D);

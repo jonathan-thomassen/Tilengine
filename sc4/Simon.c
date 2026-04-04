@@ -435,60 +435,33 @@ static bool update_air_throttle(Direction input) {
   return changing_dir;
 }
 
-/** Commits the direction change and moves Simon one (or two) pixels. */
-static void execute_move(Direction input, int width, bool changing_dir) {
+/** Commits the direction change and returns the desired dx before collision. */
+static int execute_move(Direction input, bool changing_dir) {
   if (changing_dir) {
     air_dir = input; /* commit new direction after delay */
   }
   update_facing(input); /* flip sprite only when movement commits */
 
   int dx = 0;
-  int dy = 0;
-
   if (input == DIR_RIGHT) {
-    if (++move_frame % 4 == 0) {
-      dx = 2;
-      resolve_collision(position.scroll_x, position.x, position.y, &dx, &dy);
-    } else {
-      dx = 1;
-      resolve_collision(position.scroll_x, position.x, position.y, &dx, &dy);
-    }
+    dx = (++move_frame % 4 == 0) ? 2 : 1;
   } else if (input == DIR_LEFT) {
-    if (++move_frame % 4 == 0) {
-      dx = -2;
-      resolve_collision(position.scroll_x, position.x, position.y, &dx, &dy);
-    } else {
-      dx = -1;
-      resolve_collision(position.scroll_x, position.x, position.y, &dx, &dy);
-    }
+    dx = (++move_frame % 4 == 0) ? -2 : -1;
   }
-
-  if (dx > 0) {
-    if (!camera_frozen && position.scroll_x < layer_width - width && position.x >= 112) {
-      position.scroll_x += dx;
-    } else if (position.x < 112 || position.x < width - 16) {
-      position.x += dx;
-    }
-  } else if (dx < 0) {
-    if (!camera_frozen && position.scroll_x > 0 && position.x <= 128) {
-      position.scroll_x += dx;
-    } else if (position.x > -4) {
-      position.x += dx;
-    }
-  }
+  return dx;
 }
 
 /**
  * Handles air-throttle tracking and drives the movement state machine.
- * Horizontally moving Simon one pixel per call, subject to direction-change
- * delay when airborne.
+ * Returns the desired horizontal displacement before collision resolution.
  */
-static void apply_movement(Direction input, int width) {
+static int apply_movement(Direction input) {
   bool changing_dir = update_air_throttle(input);
 
   bool first_frame = (prev_input == DIR_NONE && input != DIR_NONE) != 0;
   prev_input = input;
 
+  int dx = 0;
   switch (state) {
   case SIMON_TEETER:
   case SIMON_IDLE:
@@ -499,7 +472,7 @@ static void apply_movement(Direction input, int width) {
   case SIMON_WALKING:
   case SIMON_JUMPING:
     if (!first_frame && (!changing_dir || dir_change_timer > AIR_TURN_DELAY)) {
-      execute_move(input, width, changing_dir);
+      dx = execute_move(input, changing_dir);
     } else {
       move_frame = 0;
     }
@@ -511,12 +484,12 @@ static void apply_movement(Direction input, int width) {
     /* Directional input while crouching starts a crouch-walk. */
     if (input) {
       SimonSetState(SIMON_CROUCH_WALKING);
-      execute_move(input, width, changing_dir);
+      dx = execute_move(input, changing_dir);
     }
     break;
   case SIMON_CROUCH_WALKING:
     if (!first_frame && (!changing_dir || dir_change_timer > AIR_TURN_DELAY)) {
-      execute_move(input, width, changing_dir);
+      dx = execute_move(input, changing_dir);
     } else {
       move_frame = 0;
     }
@@ -528,13 +501,14 @@ static void apply_movement(Direction input, int width) {
     /* No movement during a crouched whip swing. */
     break;
   }
+  return dx;
 }
 
 /**
  * Applies ceiling/floor collision and detects landing.
  * \param start_y_velocity  Vertical velocity captured before advance_gravity() was called.
  */
-static void apply_collisions(int start_y_velocity) {
+static void apply_collisions(int start_y_velocity, int dx, int width) {
   int arc_len = (int)jump_arc_higher ? JUMP_ARC_LEN_HIGHER
                 : (int)jump_arc_tall ? JUMP_ARC_LEN_TALL
                                      : JUMP_ARC_LEN_SHORT;
@@ -563,30 +537,29 @@ static void apply_collisions(int start_y_velocity) {
     /* non-jumping states: original velocity-based movement */
     dy = (y_velocity > 0 ? y_velocity / 3 : y_velocity >> 2);
   }
-  int resolved_dx = 0;
-  int resolved_dy = dy;
-  resolve_collision(position.scroll_x, position.x, position.y, &resolved_dx, &resolved_dy);
-  if (dy > 0 && resolved_dy < dy) {
-    y_velocity = 0;
+
+  if (dx == 0 && dy == 0) {
+    return;
   }
-  int new_y = position.y + resolved_dy;
-  if (bridge_floor < BRIDGE_FLOOR_Y) {
-    /* Bridge surface overrides tile floor — prevents castle approach tiles
-     * from fighting the bridge geometry.  Uses >= so that standing still
-     * (feet == floor) also zeroes y_velocity every frame, stopping apex_hang
-     * from triggering gravity accumulation between snaps.
-     * bridge_tolerance widens the band: Simon can enter up to
-     * bridge_tolerance px into the surface from above. */
-    if (new_y + 46 >= bridge_floor - bridge_tolerance) {
-      new_y = bridge_floor - 46 + bridge_tolerance;
-      y_velocity = 0;
-      apex_hang = 0;
+
+  resolve_collision(position.scroll_x, position.x, position.y, &dx, &dy);
+  if (dx > 0) {
+    if (!camera_frozen && position.scroll_x < layer_width - width && position.x >= 112) {
+      position.scroll_x += dx;
+    } else if (position.x < 112 || position.x < width - 16) {
+      position.x += dx;
+    }
+  } else if (dx < 0) {
+    if (!camera_frozen && position.scroll_x > 0 && position.x <= 128) {
+      position.scroll_x += dx;
+    } else if (position.x > -4) {
+      position.x += dx;
     }
   }
+  position.y += dy;
   if (start_y_velocity > 0 && y_velocity == 0) {
     SimonSetState(SIMON_IDLE);
   }
-  position.y = new_y;
   if (position.y > TLN_GetHeight()) {
     position.y = 0;
     y_velocity = 0;
@@ -623,7 +596,8 @@ void SimonTasks(void) {
     jump_was_released = true;
   }
 
-  apply_movement(input, TLN_GetWidth());
+  int width = TLN_GetWidth();
+  int desired_dx = apply_movement(input);
 
   if ((int)jump && (int)jump_was_released && state != SIMON_JUMPING) {
     SimonSetState(SIMON_JUMPING);
@@ -647,7 +621,7 @@ void SimonTasks(void) {
   }
 
   int start_y_velocity = y_velocity;
-  apply_collisions(start_y_velocity);
+  apply_collisions(start_y_velocity, desired_dx, width);
 
   /* If collisions landed Simon into IDLE but a direction is still held,
    * promote immediately to WALKING so the idle sprite never shows for one
