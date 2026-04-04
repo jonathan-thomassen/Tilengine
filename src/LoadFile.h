@@ -8,7 +8,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * */
 
-#include <stdbool.h>
 #include <stdio.h>
 
 #ifndef LOAD_FILE_H
@@ -27,9 +26,9 @@ typedef SSIZE_T ssize_t;
 #endif
 
 typedef struct {
-    char path[200];
-    char name[200];
-    char ext[16];
+  char path[200];
+  char name[200];
+  char ext[16];
 } FileInfo;
 
 #ifdef __cplusplus

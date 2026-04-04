@@ -62,6 +62,7 @@ add_executable(
   Intro.c
   Profiling.c
   Simon.c
+  SimonCollision.c
   Sandblock.c
   Torch.c
   Prop.c

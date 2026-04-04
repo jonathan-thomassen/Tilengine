@@ -1,8 +1,6 @@
 #ifndef TORCH_H
 #define TORCH_H
 
-#include <stdbool.h>
-
 /** Maximum number of torches that can exist simultaneously. */
 #define MAX_TORCHES 8
 
