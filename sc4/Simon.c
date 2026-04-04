@@ -407,34 +407,6 @@ void SimonSetState(SimonState new_state) {
   }
 }
 
-static void move_left(void) {
-  int dx = -1;
-  int dy = 0;
-  resolve_collision(position.scroll_x, position.x, position.y, &dx, &dy);
-  if (dx == 0) {
-    return;
-  }
-  if (!camera_frozen && position.scroll_x > 0 && position.x <= 128) {
-    position.scroll_x--;
-  } else if (position.x > -4) {
-    position.x--;
-  }
-}
-
-static void move_right(int width) {
-  int dx = 1;
-  int dy = 0;
-  resolve_collision(position.scroll_x, position.x, position.y, &dx, &dy);
-  if (dx == 0) {
-    return;
-  }
-  if (!camera_frozen && position.scroll_x < layer_width - width && position.x >= 112) {
-    position.scroll_x++;
-  } else if (position.x < 112 || position.x < width - 16) {
-    position.x++;
-  }
-}
-
 static void update_facing(Direction input) {
   if ((input == DIR_RIGHT && direction == DIR_LEFT) ||
       (input == DIR_LEFT && direction == DIR_RIGHT)) {
@@ -469,15 +441,39 @@ static void execute_move(Direction input, int width, bool changing_dir) {
     air_dir = input; /* commit new direction after delay */
   }
   update_facing(input); /* flip sprite only when movement commits */
+
+  int dx = 0;
+  int dy = 0;
+
   if (input == DIR_RIGHT) {
-    move_right(width);
     if (++move_frame % 4 == 0) {
-      move_right(width);
+      dx = 2;
+      resolve_collision(position.scroll_x, position.x, position.y, &dx, &dy);
+    } else {
+      dx = 1;
+      resolve_collision(position.scroll_x, position.x, position.y, &dx, &dy);
     }
   } else if (input == DIR_LEFT) {
-    move_left();
     if (++move_frame % 4 == 0) {
-      move_left();
+      dx = -2;
+      resolve_collision(position.scroll_x, position.x, position.y, &dx, &dy);
+    } else {
+      dx = -1;
+      resolve_collision(position.scroll_x, position.x, position.y, &dx, &dy);
+    }
+  }
+
+  if (dx > 0) {
+    if (!camera_frozen && position.scroll_x < layer_width - width && position.x >= 112) {
+      position.scroll_x += dx;
+    } else if (position.x < 112 || position.x < width - 16) {
+      position.x += dx;
+    }
+  } else if (dx < 0) {
+    if (!camera_frozen && position.scroll_x > 0 && position.x <= 128) {
+      position.scroll_x += dx;
+    } else if (position.x > -4) {
+      position.x += dx;
     }
   }
 }
