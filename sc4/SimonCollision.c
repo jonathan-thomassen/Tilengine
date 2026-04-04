@@ -204,7 +204,7 @@ static void move_left_probes(int world_x, int sprite_x, int sprite_y, int *dx, b
                      i == 0 ? sprite_y : sprite_y + (TILE_SIZE * i) - 1, &h_tile);
 
     if (!h_tile.empty) {
-      *dx = h_tile.xoffset - (world_x + sprite_x + SIMON_COL_X_OFFSET);
+      *dx = (h_tile.xoffset + TILE_SIZE) - (world_x + sprite_x + SIMON_COL_X_OFFSET);
       return;
     }
   }
@@ -530,7 +530,7 @@ static void move_down_right_probe_down_right(int world_x, int sprite_x, int spri
     if (v_tile.empty) {
       int x_overlap =
           (world_x + sprite_x + SIMON_COL_X_OFFSET + SIMON_COL_WIDTH + *dx) - hv_tile.xoffset;
-      int y_overlap = (sprite_y + SIMON_COL_HEIGHT + *dy) - v_tile.yoffset;
+      int y_overlap = (sprite_y + SIMON_COL_HEIGHT + *dy) - hv_tile.yoffset;
       if (y_overlap < x_overlap) {
         *dx = hv_tile.xoffset - (world_x + sprite_x + SIMON_COL_X_OFFSET + SIMON_COL_WIDTH);
         return;
@@ -657,7 +657,7 @@ static void move_down_left_probe_down_left(int world_x, int sprite_x, int sprite
     if (v_tile.empty) {
       int x_overlap =
           (hv_tile.xoffset + TILE_SIZE) - (world_x + sprite_x + SIMON_COL_X_OFFSET + *dx);
-      int y_overlap = (sprite_y + SIMON_COL_HEIGHT + *dy) - v_tile.yoffset;
+      int y_overlap = (sprite_y + SIMON_COL_HEIGHT + *dy) - hv_tile.yoffset;
       if (y_overlap < x_overlap) {
         *dx = (hv_tile.xoffset + TILE_SIZE) - (world_x + sprite_x + SIMON_COL_X_OFFSET);
         return;
@@ -761,12 +761,16 @@ static bool dispatch_single_axis(int world_x, int sprite_x, int sprite_y, int *d
     if (*dy < 0) {
       move_up_probes(world_x, sprite_x, sprite_y, dy, probes);
     } else if (*dy > 0) {
-      mo ve_down_probes(world_x, sprite_x, sprite_y, dy, probes);
+      move_down_probes(world_x, sprite_x, sprite_y, dy, probes);
     }
     return true;
   }
   if (*dy == 0) {
-    move_right_probes(world_x, sprite_x, sprite_y, dx, probes);
+    if (*dx < 0) {
+      move_left_probes(world_x, sprite_x, sprite_y, dx, probes);
+    } else if (*dx > 0) {
+      move_right_probes(world_x, sprite_x, sprite_y, dx, probes);
+    }
     return true;
   }
   return false;
@@ -919,17 +923,27 @@ void resolve_collision(int world_x, int sprite_x, int sprite_y, int *dx, int *dy
   }
   bool probes[2][4] = {{false}};
 
-  if (*dx >= 0) {
-    if (*dy <= 0) {
-      move_up_right_probes(world_x, sprite_x, sprite_y, dx, dy, probes);
+  if (*dx < 0) {
+    if (*dy < 0) {
+      move_up_left_probes(world_x, sprite_x, sprite_y, dx, dy, probes);
+    } else if (*dy > 0) {
+      move_down_left_probes(world_x, sprite_x, sprite_y, dx, dy, probes);
     } else {
+      move_left_probes(world_x, sprite_x, sprite_y, dx, probes);
+    }
+  } else if (*dx > 0) {
+    if (*dy < 0) {
+      move_up_right_probes(world_x, sprite_x, sprite_y, dx, dy, probes);
+    } else if (*dy > 0) {
       move_down_right_probes(world_x, sprite_x, sprite_y, dx, dy, probes);
+    } else {
+      move_right_probes(world_x, sprite_x, sprite_y, dx, probes);
     }
   } else {
-    if (*dy <= 0) {
-      move_up_left_probes(world_x, sprite_x, sprite_y, dx, dy, probes);
-    } else {
-      move_down_left_probes(world_x, sprite_x, sprite_y, dx, dy, probes);
+    if (*dy < 0) {
+      move_down_probes(world_x, sprite_x, sprite_y, dy, probes);
+    } else if (*dy > 0) {
+      move_up_probes(world_x, sprite_x, sprite_y, dy, probes);
     }
   }
 }
