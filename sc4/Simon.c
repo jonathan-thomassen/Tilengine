@@ -566,6 +566,9 @@ static void apply_collisions(int start_y_velocity) {
   int resolved_dx = 0;
   int resolved_dy = dy;
   resolve_collision(position.scroll_x, position.x, position.y, &resolved_dx, &resolved_dy);
+  if (dy > 0 && resolved_dy < dy) {
+    y_velocity = 0;
+  }
   int new_y = position.y + resolved_dy;
   if (bridge_floor < BRIDGE_FLOOR_Y) {
     /* Bridge surface overrides tile floor — prevents castle approach tiles
