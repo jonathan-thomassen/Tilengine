@@ -13,7 +13,6 @@
 #define TERM_VELOCITY 10
 #define AIR_TURN_DELAY 6
 #define SIMON_HEIGHT 48
-#define SIMON_START_POS ((Coords2d){.x = 33, .y = 146})
 #define SIMON_WIDTH 32          /* total sprite width  (2 × 16 px tiles) */
 #define SIMON_SEG_W 16          /* width of one subsprite tile           */
 #define SIMON_MAX_STAGES 8      /* max animation stages per section      */
@@ -357,7 +356,6 @@ void SimonInit(void) {
   load_simon_section("simon_map.txt", "whip-up", &sec_whip_up);
   load_simon_section("simon_map.txt", "jump-whip-up", &sec_whip_jump_up);
 
-  position = SIMON_START_POS;
   layer_width = TLN_GetLayerWidth(1);
   state = SIMON_IDLE;
   direction = DIR_RIGHT;

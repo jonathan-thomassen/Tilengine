@@ -1,10 +1,12 @@
 #ifndef SIMON_COLLISION_H
 #define SIMON_COLLISION_H
 
-#define TILE_SIZE 16
+#define TILE_SIZE 8
+#define BLOCK_SIZE 16
 #define SIMON_COL_WIDTH 16
-#define SIMON_COL_HEIGHT 48
+#define SIMON_COL_HEIGHT 46
 #define SIMON_COL_X_OFFSET 8
+#define MAX_VELOCITY 8
 
 /* Load the col_definition lookup table from disk.  Must be called once
  * before any call to resolve_collision(). */
