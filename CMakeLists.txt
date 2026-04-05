@@ -121,4 +121,3 @@ endif()
 
 # samples
 add_subdirectory(samples)
-add_subdirectory(sc4)
