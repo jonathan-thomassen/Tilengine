@@ -113,10 +113,10 @@ static void load_objects(void) {
   TLN_ObjectList objects = TLN_LoadObjectList("drawbridge_main.tmx", "Objects");
   if (objects != NULL) {
     TLN_ObjectInfo info;
-    bool ok = TLN_GetListObject(objects, &info);
-    while (ok) {
+    bool okay = TLN_GetListObject(objects, &info);
+    while (okay) {
       spawn_object(&info);
-      ok = TLN_GetListObject(objects, NULL);
+      okay = TLN_GetListObject(objects, NULL);
     }
     TLN_DeleteObjectList(objects);
   } else {
@@ -145,44 +145,9 @@ static void setup_entity_priorities(void) {
  * Screen x and y are looked up directly from baked tables. */
 static void tick_chain_prop(bool db_triggered, int xpos) {
   if ((int)db_triggered && chain_prop_idx >= 0) {
-    ChainPos cp = DrawbridgeChainPos();
-    PropSetWorldPos(chain_prop_idx, cp.x + xpos, cp.y);
+    ChainPos chainpos = DrawbridgeChainPos();
+    PropSetWorldPos(chain_prop_idx, chainpos.x + xpos, chainpos.y);
   }
-}
-
-/* Adjusts g_hinge_x / g_hinge_y with [ ] - = (hold Shift for ×10 step).
- * Calls DrawbridgeSetHinge when either value changes and prints the new
- * values to stderr so they can be baked back into the source. */
-static void tick_hinge_adjust(bool db_triggered) {
-  const bool *keys = SDL_GetKeyboardState(NULL);
-  bool shift = ((int)keys[SDL_SCANCODE_LSHIFT] || (int)keys[SDL_SCANCODE_RSHIFT]) != 0;
-  int step = (int)shift ? 10 : 1;
-  int dx = 0;
-  int dy = 0;
-  /* if (keys[SDL_SCANCODE_A]) {
-    dx = -step;
-  }
-  if (keys[SDL_SCANCODE_S]) {
-    dx = +step;
-  }
-  if (keys[SDL_SCANCODE_Q]) {
-    dy = -step;
-  }
-  if (keys[SDL_SCANCODE_W]) {
-    dy = +step;
-  } */
-  if (dx == 0 && dy == 0) {
-    return;
-  }
-
-  g_hinge_x += dx;
-  g_hinge_y += dy;
-
-  /* Apply the same DB_LAYER_Y_OFFSET correction that the trigger block uses
-   * so the live value matches what DrawbridgeSurfaceY reads. */
-  int applied_y = (int)db_triggered ? g_hinge_y - DB_LAYER_Y_OFFSET : g_hinge_y;
-  DrawbridgeSetHinge(g_hinge_x, applied_y);
-  fprintf(stderr, "[hinge] x=%d  y=%d\n", g_hinge_x, g_hinge_y);
 }
 
 /* Handles the Esc pause toggle; returns true while the game is paused. */
@@ -290,31 +255,14 @@ int main(int argc, char *argv[]) {
   /* Enable the frame profiler with --profile or -p.
    * Pass --test-db to skip to just before the drawbridge animation fires. */
   bool prof_enabled = false;
-  bool test_db_mode = false;
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], "--profile") == 0 || strcmp(argv[i], "-p") == 0) {
       prof_enabled = true;
-    } else if (strcmp(argv[i], "--test-db") == 0) {
-      test_db_mode = true;
     }
   }
   ProfState prof;
   if (prof_enabled) {
     prof_init(&prof);
-  }
-
-  /* Test mode: skip ahead to the moment the drawbridge animation triggers.
-   * Simon is placed on the flat bridge left of the hinge so the animation
-   * starts on the very first game frame. */
-  if (test_db_mode) {
-    xpos = DB_TRIGGER_X;
-    prev_xpos = DB_TRIGGER_X; /* suppress camera-delta spike on frame 1 */
-    rails_triggered = true;
-    rails_pos = DB_TRIGGER_X;
-    rails_max = TLN_GetLayerWidth(MAIN_LAYER) - WIDTH;
-    SimonFreezeCamera();
-    SimonSetScreenX(HINGE_X - 100); /* place Simon on the bridge, left of hinge */
-    SimonSetWorldX(DB_TRIGGER_X);
   }
 
   while (TLN_ProcessWindow()) {
@@ -422,7 +370,6 @@ int main(int argc, char *argv[]) {
     /* Camera is locked by SimonFreezeCamera(); xpos stays at its
      * frozen value for all layer positions. */
     push_simon_on_bridge(db_triggered);
-    tick_hinge_adjust(db_triggered);
 
     tick_chain_prop(db_triggered, xpos);
 

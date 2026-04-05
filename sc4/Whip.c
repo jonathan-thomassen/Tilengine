@@ -31,23 +31,23 @@ static TLN_Spriteset load_grid_spriteset(const char *txt_name, const char *png_n
     return NULL;
   }
 
-  int tw = 0;
-  int th = 0;
+  int tile_width = 0;
+  int tile_height = 0;
   int cols = 0;
   char line[64];
   while (fgets(line, sizeof(line), file) != NULL) {
     int v;
     if (sscanf(line, " w = %d", &v) == 1) {
-      tw = v;
+      tile_width = v;
     } else if (sscanf(line, " h = %d", &v) == 1) {
-      th = v;
+      tile_height = v;
     } else if (sscanf(line, " cols = %d", &v) == 1) {
       cols = v;
     }
   }
   fclose(file);
 
-  if (tw <= 0 || th <= 0 || cols <= 0) {
+  if (tile_width <= 0 || tile_height <= 0 || cols <= 0) {
     return NULL;
   }
 
@@ -56,7 +56,7 @@ static TLN_Spriteset load_grid_spriteset(const char *txt_name, const char *png_n
     return NULL;
   }
 
-  int rows = TLN_GetBitmapHeight(bmp) / th;
+  int rows = TLN_GetBitmapHeight(bmp) / tile_height;
   int total = rows * cols;
 
   TLN_SpriteData *data = (TLN_SpriteData *)malloc((size_t)total * sizeof(TLN_SpriteData));
@@ -65,14 +65,14 @@ static TLN_Spriteset load_grid_spriteset(const char *txt_name, const char *png_n
     return NULL;
   }
 
-  for (int r = 0; r < rows; r++) {
-    for (int c = 0; c < cols; c++) {
-      TLN_SpriteData *e = &data[(r * cols) + c];
-      snprintf(e->name, sizeof(e->name), "s%d", (r * cols) + c);
-      e->x = c * tw;
-      e->y = r * th;
-      e->w = tw;
-      e->h = th;
+  for (int row = 0; row < rows; row++) {
+    for (int column = 0; column < cols; column++) {
+      TLN_SpriteData *sprite_data = &data[(row * cols) + column];
+      snprintf(sprite_data->name, sizeof(sprite_data->name), "s%d", (row * cols) + column);
+      sprite_data->x = column * tile_width;
+      sprite_data->y = row * tile_height;
+      sprite_data->w = tile_width;
+      sprite_data->h = tile_height;
     }
   }
 
@@ -214,19 +214,20 @@ static void load_map_file(const char *filename, const char *section, WhipStage *
     }
 
     int pic = -1;
-    int dx = 0;
-    int dy = 0;
+    int displacement_x = 0;
+    int displacement_y = 0;
     char flags[8] = "";
 
-    int matched = sscanf(line, " s%d = ( %d , %d ) %7s", &pic, &dx, &dy, flags);
+    int matched =
+        sscanf(line, " s%d = ( %d , %d ) %7s", &pic, &displacement_x, &displacement_y, flags);
     if (matched < 3 || pic < 0) {
       continue;
     }
 
     WhipSeg *segment = &dest[cur_stage].segs[dest[cur_stage].count];
     segment->pic = pic;
-    segment->dx = dx;
-    segment->dy = dy;
+    segment->dx = displacement_x;
+    segment->dy = displacement_y;
     segment->flip_h = (strchr(flags, 'h') != NULL);
     segment->flip_v = (strchr(flags, 'v') != NULL);
     dest[cur_stage].count++;
@@ -313,29 +314,29 @@ void WhipRender(void) {
     return;
   }
   int stage = last_rendered_stage;
-  int sx = SimonGetScreenX();
-  int sy = SimonGetScreenY();
+  int sprite_x = SimonGetScreenX();
+  int sprite_y = SimonGetScreenY();
   const WhipStage *active_stages = (int)swing_up ? up_stages : stages;
   int count = active_stages[stage].count;
 
   for (int seg = 0; seg < MAX_WHIP_SPRITES; seg++) {
     if (seg < count) {
       const WhipSeg *segment = &active_stages[stage].segs[seg];
-      int wx;
-      bool fh;
+      int world_x;
+      bool flip_h;
       if (swing_facing_right) {
-        wx = sx + segment->dx;
-        fh = segment->flip_h;
+        world_x = sprite_x + segment->dx;
+        flip_h = segment->flip_h;
       } else {
-        wx = sx + (SIMON_SPRITE_W - segment->dx - SEG_SIZE);
-        fh = ((!segment->flip_h) != 0);
+        world_x = sprite_x + (SIMON_SPRITE_W - segment->dx - SEG_SIZE);
+        flip_h = ((!segment->flip_h) != 0);
       }
       TLN_SetSpriteSet(WHIP_SPRITE_BASE + seg, spriteset);
       TLN_SetSpritePicture(WHIP_SPRITE_BASE + seg, segment->pic);
-      TLN_EnableSpriteFlag(WHIP_SPRITE_BASE + seg, FLAG_FLIPX, fh);
+      TLN_EnableSpriteFlag(WHIP_SPRITE_BASE + seg, FLAG_FLIPX, flip_h);
       TLN_EnableSpriteFlag(WHIP_SPRITE_BASE + seg, FLAG_FLIPY, segment->flip_v);
       int y_offset = (int)SimonIsCrouching() ? 12 : 0;
-      TLN_SetSpritePosition(WHIP_SPRITE_BASE + seg, wx, sy + segment->dy + y_offset);
+      TLN_SetSpritePosition(WHIP_SPRITE_BASE + seg, world_x, sprite_y + segment->dy + y_offset);
     } else {
       TLN_DisableSprite(WHIP_SPRITE_BASE + seg);
     }

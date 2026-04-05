@@ -29,15 +29,15 @@
  * Odd velocity steps hold for 3 frames, even steps for 2, until CEILING_FALL_TV.
  * {1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 6, 6, 7, 7, 7, 8} */
 static int ceiling_fall_dy_at(int frame) {
-  int v = 1;
+  int velocity = 1;
   int i = 0;
-  while (v < CEILING_FALL_TV) {
-    int count = (v & 1) ? 3 : 2;
+  while (velocity < CEILING_FALL_TV) {
+    int count = (velocity & 1) ? 3 : 2;
     if (frame < i + count) {
-      return v;
+      return velocity;
     }
     i += count;
-    v++;
+    velocity++;
   }
   return CEILING_FALL_TV;
 }
@@ -135,8 +135,8 @@ void SimonClearBridgeFloor(void) {
 
 static TLN_Spriteset load_grid_spriteset(const char *txt_name, const char *png_name,
                                          TLN_Bitmap *out_bitmap) {
-  FILE *f = FileOpen(txt_name);
-  if (f == NULL) {
+  FILE *file = FileOpen(txt_name);
+  if (file == NULL) {
     return NULL;
   }
 
@@ -145,7 +145,7 @@ static TLN_Spriteset load_grid_spriteset(const char *txt_name, const char *png_n
   int cols = 0;
 
   char line[64];
-  while (fgets(line, sizeof(line), f) != NULL) {
+  while (fgets(line, sizeof(line), file) != NULL) {
     int v;
     if (sscanf(line, " w = %d", &v) == 1) {
       tw = v;
@@ -155,7 +155,7 @@ static TLN_Spriteset load_grid_spriteset(const char *txt_name, const char *png_n
       cols = v;
     }
   }
-  fclose(f);
+  fclose(file);
 
   if (tw <= 0 || th <= 0 || cols <= 0) {
     return NULL;
@@ -175,23 +175,23 @@ static TLN_Spriteset load_grid_spriteset(const char *txt_name, const char *png_n
     return NULL;
   }
 
-  for (int r = 0; r < rows; r++) {
-    for (int c = 0; c < cols; c++) {
-      TLN_SpriteData *e = &data[(r * cols) + c];
-      snprintf(e->name, sizeof(e->name), "s%d", (r * cols) + c);
-      e->x = c * tw;
-      e->y = r * th;
-      e->w = tw;
-      e->h = th;
+  for (int row = 0; row < rows; row++) {
+    for (int column = 0; column < cols; column++) {
+      TLN_SpriteData *spritedata = &data[(row * cols) + column];
+      snprintf(spritedata->name, sizeof(spritedata->name), "s%d", (row * cols) + column);
+      spritedata->x = column * tw;
+      spritedata->y = row * th;
+      spritedata->w = tw;
+      spritedata->h = th;
     }
   }
 
-  TLN_Spriteset ss = TLN_CreateSpriteset(bmp, data, total);
+  TLN_Spriteset spriteset = TLN_CreateSpriteset(bmp, data, total);
   free(data);
   /* Do NOT delete bmp here — the spriteset holds a reference to it.
    * The caller is responsible for deleting it after the spriteset is freed. */
   *out_bitmap = bmp;
-  return ss;
+  return spriteset;
 }
 
 /*
@@ -265,17 +265,18 @@ static void render_section_stage(const SimonSection *sec, int stage_idx) {
   if (stage_idx >= sec->num_stages) {
     stage_idx = sec->num_stages - 1;
   }
-  const SimonStage *st = &sec->stages[stage_idx];
+  const SimonStage *stage = &sec->stages[stage_idx];
   bool facing_right = (direction == DIR_RIGHT);
   for (int i = 0; i < MAX_SIMON_SPRITES; i++) {
-    if (i < st->count) {
-      const SimonSeg *s = &st->segs[i];
-      int wx = position.x + ((int)facing_right ? s->dx : (SIMON_WIDTH - s->dx - SIMON_SEG_W));
+    if (i < stage->count) {
+      const SimonSeg *seg = &stage->segs[i];
+      int worldx =
+          position.x + ((int)facing_right ? seg->dx : (SIMON_WIDTH - seg->dx - SIMON_SEG_W));
       TLN_SetSpriteSet(SIMON_SPRITE_BASE + i, simon);
-      TLN_SetSpritePicture(SIMON_SPRITE_BASE + i, s->pic);
+      TLN_SetSpritePicture(SIMON_SPRITE_BASE + i, seg->pic);
       TLN_EnableSpriteFlag(SIMON_SPRITE_BASE + i, FLAG_FLIPX, (bool)!facing_right);
       TLN_EnableSpriteFlag(SIMON_SPRITE_BASE + i, FLAG_FLIPY, false);
-      TLN_SetSpritePosition(SIMON_SPRITE_BASE + i, wx, position.y + s->dy);
+      TLN_SetSpritePosition(SIMON_SPRITE_BASE + i, worldx, position.y + seg->dy);
     } else {
       TLN_DisableSprite(SIMON_SPRITE_BASE + i);
     }

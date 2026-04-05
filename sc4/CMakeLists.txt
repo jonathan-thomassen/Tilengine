@@ -70,6 +70,40 @@ add_executable(
   Drawbridge.c
   Whip.c)
 
+# Unit test for SimonCollision (self-contained, no Tilengine/SDL link needed)
+add_executable(test_collision test_collision.c)
+target_include_directories(test_collision PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+                                                  ../src ../include)
+target_compile_definitions(test_collision PRIVATE LIB_EXPORTS)
+# Unlink the default libraries — the test provides its own mocks.
+set_target_properties(test_collision PROPERTIES LINK_LIBRARIES "")
+enable_testing()
+add_test(NAME SimonCollision COMMAND test_collision)
+
+# Coverage: cmake -DCOVERAGE=ON .. && cmake --build . --target coverage
+option(COVERAGE "Build test_collision with gcov coverage instrumentation" OFF)
+if(COVERAGE AND NOT MSVC)
+  target_compile_options(test_collision PRIVATE --coverage -O0 -g)
+  target_link_options(test_collision PRIVATE --coverage)
+  find_program(GCOVR gcovr)
+  if(GCOVR)
+    add_custom_target(
+      coverage
+      COMMAND test_collision
+      COMMAND ${GCOVR} --root ${CMAKE_CURRENT_SOURCE_DIR}
+              --filter ${CMAKE_CURRENT_SOURCE_DIR}/SimonCollision.c
+              --print-summary
+              --html-details ${CMAKE_CURRENT_BINARY_DIR}/coverage.html
+              --txt ${CMAKE_CURRENT_BINARY_DIR}/coverage.txt
+              ${CMAKE_CURRENT_BINARY_DIR}
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+      DEPENDS test_collision
+      COMMENT "Running tests and generating coverage report")
+  else()
+    message(WARNING "gcovr not found — install with: pip install gcovr")
+  endif()
+endif()
+
 # Master list of all sc4 targets, used for dependency wiring below.
 set(SC4_TARGETS intro)
 
